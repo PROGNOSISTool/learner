@@ -1,0 +1,311 @@
+Maximum number of traces: 40000
+Minimum length of traces: 6
+Maximim length of traces: 6
+Mapper: freebsd
+Seed: 1299777356020 - Set statically
+TCP endpoint: (127.0.0.1,18200)
+Reset oracle: client
+starting learning
+
+		RUN NUMBER: 1
+
+done learning
+starting equivalence query
+done equivalence query
+Sending CE to LearnLib.
+Counter Example: LISTEN SYN(V,V,0) ACK(V,V,0) ACCEPT CLOSECONNECTION FIN+ACK(V,V,0) CLOSE ACK+RST(V,V,0) SYN(V,V,0) 
+		RUN NUMBER: 2
+
+done learning
+starting equivalence query
+done equivalence query
+Sending CE to LearnLib.
+Counter Example: CLOSE LISTEN SYN+ACK(V,V,0) SYN(V,V,0) 
+		RUN NUMBER: 3
+
+done learning
+starting equivalence query
+done equivalence query
+Sending CE to LearnLib.
+Counter Example: LISTEN SYN(V,V,0) ACCEPT LISTEN SEND ACK(V,V,0) LISTEN CLOSECONNECTION ACCEPT CLOSECONNECTION 
+		RUN NUMBER: 4
+
+done learning
+starting equivalence query
+done equivalence query
+Sending CE to LearnLib.
+Counter Example: LISTEN SYN(V,V,0) ACCEPT FIN+ACK(V,V,0) CLOSECONNECTION FIN+ACK(V,V,0) ACK+RST(V,V,0) SYN+ACK(V,V,0) SEND ACK+RST(V,V,0) FIN+ACK(V,V,0) RCV RCV RCV RCV SYN(V,V,0) 
+		RUN NUMBER: 5
+
+done learning
+starting equivalence query
+done equivalence query
+Sending CE to LearnLib.
+Counter Example: LISTEN SYN(V,V,0) ACK+PSH(V,V,1) FIN+ACK(V,V,0) ACCEPT CLOSECONNECTION FIN+ACK(V,V,0) 
+		RUN NUMBER: 6
+
+done learning
+starting equivalence query
+done equivalence query
+Sending CE to LearnLib.
+Counter Example: LISTEN FIN+ACK(V,V,0) SYN(V,V,0) ACK(V,V,0) SYN+ACK(V,V,0) SYN(V,V,0) FIN+ACK(V,V,0) ACCEPT SEND 
+		RUN NUMBER: 7
+
+done learning
+starting equivalence query
+done equivalence query
+Sending CE to LearnLib.
+Counter Example: LISTEN SYN(V,V,0) ACCEPT FIN+ACK(V,V,0) ACK+RST(V,V,0) SYN(V,V,0) ACCEPT SYN+ACK(V,V,0) ACK+RST(V,V,0) SYN(V,V,0) ACK(V,V,0) ACCEPT CLOSE 
+		RUN NUMBER: 8
+
+done learning
+starting equivalence query
+done equivalence query
+Sending CE to LearnLib.
+Counter Example: LISTEN SYN(V,V,0) FIN+ACK(V,V,0) SYN(V,V,0) SYN(V,V,0) SYN(V,V,0) ACK(V,V,0) ACK+RST(V,V,0) CLOSECONNECTION SYN(V,V,0) ACK(V,V,0) 
+		RUN NUMBER: 9
+
+done learning
+starting equivalence query
+done equivalence query
+Sending CE to LearnLib.
+Counter Example: LISTEN SYN(V,V,0) ACCEPT FIN+ACK(V,V,0) ACK+RST(V,V,0) SYN(V,V,0) ACK+PSH(V,V,1) RST(V,V,0) SYN(V,V,0) SYN+ACK(V,V,0) RCV SYN(V,V,0) ACK(V,V,0) 
+		RUN NUMBER: 10
+
+done learning
+starting equivalence query
+done equivalence query
+Sending CE to LearnLib.
+Counter Example: LISTEN ACCEPT ACK+RST(V,V,0) SYN+ACK(V,V,0) SYN(V,V,0) ACK+PSH(V,V,1) SEND 
+		RUN NUMBER: 11
+
+done learning
+starting equivalence query
+done equivalence query
+Sending CE to LearnLib.
+Counter Example: LISTEN ACCEPT SYN(V,V,0) ACK(V,V,0) SYN(V,V,0) ACCEPT SYN(V,V,0) ACK(V,V,0) RCV SYN+ACK(V,V,0) CLOSECONNECTION ACCEPT SYN(V,V,0) ACK+PSH(V,V,1) CLOSE 
+		RUN NUMBER: 12
+
+done learning
+starting equivalence query
+done equivalence query
+Sending CE to LearnLib.
+Counter Example: LISTEN ACCEPT SYN(V,V,0) ACK(V,V,0) ACK+RST(V,V,0) SYN(V,V,0) ACK(V,V,0) RST(V,V,0) SYN(V,V,0) ACK+RST(V,V,0) FIN+ACK(V,V,0) RST(V,V,0) ACK+PSH(V,V,1) SEND ACCEPT ACCEPT CLOSECONNECTION SYN(V,V,0) ACK+PSH(V,V,1) ACCEPT CLOSE 
+		RUN NUMBER: 13
+
+done learning
+starting equivalence query
+done equivalence query
+Sending CE to LearnLib.
+Counter Example: LISTEN ACCEPT SYN(V,V,0) ACK(V,V,0) ACK+RST(V,V,0) SYN(V,V,0) SYN+ACK(V,V,0) SYN(V,V,0) FIN+ACK(V,V,0) LISTEN CLOSECONNECTION ACCEPT CLOSECONNECTION FIN+ACK(V,V,0) 
+		RUN NUMBER: 14
+
+done learning
+starting equivalence query
+done equivalence query
+Sending CE to LearnLib.
+Counter Example: LISTEN SYN(V,V,0) ACK(V,V,0) ACK+RST(V,V,0) SYN(V,V,0) ACK(V,V,0) FIN+ACK(V,V,0) SEND ACCEPT ACCEPT CLOSECONNECTION FIN+ACK(V,V,0) 
+		RUN NUMBER: 15
+
+done learning
+starting equivalence query
+done equivalence query
+Sending CE to LearnLib.
+Counter Example: LISTEN ACCEPT SYN(V,V,0) ACK(V,V,0) ACK+RST(V,V,0) SYN(V,V,0) ACK(V,V,0) ACK+RST(V,V,0) SYN(V,V,0) ACK+RST(V,V,0) ACK+PSH(V,V,1) SYN(V,V,0) RCV RST(V,V,0) RST(V,V,0) SYN(V,V,0) ACK(V,V,0) ACCEPT LISTEN ACCEPT FIN+ACK(V,V,0) ACK+PSH(V,V,1) CLOSECONNECTION ACCEPT ACCEPT CLOSECONNECTION FIN+ACK(V,V,0) 
+		RUN NUMBER: 16
+
+done learning
+starting equivalence query
+ACK+PSH(V,V,1)
+!RST(ZERO,ZERO,0)
+RCV
+!TIMEOUT
+ACK(V,V,0)
+!RST(ZERO,ZERO,0)
+reset
+ACK+PSH(V,V,1)
+!RST(ZERO,ZERO,0)
+RCV
+!TIMEOUT
+SYN(V,V,0)
+!ACK+RST(ZERO,NEXT,0)
+reset
+ACK+PSH(V,V,1)
+!RST(ZERO,ZERO,0)
+FIN+ACK(V,V,0)
+!RST(ZERO,ZERO,0)
+LISTEN
+!TIMEOUT
+SYN(V,V,0)
+!ACK+SYN(FRESH,NEXT,0)
+reset
+ACK+PSH(V,V,1)
+!RST(ZERO,ZERO,0)
+SYN(V,V,0)
+!ACK+RST(ZERO,NEXT,0)
+SYN(V,V,0)
+!ACK+RST(ZERO,NEXT,0)
+reset
+ACK+PSH(V,V,1)
+!RST(ZERO,ZERO,0)
+SYN(V,V,0)
+!ACK+RST(ZERO,NEXT,0)
+LISTEN
+!TIMEOUT
+SYN(V,V,0)
+!ACK+SYN(FRESH,NEXT,0)
+reset
+ACK+PSH(V,V,1)
+!RST(ZERO,ZERO,0)
+CLOSECONNECTION
+!TIMEOUT
+ACK(V,V,0)
+!RST(ZERO,ZERO,0)
+reset
+ACK+PSH(V,V,1)
+!RST(ZERO,ZERO,0)
+CLOSECONNECTION
+!TIMEOUT
+LISTEN
+!TIMEOUT
+SYN(V,V,0)
+!ACK+SYN(FRESH,NEXT,0)
+reset
+ACK+PSH(V,V,1)
+!RST(ZERO,ZERO,0)
+ACK+RST(V,V,0)
+!TIMEOUT
+ACK(V,V,0)
+!RST(ZERO,ZERO,0)
+reset
+ACK+PSH(V,V,1)
+!RST(ZERO,ZERO,0)
+ACK+RST(V,V,0)
+!TIMEOUT
+LISTEN
+!TIMEOUT
+SYN(V,V,0)
+!ACK+SYN(FRESH,NEXT,0)
+reset
+ACK+PSH(V,V,1)
+!RST(ZERO,ZERO,0)
+CLOSE
+!TIMEOUT
+SYN(V,V,0)
+!ACK+RST(ZERO,NEXT,0)
+reset
+ACK+PSH(V,V,1)
+!RST(ZERO,ZERO,0)
+CLOSE
+!TIMEOUT
+SEND
+!TIMEOUT
+reset
+ACK+PSH(V,V,1)
+!RST(ZERO,ZERO,0)
+SEND
+!TIMEOUT
+SYN(V,V,0)
+!ACK+RST(ZERO,NEXT,0)
+reset
+ACK+PSH(V,V,1)
+!RST(ZERO,ZERO,0)
+SEND
+!TIMEOUT
+LISTEN
+!TIMEOUT
+SYN(V,V,0)
+!ACK+SYN(FRESH,NEXT,0)
+reset
+ACK+PSH(V,V,1)
+!RST(ZERO,ZERO,0)
+SEND
+!TIMEOUT
+SEND
+!TIMEOUT
+reset
+ACK+PSH(V,V,1)
+!RST(ZERO,ZERO,0)
+ACK(V,V,0)
+!RST(ZERO,ZERO,0)
+SYN(V,V,0)
+!ACK+RST(ZERO,NEXT,0)
+reset
+ACK+PSH(V,V,1)
+!RST(ZERO,ZERO,0)
+ACK(V,V,0)
+!RST(ZERO,ZERO,0)
+LISTEN
+!TIMEOUT
+SYN(V,V,0)
+!ACK+SYN(FRESH,NEXT,0)
+reset
+ACK+PSH(V,V,1)
+!RST(ZERO,ZERO,0)
+ACCEPT
+!TIMEOUT
+SYN(V,V,0)
+!ACK+RST(ZERO,NEXT,0)
+reset
+ACK+PSH(V,V,1)
+!RST(ZERO,ZERO,0)
+SYN+ACK(V,V,0)
+!RST(ZERO,ZERO,0)
+LISTEN
+!TIMEOUT
+SYN(V,V,0)
+!ACK+SYN(FRESH,NEXT,0)
+reset
+ACK+PSH(V,V,1)
+!RST(ZERO,ZERO,0)
+LISTEN
+!TIMEOUT
+ACK(V,V,0)
+!RST(ZERO,ZERO,0)
+reset
+ACK+PSH(V,V,1)
+!RST(ZERO,ZERO,0)
+LISTEN
+!TIMEOUT
+SYN(V,V,0)
+!ACK+SYN(FRESH,NEXT,0)
+ACK(V,V,0)
+!TIMEOUT
+CLOSE
+!ACK+RST(NEXT,CURRENT,0)
+reset
+ACK+PSH(V,V,1)
+!RST(ZERO,ZERO,0)
+RST(V,V,0)
+!TIMEOUT
+ACK(V,V,0)
+!RST(ZERO,ZERO,0)
+reset
+ACK+PSH(V,V,1)
+!RST(ZERO,ZERO,0)
+RST(V,V,0)
+!TIMEOUT
+LISTEN
+!TIMEOUT
+SYN(V,V,0)
+!ACK+SYN(FRESH,NEXT,0)
+reset
+ACK+PSH(V,V,1)
+!RST(ZERO,ZERO,0)
+ACK+PSH(V,V,1)
+!RST(ZERO,ZERO,0)
+ACK(V,V,0)
+!RST(ZERO,ZERO,0)
+reset
+ACK+PSH(V,V,1)
+!RST(ZERO,ZERO,0)
+ACK+PSH(V,V,1)
+!RST(ZERO,ZERO,0)
+LISTEN
+!TIMEOUT
+SYN(V,V,0)
+!ACK+SYN(FRESH,NEXT,0)
+reset
+done equivalence query
+Seed: 1299777356020
+Done.

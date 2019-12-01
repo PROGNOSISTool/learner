@@ -1,0 +1,384 @@
+copy this to obtain the regex describing any text between two inputs of a trace:
+[^\r\n]*[\r\n][^\r\n]*[\r\n][^\r\n]*[\r\n][^\r\n]*[\r\n]
+
+
+reset
+
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=, sutSeq=?, lastAckReceived=?}
+ACK+PSH(V,V,1) \ AP 0 0 [x]
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=ACK+PSH, sutSeq=?, lastAckReceived=?}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+RCV \ rcv
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+> TIMEOUT \ timeout
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+ACK(V,V,0) \ A 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=ACK, sutSeq=?, lastAckReceived=0}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+reset
+
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=, sutSeq=?, lastAckReceived=?}
+ACK+PSH(V,V,1) \ AP 0 0 [x]
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=ACK+PSH, sutSeq=?, lastAckReceived=?}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+RCV \ rcv
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+> TIMEOUT \ timeout
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+SYN(V,V,0) \ S 6210 38290 []
+{lastLearnerSeq=?, learnerSeqProposed=6210, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=SYN, sutSeq=?, lastAckReceived=0}
+> ACK+RST(ZERO,NEXT,0) \ RA 0 6211 []
+reset
+
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=, sutSeq=?, lastAckReceived=?}
+ACK+PSH(V,V,1) \ AP 0 0 [x]
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=ACK+PSH, sutSeq=?, lastAckReceived=?}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+FIN+ACK(V,V,0) \ AF 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=ACK+FIN, sutSeq=?, lastAckReceived=0}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+LISTEN \ listen
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+> TIMEOUT \ timeout
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+SYN(V,V,0) \ S 53756 4889 []
+{lastLearnerSeq=?, learnerSeqProposed=53756, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=SYN, sutSeq=?, lastAckReceived=0}
+> ACK+SYN(FRESH,NEXT,0) \ SA 221608466 53757 []
+reset
+
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=, sutSeq=?, lastAckReceived=?}
+ACK+PSH(V,V,1) \ AP 0 0 [x]
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=ACK+PSH, sutSeq=?, lastAckReceived=?}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+SYN(V,V,0) \ S 13468 44188 []
+{lastLearnerSeq=?, learnerSeqProposed=13468, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=SYN, sutSeq=?, lastAckReceived=0}
+> ACK+RST(ZERO,NEXT,0) \ RA 0 13469 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=13469}
+SYN(V,V,0) \ S 19458 32320 []
+{lastLearnerSeq=?, learnerSeqProposed=19458, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=SYN, sutSeq=?, lastAckReceived=13469}
+> ACK+RST(ZERO,NEXT,0) \ RA 0 19459 []
+reset
+
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=, sutSeq=?, lastAckReceived=?}
+ACK+PSH(V,V,1) \ AP 0 0 [x]
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=ACK+PSH, sutSeq=?, lastAckReceived=?}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+SYN(V,V,0) \ S 63079 50813 []
+{lastLearnerSeq=?, learnerSeqProposed=63079, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=SYN, sutSeq=?, lastAckReceived=0}
+> ACK+RST(ZERO,NEXT,0) \ RA 0 63080 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=63080}
+LISTEN \ listen
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=63080}
+> TIMEOUT \ timeout
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=63080}
+SYN(V,V,0) \ S 30914 33448 []
+{lastLearnerSeq=?, learnerSeqProposed=30914, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=SYN, sutSeq=?, lastAckReceived=63080}
+> ACK+SYN(FRESH,NEXT,0) \ SA 1943061701 30915 []
+reset
+
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=, sutSeq=?, lastAckReceived=?}
+ACK+PSH(V,V,1) \ AP 0 0 [x]
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=ACK+PSH, sutSeq=?, lastAckReceived=?}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+CLOSECONNECTION \ closeconnection
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+> TIMEOUT \ timeout
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+ACK(V,V,0) \ A 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=ACK, sutSeq=?, lastAckReceived=0}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+reset
+
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=, sutSeq=?, lastAckReceived=?}
+ACK+PSH(V,V,1) \ AP 0 0 [x]
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=ACK+PSH, sutSeq=?, lastAckReceived=?}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+CLOSECONNECTION \ closeconnection
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+> TIMEOUT \ timeout
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+LISTEN \ listen
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+> TIMEOUT \ timeout
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+SYN(V,V,0) \ S 45306 58585 []
+{lastLearnerSeq=?, learnerSeqProposed=45306, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=SYN, sutSeq=?, lastAckReceived=0}
+> ACK+SYN(FRESH,NEXT,0) \ SA 728806522 45307 []
+reset
+
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=, sutSeq=?, lastAckReceived=?}
+ACK+PSH(V,V,1) \ AP 0 0 [x]
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=ACK+PSH, sutSeq=?, lastAckReceived=?}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+ACK+RST(V,V,0) \ AR 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=ACK+RST, sutSeq=?, lastAckReceived=0}
+> TIMEOUT \ timeout
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+ACK(V,V,0) \ A 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=ACK, sutSeq=?, lastAckReceived=0}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+reset
+
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=, sutSeq=?, lastAckReceived=?}
+ACK+PSH(V,V,1) \ AP 0 0 [x]
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=ACK+PSH, sutSeq=?, lastAckReceived=?}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+ACK+RST(V,V,0) \ AR 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=ACK+RST, sutSeq=?, lastAckReceived=0}
+> TIMEOUT \ timeout
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+LISTEN \ listen
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+> TIMEOUT \ timeout
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+SYN(V,V,0) \ S 24464 11106 []
+{lastLearnerSeq=?, learnerSeqProposed=24464, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=SYN, sutSeq=?, lastAckReceived=0}
+> ACK+SYN(FRESH,NEXT,0) \ SA 4152378097 24465 []
+reset
+
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=, sutSeq=?, lastAckReceived=?}
+ACK+PSH(V,V,1) \ AP 0 0 [x]
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=ACK+PSH, sutSeq=?, lastAckReceived=?}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+CLOSE \ close
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+> TIMEOUT \ timeout
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+SYN(V,V,0) \ S 7159 57515 []
+{lastLearnerSeq=?, learnerSeqProposed=7159, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=SYN, sutSeq=?, lastAckReceived=0}
+> ACK+RST(ZERO,NEXT,0) \ RA 0 7160 []
+reset
+
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=, sutSeq=?, lastAckReceived=?}
+ACK+PSH(V,V,1) \ AP 0 0 [x]
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=ACK+PSH, sutSeq=?, lastAckReceived=?}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+CLOSE \ close
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+> TIMEOUT \ timeout
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+SEND \ send
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+> TIMEOUT \ timeout
+reset
+
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=, sutSeq=?, lastAckReceived=?}
+ACK+PSH(V,V,1) \ AP 0 0 [x]
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=ACK+PSH, sutSeq=?, lastAckReceived=?}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+SEND \ send
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+> TIMEOUT \ timeout
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+SYN(V,V,0) \ S 33201 1647 []
+{lastLearnerSeq=?, learnerSeqProposed=33201, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=SYN, sutSeq=?, lastAckReceived=0}
+> ACK+RST(ZERO,NEXT,0) \ RA 0 33202 []
+reset
+
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=, sutSeq=?, lastAckReceived=?}
+ACK+PSH(V,V,1) \ AP 0 0 [x]
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=ACK+PSH, sutSeq=?, lastAckReceived=?}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+SEND \ send
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+> TIMEOUT \ timeout
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+LISTEN \ listen
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+> TIMEOUT \ timeout
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+SYN(V,V,0) \ S 16503 8503 []
+{lastLearnerSeq=?, learnerSeqProposed=16503, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=SYN, sutSeq=?, lastAckReceived=0}
+> ACK+SYN(FRESH,NEXT,0) \ SA 3743538783 16504 []
+reset
+
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=, sutSeq=?, lastAckReceived=?}
+ACK+PSH(V,V,1) \ AP 0 0 [x]
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=ACK+PSH, sutSeq=?, lastAckReceived=?}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+SEND \ send
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+> TIMEOUT \ timeout
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+SEND \ send
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+> TIMEOUT \ timeout
+reset
+
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=, sutSeq=?, lastAckReceived=?}
+ACK+PSH(V,V,1) \ AP 0 0 [x]
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=ACK+PSH, sutSeq=?, lastAckReceived=?}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+ACK(V,V,0) \ A 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=ACK, sutSeq=?, lastAckReceived=0}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+SYN(V,V,0) \ S 11443 2422 []
+{lastLearnerSeq=?, learnerSeqProposed=11443, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=SYN, sutSeq=?, lastAckReceived=0}
+> ACK+RST(ZERO,NEXT,0) \ RA 0 11444 []
+reset
+
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=, sutSeq=?, lastAckReceived=?}
+ACK+PSH(V,V,1) \ AP 0 0 [x]
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=ACK+PSH, sutSeq=?, lastAckReceived=?}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+ACK(V,V,0) \ A 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=ACK, sutSeq=?, lastAckReceived=0}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+LISTEN \ listen
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+> TIMEOUT \ timeout
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+SYN(V,V,0) \ S 7228 63115 []
+{lastLearnerSeq=?, learnerSeqProposed=7228, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=SYN, sutSeq=?, lastAckReceived=0}
+> ACK+SYN(FRESH,NEXT,0) \ SA 1284214262 7229 []
+reset
+
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=, sutSeq=?, lastAckReceived=?}
+ACK+PSH(V,V,1) \ AP 0 0 [x]
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=ACK+PSH, sutSeq=?, lastAckReceived=?}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+ACCEPT \ accept
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+> TIMEOUT \ timeout
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+SYN(V,V,0) \ S 50485 41899 []
+{lastLearnerSeq=?, learnerSeqProposed=50485, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=SYN, sutSeq=?, lastAckReceived=0}
+> ACK+RST(ZERO,NEXT,0) \ RA 0 50486 []
+reset
+
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=, sutSeq=?, lastAckReceived=?}
+ACK+PSH(V,V,1) \ AP 0 0 [x]
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=ACK+PSH, sutSeq=?, lastAckReceived=?}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+SYN+ACK(V,V,0) \ AS 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=ACK+SYN, sutSeq=?, lastAckReceived=0}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+LISTEN \ listen
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+> TIMEOUT \ timeout
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+SYN(V,V,0) \ S 34798 6538 []
+{lastLearnerSeq=?, learnerSeqProposed=34798, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=SYN, sutSeq=?, lastAckReceived=0}
+> ACK+SYN(FRESH,NEXT,0) \ SA 1387726740 34799 []
+reset
+
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=, sutSeq=?, lastAckReceived=?}
+ACK+PSH(V,V,1) \ AP 0 0 [x]
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=ACK+PSH, sutSeq=?, lastAckReceived=?}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+LISTEN \ listen
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+> TIMEOUT \ timeout
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+ACK(V,V,0) \ A 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=ACK, sutSeq=?, lastAckReceived=0}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+reset
+
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=, sutSeq=?, lastAckReceived=?}
+ACK+PSH(V,V,1) \ AP 0 0 [x]
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=ACK+PSH, sutSeq=?, lastAckReceived=?}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+LISTEN \ listen
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+> TIMEOUT \ timeout
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+SYN(V,V,0) \ S 52168 32957 []
+{lastLearnerSeq=?, learnerSeqProposed=52168, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=SYN, sutSeq=?, lastAckReceived=0}
+> ACK+SYN(FRESH,NEXT,0) \ SA 3187187588 52169 []
+{lastLearnerSeq=52169, learnerSeqProposed=?, learnerSeq=52169, lastSeqPlusDataReceived=3187187589, lastFlagsSent=, sutSeq=3187187588, lastAckReceived=52169}
+ACK(V,V,0) \ A 52169 3187187589 []
+{lastLearnerSeq=52169, learnerSeqProposed=?, learnerSeq=52169, lastSeqPlusDataReceived=3187187589, lastFlagsSent=ACK, sutSeq=3187187588, lastAckReceived=52169}
+> TIMEOUT \ timeout
+{lastLearnerSeq=52169, learnerSeqProposed=?, learnerSeq=52169, lastSeqPlusDataReceived=3187187589, lastFlagsSent=, sutSeq=3187187588, lastAckReceived=52169}
+CLOSE \ close
+{lastLearnerSeq=52169, learnerSeqProposed=?, learnerSeq=52169, lastSeqPlusDataReceived=3187187589, lastFlagsSent=, sutSeq=3187187588, lastAckReceived=52169}
+> ACK+RST(NEXT,CURRENT,0) \ RA 3187187589 52169 []
+reset
+
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=, sutSeq=?, lastAckReceived=?}
+ACK+PSH(V,V,1) \ AP 0 0 [x]
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=ACK+PSH, sutSeq=?, lastAckReceived=?}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+RST(V,V,0) \ R 25961 50870 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=RST, sutSeq=?, lastAckReceived=0}
+> TIMEOUT \ timeout
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+ACK(V,V,0) \ A 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=ACK, sutSeq=?, lastAckReceived=0}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+reset
+
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=, sutSeq=?, lastAckReceived=?}
+ACK+PSH(V,V,1) \ AP 0 0 [x]
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=ACK+PSH, sutSeq=?, lastAckReceived=?}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+RST(V,V,0) \ R 3198 3117 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=RST, sutSeq=?, lastAckReceived=0}
+> TIMEOUT \ timeout
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+LISTEN \ listen
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+> TIMEOUT \ timeout
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+SYN(V,V,0) \ S 8070 62767 []
+{lastLearnerSeq=?, learnerSeqProposed=8070, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=SYN, sutSeq=?, lastAckReceived=0}
+> ACK+SYN(FRESH,NEXT,0) \ SA 2426658863 8071 []
+reset
+
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=, sutSeq=?, lastAckReceived=?}
+ACK+PSH(V,V,1) \ AP 0 0 [x]
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=ACK+PSH, sutSeq=?, lastAckReceived=?}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+ACK+PSH(V,V,1) \ AP 0 0 [x]
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=ACK+PSH, sutSeq=?, lastAckReceived=0}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+ACK(V,V,0) \ A 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=ACK, sutSeq=?, lastAckReceived=0}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+reset
+
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=, sutSeq=?, lastAckReceived=?}
+ACK+PSH(V,V,1) \ AP 0 0 [x]
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=?, lastFlagsSent=ACK+PSH, sutSeq=?, lastAckReceived=?}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+ACK+PSH(V,V,1) \ AP 0 0 [x]
+{lastLearnerSeq=?, learnerSeqProposed=0, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=ACK+PSH, sutSeq=?, lastAckReceived=0}
+> RST(ZERO,ZERO,0) \ R 0 0 []
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+LISTEN \ listen
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+> TIMEOUT \ timeout
+{lastLearnerSeq=?, learnerSeqProposed=?, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=, sutSeq=?, lastAckReceived=0}
+SYN(V,V,0) \ S 24676 64851 []
+{lastLearnerSeq=?, learnerSeqProposed=24676, learnerSeq=?, lastSeqPlusDataReceived=0, lastFlagsSent=SYN, sutSeq=?, lastAckReceived=0}
+> ACK+SYN(FRESH,NEXT,0) \ SA 2612643598 24677 []

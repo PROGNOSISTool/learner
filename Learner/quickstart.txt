@@ -1,0 +1,76 @@
+A (relatively) fast way to get things running so you don't have to read through the readme.txt gibberish.
+
+
+Learner  -  Mapper     -    Local Boundary    -Pkt crafter-  Network Boundary - Listening Server  
+------------------------                      -------------                   -------------   
+		 -	Abs -> Conc-   Concrete String    -           -   TCP Request     -           -
+LearnLib -  <-----------   <------------>-    -  Adapter    <-------------->  -  Server   -   
+		 -	Abs <- Conc-      Messages        -           -   TCP Response    -           -
+------------------------      -				  -------------                   -------------
+
+Installation Requirements:
+java jdk 1.7 provided by Oracle 
+eclipse IDE (the learner project is an eclipse project)
+python 2.7 with scapy, pcapy and impacket packages added
+
+--Installing scapy--
+You already have it set up probably :)
+
+--Installing pcapy--
+First, install pcapy dependencies:
+apt-get install python-dev (setup gcc dev tools in python)
+apt-get install libpcap0.8-dev
+Then proceed with installation: 
+download kit http://corelabs.coresecurity.com/index.php?module=Wiki&action=view&type=tool&name=Pcapy 
+python setup.py install
+
+--Installing impacket--
+download kit http://corelabs.coresecurity.com/index.php?module=Wiki&action=view&type=tool&name=Impacket
+python setup.py install
+
+
+Running the setup:
+	-> start the server: (TCPListenerMain.java or any server implementation of your choice)
+	-> start the network adapter
+	-> start the learner setup 
+	-> profit $$$
+
+Start server:
+	java TCPListenerMain // listens on 7991 and 7992
+	
+Start network adapter:
+	configure the interface parameters (interface name and type) in networkAdapter.py
+	sudo python networkAdapter.py -lcp portNumber // where portNumber is the local port number, preferably over 1000 
+
+Start learner setup:
+	Within eclipse do the following:
+		-> import NetworkSetup as a project in eclipse
+		-> Run -> Run Configurations -> 
+		Main Class: abslearning.learner.Main
+		Project: NetworkSetup
+		Arguments: --port portNumber your_path/NetworkSetup/input/tcp/config.yaml //same portNumber used for the networkAdapter
+		Configure learning parameters in /input/tcp
+	Before running, make sure that networkAdapter.py and the server (on the other environment) are also running. Also make sure you've
+	blocked resets from the Ubuntu OS. 
+
+Along with the adapter, there is a traceRunner.py, used for testing. You need to configure its parameters, so that it fits in with your
+environment. It enables you to run an abstract trace (which you can write, but also copy from trace logs).
+It runs on the command:
+	python traceRunner.py 
+
+Other stuff:
+You need an Ethernet connection to run the adapter with the tracker option enabled. I will try to also add wireless support.
+To stop the network adapter press Ctrl + C. Unfortunately, my way of exiting is still not foolproof (despite efforts), 
+as such, you still cannot rerun straight away. (it lingers in some Fin Wait state before exiting). What you can do however,
+is, after you have exited, to rerun both the learner and the adapter using a different value for the port number. That way you don't have to wait.
+
+I use Wireshark to monitor packets. A packet filter that works for me is:
+(ip.src == ipVM or ip.dst == ipVM) and tcp
+
+Files to look out for:
+-> sut/interfacing/Mapper.java , sut.interfacing.SutSocketWrapper.java
+-> input/tcp/*
+-> traceFiles/* for all traces
+
+Cheers.
+ 

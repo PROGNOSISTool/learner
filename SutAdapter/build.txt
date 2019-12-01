@@ -1,0 +1,10 @@
+To build the server adapter
+on Linux: 
+    open a terminal
+    gcc -Wall -pthread -o serverAdapter.o serverAdapter.c
+
+on Windows:
+    open a developer command prompt (should come with VS)
+    cl serverAdapter.c
+
+    

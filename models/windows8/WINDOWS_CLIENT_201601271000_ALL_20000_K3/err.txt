@@ -1,0 +1,11 @@
+ERROR (learner.IOEquivalenceOracle;findCounterExample;62): Yannakakis counterexample 
+for input: CONNECT SYN+ACK(V,V,0) RCV ACK+PSH(V,V,1) CONNECT CLOSE CONNECT 
+expected: SYN(FRESH,ZERO,0) ACK(NEXT,NEXT,0) TIMEOUT ACK(NEXT,NEXT,0) TIMEOUT ACK+FIN(NEXT,CURRENT,0) TIMEOUT 
+received: SYN(FRESH,ZERO,0) ACK(NEXT,NEXT,0) TIMEOUT ACK(NEXT,NEXT,0) TIMEOUT ACK+RST(NEXT,CURRENT,0) TIMEOUT 
+ERROR (learner.IOEquivalenceOracle;findCounterExample;71): Counterexample found after 1322 attempts
+ERROR (learner.IOEquivalenceOracle;findCounterExample;88): No counterexample found after 20000 attempts
+ERROR (learner.IOEquivalenceOracle;findCounterExample;80): Yannakakis did not produce enough equivalence queries
+ERROR (learner.IOEquivalenceOracle;findCounterExample;88): No counterexample found after 31306 attempts
+Seed: 1299777356020
+Successful run.
+Learner Finished!

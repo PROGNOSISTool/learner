@@ -1,0 +1,257 @@
+ERROR (learner.IOEquivalenceOracle;findCounterExample;77): Yannakakis counterexample 
+for input: CONNECT SYN(V,V,0) ACK(V,V,0) ACK(V,V,0) SYN(V,V,0) ACK(V,V,0) RCV SYN+ACK(V,V,0) ACK+PSH(V,V,1) SYN+ACK(V,V,0) SYN+ACK(V,V,0) CLOSE 
+expected: SYN(FRESH,ZERO,0) ACK+SYN(CURRENT,NEXT,0) TIMEOUT TIMEOUT TIMEOUT TIMEOUT TIMEOUT ACK(NEXT,CURRENT,0) ACK(NEXT,NEXT,0) ACK(NEXT,CURRENT,0) ACK(NEXT,CURRENT,0) ACK+FIN(NEXT,CURRENT,0) 
+received: SYN(FRESH,ZERO,0) ACK+SYN(CURRENT,NEXT,0) TIMEOUT TIMEOUT TIMEOUT TIMEOUT TIMEOUT ACK(NEXT,CURRENT,0) ACK(NEXT,NEXT,0) ACK(NEXT,CURRENT,0) ACK(NEXT,CURRENT,0) ACK+RST(NEXT,CURRENT,0) 
+ERROR (learner.IOEquivalenceOracle;findCounterExample;86): Counterexample found after 15268 attempts
+ERROR (learner.IOEquivalenceOracle;findCounterExample;103): No counterexample found after 20000 attempts
+ERROR (learner.IOEquivalenceOracle;findCounterExample;51): Changed seed to: 55
+ERROR (learner.IOEquivalenceOracle;findCounterExample;52): Number of expected tests: 122
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), TIMEOUT, SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0), ACK+SYN(CURRENT,NEXT,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0), TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), TIMEOUT, RST(ZERO,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), TIMEOUT, ACK+RST(ZERO,NEXT,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), TIMEOUT, TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), TIMEOUT, SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), TIMEOUT, SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), ACK+RST(ZERO,NEXT,0), SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0), ACK+SYN(CURRENT,NEXT,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0), TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), TIMEOUT, SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), TIMEOUT, RST(ZERO,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), TIMEOUT, ACK+RST(ZERO,NEXT,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), TIMEOUT, SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, TIMEOUT, SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, ACK+RST(ZERO,NEXT,0), SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, SYN(FRESH,ZERO,0), TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, TIMEOUT, SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, TIMEOUT, RST(ZERO,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, TIMEOUT, ACK+RST(ZERO,NEXT,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, TIMEOUT, TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, TIMEOUT, SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), TIMEOUT, SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), ACK+RST(ZERO,NEXT,0), SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0), ACK+SYN(CURRENT,NEXT,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), TIMEOUT, RST(ZERO,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), TIMEOUT, ACK+RST(ZERO,NEXT,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), TIMEOUT, TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), ACK+RST(ZERO,NEXT,0), RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), ACK+RST(ZERO,NEXT,0), RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), ACK+RST(ZERO,NEXT,0), TIMEOUT, SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), ACK+RST(ZERO,NEXT,0), RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), ACK+RST(ZERO,NEXT,0), ACK+RST(ZERO,NEXT,0), SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), ACK+RST(ZERO,NEXT,0), SYN(FRESH,ZERO,0), TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), ACK+RST(ZERO,NEXT,0), TIMEOUT, SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), ACK+RST(ZERO,NEXT,0), TIMEOUT, ACK+RST(ZERO,NEXT,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), ACK+RST(ZERO,NEXT,0), TIMEOUT, TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), ACK+RST(ZERO,NEXT,0), TIMEOUT, SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), ACK+RST(ZERO,NEXT,0), RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0), TIMEOUT, ACK+SYN(CURRENT,NEXT,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0), TIMEOUT, TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0), ACK(NEXT,NEXT,0), TIMEOUT, ACK(NEXT,NEXT,0), ACK+FIN(NEXT,CURRENT,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0), ACK(NEXT,NEXT,0), TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0), ACK(NEXT,NEXT,0), TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0), ACK(NEXT,NEXT,0), ACK+FIN(NEXT,CURRENT,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0), ACK(NEXT,NEXT,0), ACK(NEXT,NEXT,0), ACK+RST(NEXT,CURRENT,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0), TIMEOUT, ACK+SYN(CURRENT,NEXT,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0), TIMEOUT, TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0), TIMEOUT, TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0), ACK+SYN(CURRENT,NEXT,0), TIMEOUT, ACK(NEXT,NEXT,0), ACK+RST(NEXT,CURRENT,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0), ACK+SYN(CURRENT,NEXT,0), TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0), ACK+SYN(CURRENT,NEXT,0), TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0), ACK+SYN(CURRENT,NEXT,0), ACK+FIN(NEXT,CURRENT,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0), ACK+SYN(CURRENT,NEXT,0), ACK(NEXT,NEXT,0), ACK+RST(NEXT,CURRENT,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0), TIMEOUT, ACK+SYN(CURRENT,NEXT,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0), TIMEOUT, ACK+RST(ZERO,NEXT,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0), TIMEOUT, TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0), TIMEOUT, RST(NEXT,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0), TIMEOUT, ACK+RST(ZERO,NEXT,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0), TIMEOUT, ACK+SYN(FRESH,NEXT,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0), TIMEOUT, TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0), TIMEOUT, ACK+SYN(CURRENT,NEXT,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0), TIMEOUT, TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, SYN(FRESH,ZERO,0), TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, TIMEOUT, SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, TIMEOUT, TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, TIMEOUT, SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, RST(ZERO,ZERO,0), RST(ZERO,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, RST(ZERO,ZERO,0), ACK+RST(ZERO,NEXT,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, RST(ZERO,ZERO,0), TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, RST(ZERO,ZERO,0), RST(ZERO,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, RST(ZERO,ZERO,0), ACK+RST(ZERO,NEXT,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, RST(ZERO,ZERO,0), TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, TIMEOUT, RST(ZERO,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, TIMEOUT, ACK+RST(ZERO,NEXT,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, TIMEOUT, TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, RST(ZERO,ZERO,0), TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, ACK+RST(ZERO,NEXT,0), RST(ZERO,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, ACK+RST(ZERO,NEXT,0), ACK+RST(ZERO,NEXT,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, ACK+RST(ZERO,NEXT,0), TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, TIMEOUT, RST(ZERO,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, TIMEOUT, TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, TIMEOUT, ACK+RST(ZERO,NEXT,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, TIMEOUT, TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, TIMEOUT, ACK+RST(ZERO,NEXT,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, TIMEOUT, TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, TIMEOUT, ACK+RST(ZERO,NEXT,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, TIMEOUT, TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, RST(ZERO,ZERO,0), RST(ZERO,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, RST(ZERO,ZERO,0), TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, ACK+RST(ZERO,NEXT,0), SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, SYN(FRESH,ZERO,0), ACK+SYN(CURRENT,NEXT,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, SYN(FRESH,ZERO,0), TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, TIMEOUT, RST(ZERO,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, TIMEOUT, ACK+RST(ZERO,NEXT,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, TIMEOUT, TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), TIMEOUT, TIMEOUT, SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), TIMEOUT, SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0), TIMEOUT]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), TIMEOUT, SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), TIMEOUT, ACK+RST(ZERO,NEXT,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), TIMEOUT, SYN(FRESH,ZERO,0)]
+ERROR (sutInterface.ProbablisticOracle;processQuery;67): Concluded unanimously in 2 attempts:
+[RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), RST(ZERO,ZERO,0), SYN(FRESH,ZERO,0)]
+ERROR (learner.IOEquivalenceOracle;findCounterExample;95): Yannakakis did not produce enough equivalence queries
+ERROR (learner.IOEquivalenceOracle;findCounterExample;103): No counterexample found after 122 attempts
+Seed: 1299777356020
+Successful run.
+Learner Finished!

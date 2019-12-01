@@ -1,0 +1,73 @@
+Running time of membership queries: 174ms.
+Running time of membership queries: 21ms.
+Running time of membership queries: 9ms.
+Running time of membership queries: 13ms.
+Running time of membership queries: 25ms.
+Running time of membership queries: 8ms.
+Running time of membership queries: 25ms.
+Running time of membership queries: 23ms.
+Running time of membership queries: 17ms.
+Running time of membership queries: 26ms.
+Running time of membership queries: 34ms.
+Running time of membership queries: 53ms.
+Running time of membership queries: 14ms.
+Running time of membership queries: 13ms.
+Running time of membership queries: 27ms.
+Running time of membership queries: 27ms.
+Total states in learned abstract Mealy machine: 55
+
+
+		STATISTICS SUMMARY:
+Total running time: 79032ms.
+Total time Membership queries: 509
+Total time Equivalence queries: 78522
+Total number of runs: 16
+Total Membership queries: 22287
+Total Equivalence queries: 127107
+Total unique Equivalence queries: 87978
+Number of equivalence queries per hypothesis:
+hyp 0: 33
+hyp 1: 40
+hyp 2: 163
+hyp 3: 3
+hyp 4: 744
+hyp 5: 192
+hyp 6: 127
+hyp 7: 164
+hyp 8: 19
+hyp 9: 75
+hyp 10: 1453
+hyp 11: 1764
+hyp 12: 1152
+hyp 13: 2321
+hyp 14: 3654
+hyp 15: 75894
+
+
+
+		STATISTICS SUMMARY:
+Total running time: 79032ms.
+Total time Membership queries: 509
+Total time Equivalence queries: 78522
+Total number of runs: 16
+Total Membership queries: 22287
+Total Equivalence queries: 127107
+Total unique Equivalence queries: 87978
+Number of equivalence queries per hypothesis:
+hyp 0: 33
+hyp 1: 40
+hyp 2: 163
+hyp 3: 3
+hyp 4: 744
+hyp 5: 192
+hyp 6: 127
+hyp 7: 164
+hyp 8: 19
+hyp 9: 75
+hyp 10: 1453
+hyp 11: 1764
+hyp 12: 1152
+hyp 13: 2321
+hyp 14: 3654
+hyp 15: 75894
+

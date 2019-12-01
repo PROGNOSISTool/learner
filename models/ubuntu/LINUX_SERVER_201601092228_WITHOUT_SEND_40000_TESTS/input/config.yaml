@@ -1,0 +1,31 @@
+learningParams:
+    seed: 1299777356020
+    minValue: 0
+    maxValue: 300
+    minTraceLength: 6
+    maxTraceLength: 6
+    maxNumTraces: 40000
+    sutInterface: sutinfo.yaml
+    yanCommand: "/home/cav/GitHub/Yannakakis/build/main --prefix buggy --seed 123456789 = random 4 4"
+    mapper: linux
+    testTraces: []
+#     - ["CONNECT" , "SYN(V,V,0)" , "ACK(V,V,0)" , "FIN+ACK(V,V,0)" , "SEND" , "SEND" , "SEND" , "CLOSE" , "ACK+PSH(V,V,1)"]
+#     - ["CONNECT" ,"SYN(V,V,0)" ,"ACK(V,V,0)" ,"ACK+PSH(V,V,1)" ,"FIN+ACK(V,V,0)" ,"SEND" ,"RCV" ,"ACK(V,V,0)" ,"FIN+ACK(V,V,0)"]
+#     - ["CONNECT" ,"SYN(V,V,0)" ,"ACK+PSH(V,V,1)" ,"SEND" ,"RCV" ,"CONNECT" ,"SYN(V,V,0)" ,"SEND" ,"CLOSE" ,"SEND" ,"SEND" ,"ACK(V,V,0)"]
+#     - ["LISTEN" , "ACCEPT" , "SYN(V,V,0)" , "ACK+PSH(V,V,1)" , "CLOSECONNECTION"]
+#     - ["LISTEN" , "ACCEPT" , "SYN(V,V,0)" , "ACK(V,V,0)" , "ACK+PSH(V,V,1)" , "FIN+ACK(V,V,0)" , "ACK+RST(V,V,0)" , "SYN(V,V,0)" , "ACK+PSH(V,V,1)" , "CLOSECONNECTION" , "ACCEPT" , "CLOSECONNECTION" ]
+#     - ["LISTEN" , "ACCEPT" , "SYN(V,V,0)" , "ACK(V,V,0)" , "CLOSECONNECTION" , "ACK(V,V,0)" , "ACCEPT" , "ACK+RST(V,V,0)" , "SYN+ACK(V,V,0)" , "SYN(V,V,0)" , "ACK(V,V,0)" , "CLOSECONNECTION" ]
+#     - ["LISTEN" , "ACCEPT" , "SYN(V,V,0)" , "ACK(V,V,0)" , "RST(V,V,0)" , "FIN+ACK(V,V,0)" , "SYN+ACK(V,V,0)" , "ACCEPT" , "SYN(V,V,0)" , "ACK(V,V,0)" , "CLOSECONNECTION" ]
+#     - ["LISTEN" , "ACCEPT" , "SYN(V,V,0)" , "ACK(V,V,0)" , "ACK+PSH(V,V,1)" , "FIN+ACK(V,V,0)" , "ACK+RST(V,V,0)" , "SYN(V,V,0)" , "ACK+PSH(V,V,1)" , "CLOSECONNECTION" , "ACCEPT" , "CLOSECONNECTION" ]
+#     - ["LISTEN" , "SYN(V,V,0)" , "ACK+PSH(V,V,1)" , "ACK+RST(V,V,0)" , "SYN(V,V,0)" , "ACK(V,V,0)" , "ACK+RST(V,V,0)" , "ACK+RST(V,V,0)" , "SYN+ACK(V,V,0)" , "LISTEN" , "LISTEN" , "ACK+PSH(V,V,1)" , "LISTEN" , "SYN(V,V,0)" , "ACK+PSH(V,V,1)" ]
+#     - ["LISTEN" , "ACCEPT" , "SYN(V,V,0)" , "ACK(V,V,0)" , "ACK+PSH(V,V,1)" , "FIN+ACK(V,V,0)" , "RST(V,V,0)" , "SYN(V,V,0)" , "FIN+ACK(V,V,0)" , "ACK+RST(V,V,0)" , "ACCEPT" , "RST(V,V,0)" , "LISTEN" , "SYN(V,V,0)" , "ACK+PSH(V,V,1)" , "RST(V,V,0)" , "SYN(V,V,0)" , "ACK+PSH(V,V,1)" ]
+#     - ["LISTEN" , "RST(V,V,0)" , "SYN(V,V,0)" , "ACK+PSH(V,V,1)" , "ACK+RST(V,V,0)" , "SYN(V,V,0)" , "ACK(V,V,0)" , "RST(V,V,0)" , "RST(V,V,0)" , "ACK+PSH(V,V,1)" , "RST(V,V,0)" , "LISTEN" , "ACCEPT" , "SYN+ACK(V,V,0)" , "ACK+PSH(V,V,1)" , "RST(V,V,0)" , "SYN(V,V,0)" , "FIN+ACK(V,V,0)" , "ACCEPT" , "LISTEN" , "ACK+RST(V,V,0)" , "SYN(V,V,0)" , "ACK+PSH(V,V,1)" ]
+#     - ["LISTEN" , "SYN(V,V,0)" , "ACK(V,V,0)" , "ACK+PSH(V,V,1)" , "FIN+ACK(V,V,0)" , "RST(V,V,0)" , "SYN(V,V,0)" , "SYN+ACK(V,V,0)" , "LISTEN" , "SYN(V,V,0)" , "ACK+PSH(V,V,1)" , "ACCEPT" , "FIN+ACK(V,V,0)" , "CLOSECONNECTION" , "ACCEPT" , "CLOSECONNECTION" ]
+#     - ["LISTEN" , "SYN(V,V,0)" , "ACK(V,V,0)" , "ACK+PSH(V,V,1)" , "FIN+ACK(V,V,0)" , "RST(V,V,0)" , "SYN(V,V,0)" , "FIN+ACK(V,V,0)" , "SYN+ACK(V,V,0)" , "RST(V,V,0)" , "ACK+RST(V,V,0)" , "ACK+RST(V,V,0)" , "ACCEPT" , "RST(V,V,0)" , "SYN+ACK(V,V,0)" , "ACK(V,V,0)" , "RST(V,V,0)" , "SYN(V,V,0)" , "RST(V,V,0)" , "LISTEN" , "ACK+PSH(V,V,1)" , "ACK+PSH(V,V,1)" , "ACK+RST(V,V,0)" , "ACCEPT" , "ACCEPT" , "RCV" , "RCV" , "LISTEN" , "ACCEPT" , "SYN(V,V,0)" , "ACK(V,V,0)" , "ACK(V,V,0)" , "ACK+PSH(V,V,1)" , "LISTEN" , "ACCEPT" , "CLOSECONNECTION" , "FIN+ACK(V,V,0)" , "RCV" , "ACK(V,V,0)" , "ACCEPT" , "CLOSECONNECTION" , "ACCEPT" , "CLOSECONNECTION"]
+#     - ["LISTEN" , "ACCEPT" , "SYN(V,V,0)" , "ACK(V,V,0)" , "ACK+PSH(V,V,1)" , "SEND" , "ACCEPT" , "SEND" , "LISTEN" , "SEND"]
+tcpParams:
+    runsPerQuery: 2
+    confidence: 85
+    sutPort: 18200
+    sutIP: 127.0.0.1
+    oracle: client

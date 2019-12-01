@@ -1,0 +1,23 @@
+/Adapter/*.pyc
+*~
+Adapter/.idea
+Learner/bin
+Learner/traceFiles
+Learner/output
+Learner/.settings
+Learner/.classpath
+Learner/.project
+Learner/output*
+output/*
+input/*
+*/.classpath
+output/*
+*/testtrace.txt
+*/trace\ runner\ output.txt/*
+Yannakakis/*
+bin/*
+*.ser
+*.log
+Adapter/pcapy/*
+Adapter/impacket/*
+*.swp

@@ -1,0 +1,3 @@
+From the tcp-adapter directory, run:
+
+java -cp Learner/dist/TCPLearner-20160115.jar:Learner/lib/* learner.Main config.yaml
