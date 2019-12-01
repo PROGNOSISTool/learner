@@ -1,0 +1,29 @@
+name: TCP
+inputInterfaces:
+# packet inputs: flags(seqValidity, ackValidity, payload(0 or 1)) 
+
+#  RCV: []
+#  SYN(V,V,0): []
+  ACK(V,V,0): []
+#  ACK+PSH(V,V,1): []
+#  FIN+ACK(V,V,0): []
+  SYN+ACK(V,V,0): []
+#  RST(V,V,0): []
+#  ACK+RST(V,V,0): []
+
+# socket calls
+
+# both client and server
+#  SEND: []
+#  CLOSE: []
+
+# client only
+  CONNECT: []
+
+# server only
+#  CLOSECONNECTION: []
+#  LISTEN: []
+#  ACCEPT: []
+constants: []
+outputInterfaces:
+  TIMEOUT: []
