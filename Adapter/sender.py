@@ -1,6 +1,6 @@
-#from scapy.sendrecv import sr1, sniff
-#from scapy.packet import Raw
-#from scapy.config import conf
+from scapy.sendrecv import sr1, sniff
+from scapy.packet import Raw
+from scapy.config import conf
 from scapy.layers.inet import IP,TCP
 from scapy.all import *  # @UnusedWildImport
 from response import Timeout, ConcreteResponse
@@ -19,7 +19,7 @@ class Sender:
                  networkInterface="lo", networkInterfaceType=InterfaceType.Ethernet, senderPort=15000, senderPortMinimum=20000,
                  senderPortMaximum=40000, portNumberFile = "sn.txt", useTracking=False,
                  isVerbose=0, waitTime=0.02, resetMechanism=0):
-        # data on sender and server needed to send packets 
+        # data on sender and server needed to send packets
         self.serverIP = serverIP
         self.serverPort = serverPort
         self.serverMAC = serverMAC
@@ -28,21 +28,21 @@ class Sender:
         self.senderPortMinimum = senderPortMinimum
         self.senderPortMaximum = senderPortMaximum
         self.portNumberFile = portNumberFile;
-        
+
         # time to wait for a response from the server before concluding a timeout
         self.waitTime = waitTime
-        
+
         # use tracking mechanism to aid Scapy
         self.useTracking = useTracking
-        
+
         # TODO: need to remove this, the client should decide on the reset mechanism.
         self.resetMechanism = resetMechanism
-        
+
         #set verbosity (0/1)
         self.isVerbose = isVerbose
-        
+
         if self.useTracking == True:
-            # todo see if this limitation is correct 
+            # todo see if this limitation is correct
             if platform.system() != "Linux":
                 print("Tracker is not compatible with Windows can only function on Linux")
                 self.useTracking = False
@@ -52,7 +52,7 @@ class Sender:
                 self.tracker.start()
         else:
             self.tracker = None
-    
+
     def __str__(self):
         return "Sender with parameters: " + str(self.__dict__)
 
@@ -75,7 +75,7 @@ class Sender:
             if senderPortRange == 0:
                 networkPort = self.senderPortMinimum
             else:
-                networkPort = self.senderPortMinimum + (int(line) + 1) % senderPortRange 
+                networkPort = self.senderPortMinimum + (int(line) + 1) % senderPortRange
         f.closed
         f = open(self.portNumberFile, "w")
         f.write(str(networkPort))
@@ -94,13 +94,13 @@ class Sender:
         packet = self.createPacket(flagsSet, seqNr, ackNr, '')
         response = self.sendPacketAndRetrieveResponse(packet)
         return response
-    
+
     def setServerPort(self, newPort):
         self.serverPort = newPort;
-            
+
     def setSenderPort(self, newPort):
         self.senderPort = newPort
-    
+
     # function that creates packet from data strings/integers
     def createPacket(self, tcpFlagsSet, seqNr, ackNr, payload, destIP = None, destPort = None, srcPort = None,
                      ipFlagsSet="DF"):
@@ -123,24 +123,24 @@ class Sender:
         else:
             p = pIP / pTCP / Raw(load=payload)
         return p
-    
+
     # sends packets and ensures both reception tools are used so as to retrieve the response when such response is given
     # use packet = None for sniffing without sending a packet
     def sendPacketAndRetrieveResponse(self, packet, waitTime = None):
         if waitTime is None:
             waitTime = self.waitTime
 
-        # we need first to clear the last response cached in the tracker 
+        # we need first to clear the last response cached in the tracker
         if self.useTracking == True :
             self.tracker.clearLastResponse()
-        
+
         scapyResponse = None
         if packet is not None:
             #todo find a more elegant way of finding the client IP?
             self.clientIP = packet[IP].src
             # consider adding the parameter: iface="ethx" if you don't receive a response. Also consider increasing the wait time
-            #scapyResponse = sr1(packet, timeout=waitTime, iface=self.networkInterface, verbose=self.isVerbose)
-            send([packet], iface=self.networkInterface, verbose=self.isVerbose)
+            scapyResponse = sr1(packet, timeout=waitTime, iface=self.networkInterface, verbose=self.isVerbose)
+            #send([packet], iface=self.networkInterface, verbose=self.isVerbose)
             if self.useTracking:
                 # the tracker discards retransmits, but scapy doesn't, so don't use scapy
                 scapyResponse = None
@@ -169,7 +169,7 @@ class Sender:
         # if scapyResponse is not None:
         #    self.bijectionCheck(scapyResponse, response)
         return response
-    
+
     # transforms a scapy TCP response packet into an abstract response
     def scapyResponseParse(self, scapyResponse):
         flags = scapyResponse[TCP].flags
@@ -177,8 +177,8 @@ class Sender:
         ack = scapyResponse[TCP].ack
         concreteResponse = ConcreteResponse(self.intToFlags(flags), seq, ack)
         return concreteResponse
-    
-    # check if we can reproduce the response packet from the received response 
+
+    # check if we can reproduce the response packet from the received response
     def bijectionCheck(self, packet, concreteMessage):
         # first, initialize information that we should now about the sender/server
         sourceIP = packet[IP].src
@@ -187,13 +187,13 @@ class Sender:
         destPort = packet[TCP].dport
         win = packet[TCP].window
         options = packet[TCP].options
-        
+
         # build packets
         result = IP(src=sourceIP,dst=destIP) / TCP(sport=sourcePort, dport=destPort,flags=concreteMessage.flags, seq=concreteMessage.seq, ack=concreteMessage.ack, window=win, options=options)
         del result.chksum
         result = result.__class__(str(result))
         result[TCP].show()
-        packet[TCP].show() 
+        packet[TCP].show()
         return True
 
     # check whether there is a 1 at the given bit-position of the integer
@@ -221,7 +221,7 @@ class Sender:
         if self.checkForFlag(x, 5):
             result = result + "U"
         return result
-    
+
     def isFlags(self, inputString):
         isFlags = False
         matchResult = re.match("[FSRPAU]*", inputString)
@@ -262,7 +262,7 @@ class Sender:
         conf.sniff_promisc=False
 
         timeBefore = time.time()
-        
+
         if input1 != "nil":
             #response = self.sendPacket(input1, seqNr, ackNr)
             ###
@@ -271,7 +271,7 @@ class Sender:
         else:
             packet = None
         response = self.sendPacketAndRetrieveResponse(packet, waitTime)
-        
+
         # wait a certain amount of time after sending the packet
         timeAfter = time.time()
         timeSpent = timeAfter - timeBefore
@@ -300,8 +300,8 @@ class Sender:
         self.refreshNetworkPort()
         if self.useTracking == True:
             self.tracker.reset()
-            
-            
+
+
     def shutdown(self):
         if self.useTracking == True:
             self.tracker.stop();

@@ -1,0 +1,3 @@
+/home/tiferrei/tcp-learner/SutAdapter/CMakeFiles/rebuild_cache.dir
+/home/tiferrei/tcp-learner/SutAdapter/CMakeFiles/socketAdapter.dir
+/home/tiferrei/tcp-learner/SutAdapter/CMakeFiles/edit_cache.dir

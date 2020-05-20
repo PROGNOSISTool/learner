@@ -1,1 +1,0 @@
-sudo python Adapter/main.py --configFile config.cfg

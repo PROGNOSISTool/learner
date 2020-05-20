@@ -6,7 +6,7 @@ learningParams:
     maxNumTraces: 100
     sutInterface: sutinfo.yaml
 # windows/freebsd/linux
-    mapper: linux 
+    mapper: windows
 tcpParams:
 # number of times each query(test) is run, so as to
 # add confidence that there were no missed/wrong responses
