@@ -1,9 +1,12 @@
 package learner;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.learnlib.api.query.DefaultQuery;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import util.Container;
 import util.LearnlibUtils;
 import util.Log;
@@ -11,25 +14,23 @@ import util.Tuple2;
 import util.learnlib.YannakakisTest;
 import de.ls5.jlearn.abstractclasses.LearningException;
 import de.ls5.jlearn.equivalenceoracles.EquivalenceOracleOutputImpl;
-import de.ls5.jlearn.interfaces.Automaton;
-import de.ls5.jlearn.interfaces.EquivalenceOracle;
-import de.ls5.jlearn.interfaces.EquivalenceOracleOutput;
-import de.ls5.jlearn.interfaces.Oracle;
-import de.ls5.jlearn.interfaces.Word;
+import de.learnlib.api.oracle.EquivalenceOracle;
+import net.automatalib.words.Word;
+import net.automatalib.automata.Automaton;
 
-public class IOEquivalenceOracle implements EquivalenceOracle{
-	
+public class IOEquivalenceOracle<A extends Automaton, I, D> implements EquivalenceOracle<A, I, D> {
+
 	private Oracle oracle;
 	private final int numberOfTests;
 	private final boolean uniqueOnly;
 	private final Container<Integer> uniqueCounter;
 	private String ioCommand;
 	private int hypTestNumber = 0;
-	
+
 	public IOEquivalenceOracle (Oracle oracle, int numberOfTests, String ioCommand) {
 		this(oracle, numberOfTests, ioCommand, null);
 	}
-	
+
 	public IOEquivalenceOracle (Oracle oracle, int numberOfTests, String ioCommand, Container<Integer> uniqueCounter) {
 		this.oracle = oracle;
 		this.ioCommand = ioCommand;
@@ -41,9 +42,14 @@ public class IOEquivalenceOracle implements EquivalenceOracle{
 		this.uniqueCounter = uniqueCounter;
 		this.uniqueOnly = uniqueCounter != null;
 	}
-	
+
 	@Override
-	public EquivalenceOracleOutput findCounterExample(Automaton hyp) {
+	public @Nullable DefaultQuery<I, D> findCounterExample(A hypothesis, Collection<? extends I> inputs) {
+		return null;
+	}
+
+	@Override
+	public EquivalenceOracleOutput findCounterExample(A hyp) {
 		List<String> testQuery = null;
 		TestGenerator wrapper = null;
 		if (ioCommand.contains("fixed")) {
@@ -68,9 +74,9 @@ public class IOEquivalenceOracle implements EquivalenceOracle{
 			for (hypTestNumber = 0;	hypTestNumber < numberOfTests; hypTestNumber = uniqueOnly ? uniqueCounter.value - uniqueValueStart : hypTestNumber + 1) {
 				Log.info("Equivalence test " + hypTestNumber + " for this hypothesis");
 				testQuery = wrapper.nextTest();
-			
+
 				if ( testQuery != null) {
-					Word wordInput = LearnlibUtils.symbolsToWords(testQuery); 
+					Word wordInput = LearnlibUtils.symbolsToWords(testQuery);
 					Word hypOutput = hyp.getTraceOutput(wordInput);
 					Word sutOutput;
 					try {
@@ -85,7 +91,7 @@ public class IOEquivalenceOracle implements EquivalenceOracle{
 									"for input: " + wordInput + "\n" +
 									"expected: " + sutOutput + "\n" +
 									"received: " + hypOutput);
-							
+
 							EquivalenceOracleOutputImpl equivOracleOutput = new EquivalenceOracleOutputImpl();
 							equivOracleOutput.setCounterExample(wordInput);
 							equivOracleOutput.setOracleOutput(sutOutput);
@@ -110,12 +116,12 @@ public class IOEquivalenceOracle implements EquivalenceOracle{
 		Log.err("No counterexample found after " + hypTestNumber + " attempts");
 		return null;
 	}
-	
+
 
 	public void setOracle(Oracle arg0) {
 		this.oracle = arg0;
 	}
-	
+
 	/**
 	 * Gets the number of tests done for the current/most recent hypothesis
 	 * @return
@@ -123,7 +129,7 @@ public class IOEquivalenceOracle implements EquivalenceOracle{
 	public int getNrHypthesisTests() {
 		return this.hypTestNumber;
 	}
-	
+
 	public void clearNrHypTests() {
 	    this.hypTestNumber = 0;
 	}

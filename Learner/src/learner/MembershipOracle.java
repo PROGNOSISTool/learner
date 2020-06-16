@@ -4,13 +4,13 @@ import sutInterface.SutWrapper;
 import util.Container;
 import util.InputAction;
 import util.OutputAction;
-import de.ls5.jlearn.abstractclasses.LearningException;
-import de.ls5.jlearn.interfaces.Symbol;
-import de.ls5.jlearn.interfaces.Word;
-import de.ls5.jlearn.shared.SymbolImpl;
-import de.ls5.jlearn.shared.WordImpl;
+import de.learnlib.api.query.Query;
+import net.automatalib.words.Word;
+import net.automatalib.words.impl.Symbol;
 
-public class MembershipOracle implements ExtendedOracle {
+import java.util.Collection;
+
+public class MembershipOracle<I, D> implements de.learnlib.api.oracle.MembershipOracle<I, D> {
 	private static final long serialVersionUID = -1374892499287788040L;
 	private SutWrapper sutWrapper;
 	private final Container<Integer> membershipCounter;
@@ -20,25 +20,31 @@ public class MembershipOracle implements ExtendedOracle {
 		this.membershipCounter = membershipCounter;
 	}
 
-	//@Override
-	public Word processQuery(Word query) throws LearningException {
-		Word result = new WordImpl();
+	@Override
+	public void processQuery(Query query) {
+		Word result = Word.epsilon();
 
 		sutWrapper.sendReset();
-		
+
 		System.out.println("Membership query number: " + this.membershipCounter.value);
 		System.out.println("Query: " + query);
 
-		for (Symbol currentSymbol : query.getSymbolList()) {
+		for (Object currentSymbol : query.getInput().asList()) {
 			String outputString = sendInput(currentSymbol.toString());
-			result.addSymbol(new SymbolImpl(outputString));
+			result.append(new Symbol(outputString));
 		}
-		
-		System.out.println("Returning to LearnLib: " + result);
 
-		return result;
+		System.out.println("Returning to LearnLib: " + result);
+		query.answer(result);
 	}
-	
+
+	@Override
+	public void processQueries(Collection<? extends Query<I, D>> queries) {
+		for (Query query : queries) {
+			processQuery(query);
+		}
+	}
+
 	public String sendInput(String inputString) {
 		InputAction input = new InputAction(inputString);
 		System.out.println("Sending: " + inputString);
@@ -52,4 +58,6 @@ public class MembershipOracle implements ExtendedOracle {
 			return null;
 		}
 	}
+
+
 }

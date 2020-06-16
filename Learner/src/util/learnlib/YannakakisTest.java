@@ -15,45 +15,45 @@ import util.Tuple2;
 
 import learner.Main;
 import learner.YannakakisWrapper;
-import de.ls5.jlearn.interfaces.Automaton;
+import net.automatalib.automata.Automaton;
 
-public class YannakakisTest {
+public class YannakakisTest<A extends Automaton> {
     public static int MAX_NUM = 100000;
     public static int SEED_MIN = 0;
     public static int SEED_MAX = 10;
     public static String TEST_FILE = "testcases.txt";
     public static ObservationTree root;
     public static int seed;
-    
-    public static void main(String args []) throws IOException {
+
+    public void main(String args []) throws IOException {
         if (args.length < 2) {
             System.err.println("Usage: java dotFile yannakakisCmd");
             return;
         }
-        
+
         String dotFile = args[0];
         String yannakakisCmd = args[1];
-        Automaton readAutomaton = DotDo.readDotFile(dotFile);
+        A readAutomaton = DotDo.readDotFile(dotFile);
         root = Main.readCacheTree(Main.CACHE_FILE);
         Tuple2<List<LinkedList<String>>, Integer> tuple2 = getMinimumalTestSuite(readAutomaton, root, yannakakisCmd, SEED_MIN, SEED_MAX);
         System.out.println("Best seed:" + seed);
     }
-    
+
     /**
      * Instantiates a yannakakis test generation command for seeds from minSeed to maxSeed and picks the best seed out of the lot,
      * that is, the seed for which the suite generated would require the fewest runs on the sut.
-     * 
+     *
      */
-    public static Tuple2<List<LinkedList<String>>,Integer>  getMinimumalTestSuite(Automaton automaton, ObservationTree root, String yanCmd, int minSeed, int maxSeed) throws IOException{
+    public Tuple2<List<LinkedList<String>>,Integer>  getMinimumalTestSuite(A automaton, ObservationTree root, String yanCmd, int minSeed, int maxSeed) throws IOException{
         seed = -1;
         int minCount = MAX_NUM;
         Node testNode = null;
         Node minimalTestNode = null;
-        
+
         for (int i = minSeed; i < maxSeed; i ++) {
             String yannakakisCmdWithSeed = changeSeed(yanCmd, i);
             testNode = getTestSuiteTree(automaton, root, yannakakisCmdWithSeed, MAX_NUM);
-            int suitSize = testNode.getCount(); 
+            int suitSize = testNode.getCount();
             if (suitSize < minCount) {
                minCount = suitSize;
                minimalTestNode = testNode;
@@ -61,22 +61,22 @@ public class YannakakisTest {
             }
             System.out.println("Number of tests generated for seed " + i +": " + suitSize);
         }
-        
+
         return new Tuple2<List<LinkedList<String>>,Integer> (minimalTestNode.getTests(), minimalTestNode.getCount());
     }
-    
+
     /**
      * Runs a yannakakisCmd for test generation on the provided automaton. The tests generated are distributed in
      * a tree. A count is kept of the actual number of tests that would be run on the SUT. This is done by checking if the tests generated
      * are included in the ObservationTree, and if so, decrementing a counter.
-     * 
+     *
      * TODO The count should also be decremented when a new test is covered (that is, it is already included in the test tree), or when
-     * a new test covers tests already present in the test tree. 
+     * a new test covers tests already present in the test tree.
      */
     private static Node getTestSuiteTree(Automaton readAutomaton, ObservationTree root, String yannakakisCmd, int maxCount) throws IOException {
         YannakakisWrapper wrapper = new YannakakisWrapper(readAutomaton, yannakakisCmd);
         Node testTree = new Node();
-        
+
         wrapper.initialize();
         PrintStream out = new PrintStream(
                 new FileOutputStream(TEST_FILE, false));
@@ -84,7 +84,7 @@ public class YannakakisTest {
 
         int count = 0;
         List<String> nextTest = wrapper.nextTest();
-        
+
         while (nextTest != null && !nextTest.isEmpty() && (++ count) < maxCount) {
             testTree.addTest(nextTest);
             boolean observed = root.getObservation(LearnlibUtils.symbolsToWords(nextTest)) != null;
@@ -93,14 +93,14 @@ public class YannakakisTest {
             }
             nextTest = wrapper.nextTest();
         }
-        
+
         out.close();
         wrapper.terminate();
         testTree.setCount(count);
-        
+
         return testTree;
     }
-    
+
     /**
      * Replaces the seed used in running the yannakakis command with a different one.
      */
@@ -122,19 +122,19 @@ public class YannakakisTest {
         }
         return yanCmd;
     }
-    
+
     public static class Node {
         private Map<String, Node> children = new HashMap<String, Node>();
         private int count = Integer.MAX_VALUE;
-        
+
         public void setCount(int count) {
             this.count = count;
         }
-        
+
         public int getCount() {
             return this.count;
         }
-        
+
         public List<LinkedList<String>> getTests() {
             List<LinkedList<String>> tests = new ArrayList<LinkedList<String>>();
             if (children.isEmpty()) {
@@ -147,13 +147,13 @@ public class YannakakisTest {
                     for (LinkedList<String> testCase : generatedTests) {
                         testCase.addFirst(input);
                     }
-                  
+
                     tests.addAll(generatedTests);
                 }
                 return tests;
             }
         }
-        
+
         public boolean addTest(List<String> test) {
             if (test.isEmpty()) {
                 return false;
@@ -171,7 +171,7 @@ public class YannakakisTest {
                 }
             }
         }
-        
+
         public boolean query(List<String> test) {
             if (test.isEmpty()) {
                 return true;

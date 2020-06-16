@@ -17,26 +17,27 @@ import java.util.ListIterator;
 import de.ls5.jlearn.interfaces.Automaton;
 import de.ls5.jlearn.interfaces.State;
 import de.ls5.jlearn.interfaces.Symbol;
+import net.automatalib.automata.FiniteAlphabetAutomaton;
 
 public class AutomatonApp {
 	private BufferedReader in;
 	private PrintStream out;
 	private Deque<String> commands;
-	
+
 	public AutomatonApp(BufferedReader in, PrintStream out) {
 		this.in = in;
 		this.out = out;
 		this.commands = new ArrayDeque<String>();
 	}
-	
+
 	public AutomatonApp() {
 		this(new BufferedReader(new InputStreamReader(System.in)), System.out);
 	}
-	
+
 	public void bufferCommands(Collection<String> commands) {
 		this.commands.addAll(commands);
 	}
-	
+
 	private String ask(String msg) throws IOException{
 		out.println(msg);
 		if (!commands.isEmpty()) {
@@ -44,7 +45,7 @@ public class AutomatonApp {
 		}
 		return in.readLine().trim();
 	}
-	
+
 	public List<String> readTrace(String PATH) throws IOException {
 		List<String> trace;
 		trace = Files.readAllLines(Paths.get(PATH), StandardCharsets.US_ASCII);
@@ -60,7 +61,7 @@ public class AutomatonApp {
 					 while (it.hasNext()) {
 						 it.next();
 						 it.remove();
-					 } 
+					 }
 				 } else {
 					 System.out.println();
 				 }
@@ -68,7 +69,7 @@ public class AutomatonApp {
 		}
 		return trace;
 	}
-	
+
 	public Collection<String> getRoute(Automaton automaton, State startingState, List<Symbol> inputSeq) throws AppException{
 		Deque<String> strings = new ArrayDeque<String>();
 		State currentState = startingState;
@@ -83,16 +84,16 @@ public class AutomatonApp {
 			currentState = currentState.getTransitionState(input);
 		}
 		return strings;
-	} 
-	
+	}
+
 	static class AppException extends Exception{
 		public AppException(String cause) {
 			super(cause);
 		}
 	}
-	
+
 	public void play() throws IOException {
-		Automaton loadedHyp = null;
+		FiniteAlphabetAutomaton loadedHyp = null;
 		while (true) {
 			try {
 			out.println("Welcome to the hyp assistent. Today you can: " +
@@ -100,7 +101,7 @@ public class AutomatonApp {
 					"3. Get distinguishing seq between two states \n 4. Run trace \n " +
 					"5. Relabel state machine based on access sequence mapping and dump it \n" +
 					"6. Quit");
-			
+
 			String command = ask("Command:");
 			switch(command) {
 			case "1":
@@ -116,9 +117,9 @@ public class AutomatonApp {
 				} else {
 					int stateId = Integer.valueOf(ask("State ID:"));
 					List<Symbol> traceToState = AutomatonUtils.traceToState(loadedHyp, stateId);
-					Collection<String> strings = getRoute(loadedHyp, loadedHyp.getStart(), traceToState);
-					out.println("Trace to state: " + traceToState); 
-					out.println("Trace to state(full):  " + strings); 
+					Collection<String> strings = getRoute(loadedHyp, loadedHyp.getInitialStates(), traceToState);
+					out.println("Trace to state: " + traceToState);
+					out.println("Trace to state(full):  " + strings);
 				}
 				break;
 
@@ -129,14 +130,14 @@ public class AutomatonApp {
 					int stateId1 = Integer.valueOf(ask("State ID1:"));
 					int stateId2 = Integer.valueOf(ask("State ID2:"));
 					List<Symbol> distSeq = AutomatonUtils.distinguishingSeq(loadedHyp, stateId1, stateId2);
-					out.println("Distinguishing trace: " + distSeq); 
+					out.println("Distinguishing trace: " + distSeq);
 					Collection<String> strings1 = getRoute(loadedHyp, AutomatonUtils.get(loadedHyp, stateId1), distSeq);
 					Collection<String> strings2 = getRoute(loadedHyp, AutomatonUtils.get(loadedHyp, stateId2), distSeq);
 					out.println("Trace from state1: " + strings1);
 					out.println("Trace from state2: " + strings2);
 				}
 				break;
-				
+
 			case "4":
 				if (loadedHyp == null) {
 					out.println("Load a hyp first!");
@@ -145,7 +146,7 @@ public class AutomatonApp {
 					List<Symbol> traceSymbols = AutomatonUtils.buildSymbols(trace);
 					Collection<String> strings = getRoute(loadedHyp, loadedHyp.getStart(), traceSymbols);
 					out.println("Trace run:" + strings);
-					
+
 				}
 				break;
 
@@ -154,7 +155,7 @@ public class AutomatonApp {
 				if (loadedHyp == null) {
 					out.println("Load a hyp first!");
 				} else {
-					TCPDot.writeDotFile(loadedHyp, "tcp.dot");					
+					DotDo.writeDotFile(loadedHyp, loadedHyp.get "tcp.dot");
 				}
 				break;
 			case "6":
@@ -176,5 +177,5 @@ public class AutomatonApp {
 		}
 		app.play();
 	}
-	
+
 }

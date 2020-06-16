@@ -5,23 +5,22 @@ import util.Container;
 import util.InputAction;
 import util.OutputAction;
 import de.ls5.jlearn.abstractclasses.LearningException;
-import de.ls5.jlearn.interfaces.Symbol;
-import de.ls5.jlearn.interfaces.Word;
-import de.ls5.jlearn.shared.SymbolImpl;
-import de.ls5.jlearn.shared.WordImpl;
+import de.learnlib.api.query.Query;
+import net.automatalib.words.Word;
+import net.automatalib.words.impl.Symbol;
 
-public class EquivalenceOracle implements ExtendedOracle {
+public class EquivalenceOracle<I, D> implements de.learnlib.api.oracle.EquivalenceOracle<I, D> {
 	private static final long serialVersionUID = -5409624854115451929L;
 	private SutWrapper sutWrapper;
 	private final Container<Integer> equivCounter;
 	private final Container<Integer> uniqueEquivCounter;
-	
+
 	public EquivalenceOracle(SutWrapper sutWrapper, Container<Integer> equivCounter, Container<Integer> uniqueEquivCounter) {
 		this.sutWrapper = sutWrapper;
 		this.equivCounter = equivCounter;
 		this.uniqueEquivCounter = uniqueEquivCounter;
 	}
-	
+
 	public EquivalenceOracle(SutWrapper sutWrapper, Container<Integer> equivCounter) {
 		this(sutWrapper, equivCounter, null);
 	}
@@ -35,7 +34,7 @@ public class EquivalenceOracle implements ExtendedOracle {
 		System.out.println("Equivalence query number: " + equivCounter.value +
 				(uniqueEquivCounter == null ? "" : " (" + uniqueEquivCounter.value + ")"));
 
-		
+
 		for (Symbol currentSymbol : query.getSymbolList()) {
 			String outputString = sendInput(currentSymbol.toString());
 			result.addSymbol(new SymbolImpl(outputString));
@@ -44,7 +43,7 @@ public class EquivalenceOracle implements ExtendedOracle {
 		System.out.println("Returning to LearnLib: " + result);
 		return result;
 	}
-	
+
 	public String sendInput(String inputString) {
 		InputAction input = new InputAction(inputString);
 		System.out.println("Sending: " + inputString);
@@ -57,6 +56,6 @@ public class EquivalenceOracle implements ExtendedOracle {
 		} else {
 			return null;
 		}
-		
+
 	}
 }

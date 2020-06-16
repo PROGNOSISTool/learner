@@ -15,15 +15,15 @@ import util.Log;
 import de.ls5.jlearn.interfaces.Automaton;
 import de.ls5.jlearn.util.DotUtil;
 
-public class YannakakisWrapper implements TestGenerator {
+public class YannakakisWrapper<A extends Automaton> implements TestGenerator {
     private final ProcessBuilder pb;
     private Process process;
     private Writer processInput;
     private BufferedReader processOutput;
     private StreamGobbler errorGobbler;
-    private Automaton hyp;
+    private A hyp;
 
-    public YannakakisWrapper(Automaton inputEnabledHypothesis,
+    public YannakakisWrapper(A inputEnabledHypothesis,
             String yannakakisCmd) {
         this.hyp = inputEnabledHypothesis;
 
@@ -45,7 +45,7 @@ public class YannakakisWrapper implements TestGenerator {
     public void terminate() {
         close();
     }
-    
+
     public void close() {
         closeAll();
     }
@@ -78,7 +78,7 @@ public class YannakakisWrapper implements TestGenerator {
         processInput.append(dotString);
         processInput.flush();
     }
-    
+
     public List<String> nextTest() throws IOException {
         List<String> nextTest = null;
         String line = out().readLine();
@@ -146,7 +146,7 @@ public class YannakakisWrapper implements TestGenerator {
     /**
      * Starts the process and creates buffered/whatnot streams for stdin stderr
      * or the external program
-     * 
+     *
      * @throws IOException
      *             if the process could not be started (see ProcessBuilder.start
      *             for details).
