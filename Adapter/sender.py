@@ -139,8 +139,8 @@ class Sender:
             #todo find a more elegant way of finding the client IP?
             self.clientIP = packet[IP].src
             # consider adding the parameter: iface="ethx" if you don't receive a response. Also consider increasing the wait time
-            scapyResponse = sr1(packet, timeout=waitTime, iface=self.networkInterface, verbose=self.isVerbose)
-            #send([packet], iface=self.networkInterface, verbose=self.isVerbose)
+            #scapyResponse = sr1(packet, timeout=waitTime, iface=self.networkInterface, verbose=self.isVerbose)
+            send([packet], iface=self.networkInterface, verbose=self.isVerbose)
             if self.useTracking:
                 # the tracker discards retransmits, but scapy doesn't, so don't use scapy
                 scapyResponse = None
