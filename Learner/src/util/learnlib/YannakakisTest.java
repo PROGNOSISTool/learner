@@ -3,29 +3,28 @@ package util.learnlib;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import net.automatalib.automata.transducers.MealyMachine;
+import net.automatalib.words.Alphabet;
+import sutInterface.SutInfo;
 import util.LearnlibUtils;
 import util.ObservationTree;
 import util.Tuple2;
 
+
 import learner.Main;
 import learner.YannakakisWrapper;
-import net.automatalib.automata.Automaton;
 
-public class YannakakisTest<A extends Automaton> {
+public class YannakakisTest {
     public static int MAX_NUM = 100000;
     public static int SEED_MIN = 0;
     public static int SEED_MAX = 10;
     public static String TEST_FILE = "testcases.txt";
-    public static ObservationTree root;
+    public static ObservationTree<String> root;
     public static int seed;
 
-    public void main(String args []) throws IOException {
+    public <O> void main(String[] args) throws IOException {
         if (args.length < 2) {
             System.err.println("Usage: java dotFile yannakakisCmd");
             return;
@@ -33,9 +32,11 @@ public class YannakakisTest<A extends Automaton> {
 
         String dotFile = args[0];
         String yannakakisCmd = args[1];
-        A readAutomaton = DotDo.readDotFile(dotFile);
+        MealyMachine<?, String, ?, O> readAutomaton = DotDo.readDotFile(dotFile);
+        Alphabet<String> alphabet = SutInfo.generateInputAlphabet();
+
         root = Main.readCacheTree(Main.CACHE_FILE);
-        Tuple2<List<LinkedList<String>>, Integer> tuple2 = getMinimumalTestSuite(readAutomaton, root, yannakakisCmd, SEED_MIN, SEED_MAX);
+        Tuple2<List<LinkedList<String>>, Integer> tuple2 = getMinimumalTestSuite(readAutomaton, alphabet, root, yannakakisCmd, SEED_MIN, SEED_MAX);
         System.out.println("Best seed:" + seed);
     }
 
@@ -44,7 +45,7 @@ public class YannakakisTest<A extends Automaton> {
      * that is, the seed for which the suite generated would require the fewest runs on the sut.
      *
      */
-    public Tuple2<List<LinkedList<String>>,Integer>  getMinimumalTestSuite(A automaton, ObservationTree root, String yanCmd, int minSeed, int maxSeed) throws IOException{
+    public static <O> Tuple2<List<LinkedList<String>>,Integer>  getMinimumalTestSuite(MealyMachine<?, String, ?, O> automaton, Collection<? extends String> inputs, ObservationTree<String> root, String yanCmd, int minSeed, int maxSeed) throws IOException{
         seed = -1;
         int minCount = MAX_NUM;
         Node testNode = null;
@@ -52,7 +53,7 @@ public class YannakakisTest<A extends Automaton> {
 
         for (int i = minSeed; i < maxSeed; i ++) {
             String yannakakisCmdWithSeed = changeSeed(yanCmd, i);
-            testNode = getTestSuiteTree(automaton, root, yannakakisCmdWithSeed, MAX_NUM);
+            testNode = getTestSuiteTree(automaton, inputs, root, yannakakisCmdWithSeed, MAX_NUM);
             int suitSize = testNode.getCount();
             if (suitSize < minCount) {
                minCount = suitSize;
@@ -73,8 +74,8 @@ public class YannakakisTest<A extends Automaton> {
      * TODO The count should also be decremented when a new test is covered (that is, it is already included in the test tree), or when
      * a new test covers tests already present in the test tree.
      */
-    private static Node getTestSuiteTree(Automaton readAutomaton, ObservationTree root, String yannakakisCmd, int maxCount) throws IOException {
-        YannakakisWrapper wrapper = new YannakakisWrapper(readAutomaton, yannakakisCmd);
+    private static <O> Node getTestSuiteTree(MealyMachine<?, String, ?, O> readAutomaton, Collection<? extends String> inputs, ObservationTree<String> root, String yannakakisCmd, int maxCount) throws IOException {
+        YannakakisWrapper<O> wrapper = new YannakakisWrapper<O>(readAutomaton, inputs, yannakakisCmd);
         Node testTree = new Node();
 
         wrapper.initialize();

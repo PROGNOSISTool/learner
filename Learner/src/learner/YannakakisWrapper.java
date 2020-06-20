@@ -8,34 +8,35 @@ import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 
+import net.automatalib.automata.transducers.MealyMachine;
 import util.Log;
-import de.ls5.jlearn.interfaces.Automaton;
-import de.ls5.jlearn.util.DotUtil;
+import util.learnlib.DotDo;
 
-public class YannakakisWrapper<A extends Automaton> implements TestGenerator {
+public class YannakakisWrapper<O> implements TestGenerator {
     private final ProcessBuilder pb;
     private Process process;
     private Writer processInput;
     private BufferedReader processOutput;
     private StreamGobbler errorGobbler;
-    private A hyp;
+    private MealyMachine<?, String, ?, O> hyp;
+    private Collection<? extends String> inputs;
 
-    public YannakakisWrapper(A inputEnabledHypothesis,
+    public YannakakisWrapper(MealyMachine<?, String, ?, O> inputEnabledHypothesis,
+			Collection<? extends String> inputs,
             String yannakakisCmd) {
         this.hyp = inputEnabledHypothesis;
-
+        this.inputs = inputs;
         this.pb = new ProcessBuilder(yannakakisCmd.split("\\s"));
-        Main.registerShutdownHook(new Runnable() {
-            public void run() {
-                if (!isClosed()) {
-                    closeAll();
-                    Log.err("Shutting down process");
-                }
-            }
-        });
+        Main.registerShutdownHook(() -> {
+			if (!isClosed()) {
+				closeAll();
+				Log.err("Shutting down process");
+			}
+		});
     }
 
     public BufferedReader out() {
@@ -62,7 +63,7 @@ public class YannakakisWrapper<A extends Automaton> implements TestGenerator {
     private void sendHypToProcess() throws IOException {
         // the hyp is transformed to a dot state machine string
         StringWriter sw = new StringWriter();
-        DotUtil.writeDot(hyp, sw);
+        DotDo.write(hyp, inputs, sw);
         String dotString = sw.toString();
 
         // the dot string is modified to correspond with the dot version used by
@@ -116,7 +117,7 @@ public class YannakakisWrapper<A extends Automaton> implements TestGenerator {
      * stderr and stdout of the external program to be merged, but still want to
      * redirect stderr to java's stderr.
      */
-    class StreamGobbler extends Thread {
+	static class StreamGobbler extends Thread {
         private final InputStream stream;
         private final String prefix;
 
@@ -157,7 +158,7 @@ public class YannakakisWrapper<A extends Automaton> implements TestGenerator {
         processOutput = new BufferedReader(new InputStreamReader(
                 process.getInputStream()));
         errorGobbler = new StreamGobbler(process.getErrorStream(),
-                "ERROR> main");
+				"ERROR> main");
         errorGobbler.start();
     }
 

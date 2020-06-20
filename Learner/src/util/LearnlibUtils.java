@@ -2,26 +2,20 @@ package util;
 
 import java.util.List;
 
-import de.ls5.jlearn.interfaces.Symbol;
-import de.ls5.jlearn.interfaces.Word;
-import de.ls5.jlearn.shared.SymbolImpl;
-import de.ls5.jlearn.shared.WordImpl;
+import net.automatalib.words.Word;
+import net.automatalib.words.impl.Symbol;
 
 public class LearnlibUtils {
-	
-	public static Word symbolsToWords(String... symbolStrings) {
-		SymbolImpl[] symbols = new SymbolImpl[symbolStrings.length];
-		for (int i = 0; i < symbolStrings.length; i++) {
-			symbols[i] = new SymbolImpl(symbolStrings[i]);
-		}
-		return new WordImpl(symbols);
+
+	public static Word<String> symbolsToWords(String... symbolStrings) {
+		return Word.fromArray(symbolStrings, 0, symbolStrings.length);
 	}
-	
-	public static Word symbolsToWords(List<String> symbolStrings) { 
-		return symbolsToWords(symbolStrings.toArray(new String[symbolStrings.size()]));
+
+	public static Word<String> symbolsToWords(List<String> symbolStrings) {
+		return Word.fromList(symbolStrings);
 	}
-	
-	public static Word symbolsToWord(List<Symbol> symbols) {
-		return new WordImpl(symbols.toArray(new Symbol[symbols.size()]));
+
+	public static Word<Symbol> symbolsToWord(List<Symbol> symbols) {
+		return Word.fromList(symbols);
 	}
 }

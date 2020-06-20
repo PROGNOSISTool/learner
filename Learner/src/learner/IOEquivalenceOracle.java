@@ -5,33 +5,33 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.learnlib.api.exception.SULException;
+import de.learnlib.api.oracle.MembershipOracle;
+import de.learnlib.api.oracle.EquivalenceOracle.MealyEquivalenceOracle;
 import de.learnlib.api.query.DefaultQuery;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import net.automatalib.words.Word;
+import net.automatalib.automata.transducers.MealyMachine;
+
 import util.Container;
 import util.LearnlibUtils;
 import util.Log;
 import util.Tuple2;
 import util.learnlib.YannakakisTest;
-import de.ls5.jlearn.abstractclasses.LearningException;
-import de.ls5.jlearn.equivalenceoracles.EquivalenceOracleOutputImpl;
-import de.learnlib.api.oracle.EquivalenceOracle;
-import net.automatalib.words.Word;
-import net.automatalib.automata.Automaton;
 
-public class IOEquivalenceOracle<A extends Automaton, I, D> implements EquivalenceOracle<A, I, D> {
+public class IOEquivalenceOracle<O> implements MealyEquivalenceOracle<String, O>  {
 
-	private Oracle oracle;
+	private MembershipOracle<String, Word<O>> oracle;
 	private final int numberOfTests;
 	private final boolean uniqueOnly;
 	private final Container<Integer> uniqueCounter;
 	private String ioCommand;
 	private int hypTestNumber = 0;
 
-	public IOEquivalenceOracle (Oracle oracle, int numberOfTests, String ioCommand) {
+	public IOEquivalenceOracle (MembershipOracle<String, Word<O>> oracle, int numberOfTests, String ioCommand) {
 		this(oracle, numberOfTests, ioCommand, null);
 	}
 
-	public IOEquivalenceOracle (Oracle oracle, int numberOfTests, String ioCommand, Container<Integer> uniqueCounter) {
+	public IOEquivalenceOracle (MembershipOracle<String, Word<O>> oracle, int numberOfTests, String ioCommand, Container<Integer> uniqueCounter) {
 		this.oracle = oracle;
 		this.ioCommand = ioCommand;
 		if (numberOfTests <= 0) {
@@ -44,17 +44,12 @@ public class IOEquivalenceOracle<A extends Automaton, I, D> implements Equivalen
 	}
 
 	@Override
-	public @Nullable DefaultQuery<I, D> findCounterExample(A hypothesis, Collection<? extends I> inputs) {
-		return null;
-	}
-
-	@Override
-	public EquivalenceOracleOutput findCounterExample(A hyp) {
+	public DefaultQuery<String, Word<O>> findCounterExample(MealyMachine<?, String, ?, O> hyp, Collection<? extends String> inputs) {
 		List<String> testQuery = null;
 		TestGenerator wrapper = null;
 		if (ioCommand.contains("fixed")) {
 		    try {
-		        Tuple2<List<LinkedList<String>>, Integer> tuple = YannakakisTest.getMinimumalTestSuite(hyp, Main.getTree(), ioCommand, 0, 100);
+		        Tuple2<List<LinkedList<String>>, Integer> tuple = YannakakisTest.getMinimumalTestSuite(hyp, inputs, Main.getTree(), ioCommand, 0, 100);
 		        List<LinkedList<String>> testSuite = tuple.tuple0;
 		        int expectedNumTests = tuple.tuple1;
                 Log.err("Changed seed to: " + YannakakisTest.seed);
@@ -66,7 +61,7 @@ public class IOEquivalenceOracle<A extends Automaton, I, D> implements Equivalen
                 System.exit(0);
             }
 		} else {
-		    wrapper = new YannakakisWrapper(hyp, ioCommand);
+		    wrapper = new YannakakisWrapper<O>(hyp, inputs, ioCommand);
 		}
 		wrapper.initialize();
 		int uniqueValueStart = uniqueOnly ? uniqueCounter.value : 0;
@@ -76,31 +71,28 @@ public class IOEquivalenceOracle<A extends Automaton, I, D> implements Equivalen
 				testQuery = wrapper.nextTest();
 
 				if ( testQuery != null) {
-					Word wordInput = LearnlibUtils.symbolsToWords(testQuery);
-					Word hypOutput = hyp.getTraceOutput(wordInput);
-					Word sutOutput;
+					Word<String> wordInput = LearnlibUtils.symbolsToWords(testQuery);
+					Word<O> hypOutput = hyp.computeOutput(wordInput);
+					Word<O> sutOutput;
 					try {
-						sutOutput = oracle.processQuery(wordInput);
+						sutOutput = oracle.answerQuery(wordInput);
 						if (!hypOutput.equals(sutOutput)) {
 						    if (ioCommand.contains("fixed")) {
-						    Main.getTree().remove(wordInput.getSymbolList());
+						    Main.getTree().remove(wordInput.asList());
 						    }
-						    sutOutput = oracle.processQuery(wordInput);
+						    sutOutput = oracle.answerQuery(wordInput);
 						    if (!hypOutput.equals(sutOutput)) {
 							Log.err("Yannakakis counterexample \n" +
 									"for input: " + wordInput + "\n" +
 									"expected: " + sutOutput + "\n" +
 									"received: " + hypOutput);
 
-							EquivalenceOracleOutputImpl equivOracleOutput = new EquivalenceOracleOutputImpl();
-							equivOracleOutput.setCounterExample(wordInput);
-							equivOracleOutput.setOracleOutput(sutOutput);
 							wrapper.terminate();
 							Log.err("Counterexample found after " + hypTestNumber + " attempts");
-							return equivOracleOutput;
+							return new DefaultQuery<String, Word<O>>(wordInput, sutOutput);
 						    }
 						}
-					} catch (LearningException e) {
+					} catch (SULException e) {
 						e.printStackTrace();
 						throw new RuntimeException("Error executing the test query: " + wordInput);
 					}
@@ -118,7 +110,7 @@ public class IOEquivalenceOracle<A extends Automaton, I, D> implements Equivalen
 	}
 
 
-	public void setOracle(Oracle arg0) {
+	public void setOracle(MembershipOracle<String, Word<O>> arg0) {
 		this.oracle = arg0;
 	}
 

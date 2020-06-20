@@ -5,17 +5,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import de.ls5.jlearn.interfaces.Alphabet;
-import de.ls5.jlearn.shared.AlphabetImpl;
-import de.ls5.jlearn.shared.SymbolImpl;
-
+import net.automatalib.words.Alphabet;
+import net.automatalib.words.impl.Alphabets;
 
 public class SutInfo {
     private static int minValue = 0;
     private static int maxValue = 255;
     private static List < ActionSignature > inputSignatures;
     private static List < ActionSignature > outputSignatures;
-    
+
     public static int getMinValue() {
         return minValue;
     }
@@ -41,8 +39,8 @@ public class SutInfo {
     	for (Entry<String, List<String>> entry : signatures.entrySet()) {
     		SutInfo.inputSignatures.add(new ActionSignature(entry.getKey(), entry.getValue()));
     	}
-    }    
-    
+    }
+
     public static ActionSignature getInputSignature(String methodName) {
         for (ActionSignature sig: inputSignatures) {
             if (sig.getMethodName().equals(methodName)) {
@@ -54,8 +52,8 @@ public class SutInfo {
 
     public static void addInputSignature(String methodName, List < String > parameters) {
     	SutInfo.inputSignatures.add(new ActionSignature(methodName, parameters));
-    }    
- 
+    }
+
     public static List < ActionSignature > getOutputSignatures() {
         return new ArrayList < ActionSignature > (outputSignatures);
     }
@@ -65,7 +63,7 @@ public class SutInfo {
     	for (Entry<String, List<String>> entry : signatures.entrySet()) {
     		SutInfo.outputSignatures.add(new ActionSignature(entry.getKey(), entry.getValue()));
     	}
-    }      
+    }
 
     public static ActionSignature getOutputSignature(String methodName) {
         for (ActionSignature sig: outputSignatures) {
@@ -75,28 +73,24 @@ public class SutInfo {
         }
         return null;
     }
-    
 
-	public static Alphabet generateInputAlphabet() {
-		Alphabet result = new AlphabetImpl();
 
+	public static Alphabet<String> generateInputAlphabet() {
+		List<String> symbolList = new ArrayList<>();
 		for (ActionSignature sig : SutInfo.getInputSignatures()) {
-			List<String> currentAlpha = new ArrayList<String>();
+			List<String> currentAlpha = new ArrayList<>();
 			currentAlpha.add(sig.getMethodName());
-			for (String currentSymbol : currentAlpha) {
-				result.addSymbol(new SymbolImpl(currentSymbol));
-			}
+			symbolList.addAll(currentAlpha);
 		}
-		return result;
+		return Alphabets.fromList(symbolList);
 	}
 
-	public static Alphabet generateOutputAlphabet() {
-		Alphabet result = new AlphabetImpl();
-
+	public static Alphabet<String> generateOutputAlphabet() {
+    	List<String> symbolList = new ArrayList<>();
 		for (ActionSignature sig : SutInfo.getOutputSignatures()) {
-			result.addSymbol(new SymbolImpl(sig.getMethodName()));
+			symbolList.add(sig.getMethodName());
 		}
-		return result;
+		return Alphabets.fromList(symbolList);
 	}
 
 

@@ -1,17 +1,18 @@
 package util.exceptions;
 
-import de.ls5.jlearn.abstractclasses.LearningException;
-import de.ls5.jlearn.interfaces.Word;
+import de.learnlib.api.exception.SULException;
+import net.automatalib.words.Word;
 
-public class NonDeterminismException extends LearningException {
-	protected final Word input;
-	
-	public NonDeterminismException(String msg, Word input) {
-		super(msg);
+public class NonDeterminismException extends SULException {
+	protected final Word<?> input;
+
+	public NonDeterminismException(String msg, Word<?> input) {
+		super(new Throwable(msg));
 		this.input = input;
 	}
-	
-	public NonDeterminismException(Word input) {
+
+	public NonDeterminismException(Word<?> input) {
+		super(new Throwable());
 		this.input = input;
 	}
 
@@ -19,7 +20,7 @@ public class NonDeterminismException extends LearningException {
 	 * The full input for which the non-determinism was observed
 	 * @return
 	 */
-	public Word getInput() {
+	public Word<?> getInput() {
 		return this.input;
 	}
 }
