@@ -1,17 +1,13 @@
-package sutInterface.tcp.init;
+package sutInterface.quic.init;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import util.Log;
+import util.exceptions.BugException;
+
+import java.io.*;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import util.Log;
-import util.exceptions.BugException;
 
 /***
  * Provides trace state storing and fetching over a global static trace map.
@@ -47,10 +43,10 @@ public class InitCacheManager {
 			storeTrace(inputs.toArray(new String[inputs.size()]), initValue);
 		}
 	}
-	
+
 	public void checkTrace(String[] inputs, String[] outputs) {
 		String inputTrace = buildTraceEntry(inputs);
-		String outputTrace = buildTraceEntry(outputs); 
+		String outputTrace = buildTraceEntry(outputs);
 		if(cachedResults.containsKey(inputTrace)) {
 			if(!cachedResults.get(inputTrace).equalsIgnoreCase(outputTrace)) {
 				Log.err("Non determinism for input trace: " + inputTrace);
@@ -67,7 +63,7 @@ public class InitCacheManager {
 		String trace = buildTraceEntry(inputs);
 		cachedTraces.put(trace, initValue);
 	}
-	
+
 	public Boolean getTrace(List<String> inputs) {
 		return getTrace(inputs.toArray(new String[inputs.size()]));
 	}

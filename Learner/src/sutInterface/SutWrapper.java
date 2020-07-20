@@ -1,12 +1,9 @@
 package sutInterface;
 
-import util.InputAction;
-import util.OutputAction;
-
 public interface SutWrapper {
-	
-	// process input to an output 
-	public OutputAction sendInput(InputAction symbolicInput);
+
+	// process input to an output
+	public String sendInput(String symbolicInput);
 
 	// reset SUT
 	public void sendReset();

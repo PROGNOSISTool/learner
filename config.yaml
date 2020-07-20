@@ -8,11 +8,11 @@ learningParams:
     sutInterface: sutinfo.yaml
 # windows/freebsd/linux
     mapper: linux
-tcpParams:
+sutParams:
 # number of times each query(test) is run, so as to
 # add confidence that there were no missed/wrong responses
     runsPerQuery: 2
     confidence: 85
-    sutPort: 18200
+    sutPort: 3333
     sutIP: 127.0.0.1
     oracle: client

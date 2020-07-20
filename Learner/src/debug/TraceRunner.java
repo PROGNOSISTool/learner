@@ -17,27 +17,25 @@ import java.util.Map.Entry;
 import learner.Config;
 import learner.Main;
 import learner.SutInterface;
-import learner.TCPParams;
-import sutInterface.tcp.MapperSutWrapper;
-import util.InputAction;
+import learner.SUTParams;
+import sutInterface.SimpleSutWrapper;
 import util.Log;
-import util.OutputAction;
 import util.Tuple2;
 import de.ls5.jlearn.interfaces.Symbol;
 import de.ls5.jlearn.interfaces.Word;
 
 public class TraceRunner {
 	private static final String PATH = "testtrace.txt";
-	
+
 	public static final String START = 		"\n****** INPUTS  ******\n";
 	public static final String SEPARATOR = 	"\n****** OUTPUTS ******\n";
 	public static final String END = 		"\n*********************\n";
-	
+
 	private Map<List<String>, Integer> outcomes = new HashMap<List<String>, Integer>();
-	private final MapperSutWrapper sutWrapper;
-	private final List<InputAction> inputTrace;
+	private final SimpleSutWrapper sutWrapper;
+	private final List<String> inputTrace;
 	//private final CacheInputValidator validator;
-	
+
 	public static Tuple2<List<String>,Integer> readTraceAndIterations() {
 	    List<String> trace;
 	    try {
@@ -61,7 +59,7 @@ public class TraceRunner {
                      while (it.hasNext()) {
                          it.next();
                          it.remove();
-                     } 
+                     }
                  } else {
                      System.out.println();
                  }
@@ -76,7 +74,7 @@ public class TraceRunner {
         }
         return new Tuple2<List<String>,Integer>(trace, iterations);
 	}
-	
+
 	public static void main(String[] args) throws IOException {
 		Main.handleArgs(args);
 		Tuple2<List<String>, Integer> traceAndIncrement = readTraceAndIterations();
@@ -89,10 +87,10 @@ public class TraceRunner {
 		Config config = Main.createConfig();
 
 		SutInterface sutInterface = Main.createSutInterface(config);
-	
-		TCPParams tcp = Main.readConfig(config, sutInterface);
+
+		SUTParams tcp = Main.readConfig(config, sutInterface);
 		tcp.exitIfInvalid = false;
-		
+
 		/*InitOracle initOracle;
 		// in a normal init-oracle ("functional") TCP setup, we use the conventional eq/mem oracles
 		if(! "adaptive".equalsIgnoreCase(tcp.oracle)) {
@@ -102,14 +100,14 @@ public class TraceRunner {
 		}
 		TCPMapper tcpMapper = new TCPMapper(initOracle);*/
 		//TCPSutWrapper sutWrapper = new TCPSutWrapper(tcp.sutPort, tcpMapper, tcp.exitIfInvalid);
-		
-		MapperSutWrapper sutWrapper = new MapperSutWrapper(tcp.sutPort, Main.learningParams.mapper);
+
+		SimpleSutWrapper sutWrapper = new SimpleSutWrapper(tcp.sutPort);
 		TraceRunner traceRunner = new TraceRunner(trace, sutWrapper);
 		traceRunner.testTrace(iterations);
 		sutWrapper.close();
 		System.out.println(traceRunner.getResults());
 	}
-	
+
 	public String getResults() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(START);
@@ -132,61 +130,49 @@ public class TraceRunner {
 		sb.append(END);
 		return sb.toString();
 	}
-	
-	public TraceRunner(Word word, MapperSutWrapper sutWrapper) {
-		List<InputAction> inputActions = new ArrayList<>(word.size());
+
+	public TraceRunner(Word word, SimpleSutWrapper sutWrapper) {
+		List<String> inputString = new ArrayList<>(word.size());
 		for (Symbol symbol : word.getSymbolList()) {
-			inputActions.add(new InputAction(symbol.toString()));
+			inputString.add(symbol.toString());
 		}
-		this.inputTrace = inputActions;
+		this.inputTrace = inputString;
 		this.sutWrapper = sutWrapper;
 	}
-	
-	public TraceRunner(List<String> inputTrace, MapperSutWrapper sutWrapper) {
-		List<InputAction> inputActions = new ArrayList<>(inputTrace.size());
-		for (String s : inputTrace) {
-			inputActions.add(new InputAction(s.trim()));
-		}
-		this.inputTrace = inputActions;
+
+	public TraceRunner(List<String> inputTrace, SimpleSutWrapper sutWrapper) {
+		this.inputTrace = inputTrace;
 		this.sutWrapper = sutWrapper;
 	}
-	
+
 	public void testTrace(int iterations) {
 		for (int i = 0; i < iterations; i++) {
 			boolean check = runTrace((i+1));
 			if (!check) {
 			    break;
 			}
-			
+
 		}
 	    sutWrapper.sendReset();
 	}
-	
+
 	protected boolean runTrace(int printNumber) {
 		List<String> outcome = new LinkedList<String>();
 		boolean checkResult = true;
 		sutWrapper.sendReset();
 		System.out.println("# " + printNumber);
 		//System.out.println("# " + number + " @@@ " + this.sutWrapper.toString());
-		for (InputAction input : inputTrace) {
-			OutputAction output;
-			if (input.getMethodName().startsWith("=")) {
-			    String checkOutput = input.getMethodName().substring(1);
-			    boolean check = checkOutput.compareToIgnoreCase(outcome.get(outcome.size()-1)) == 0;
-			    if (!check) {
-			        checkResult = false;
-			    }
-			    continue;
-			}
-			if (input.getMethodName().equals("reset")) {
+		for (String input : inputTrace) {
+			String output;
+			if (input.equals("RESET")) {
 				this.sutWrapper.sendReset();
-				output = new OutputAction("RESET");
+				output = "RESET";
 			} else {
 				output = this.sutWrapper.sendInput(input);
 			}
 			//System.out.println("# " + number + " >>> " + input + " >>> " + output);
 			//System.out.println("# " + number + " @@@ " + this.sutWrapper.toString());
-			outcome.add(output.toString());
+			outcome.add(output);
 		}
 		Integer currentCounter = outcomes.get(outcome);
 		if (currentCounter == null) {

@@ -1,19 +1,18 @@
-package sutInterface.tcp.init;
+package sutInterface.quic.init;
 
-import util.Container;
-import learner.Main;
 import de.ls5.jlearn.abstractclasses.LearningException;
 import de.ls5.jlearn.interfaces.Oracle;
 import de.ls5.jlearn.interfaces.Word;
+import learner.Main;
 
 public class LogOracleWrapper  implements Oracle{
 	private static final long serialVersionUID = 1L;
 	private final Oracle oracle;
-	
+
 	public LogOracleWrapper(Oracle oracle) {
 		this.oracle = oracle;
 	}
-	
+
 	@Override
 	public Word processQuery(Word input) throws LearningException {
 		Word output = this.oracle.processQuery(input);

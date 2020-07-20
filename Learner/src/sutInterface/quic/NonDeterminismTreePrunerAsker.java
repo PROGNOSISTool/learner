@@ -1,19 +1,17 @@
-package sutInterface.tcp;
+package sutInterface.quic;
 
-import java.util.Scanner;
-
-import learner.Main;
-import de.ls5.jlearn.abstractclasses.LearningException;
 import de.ls5.jlearn.interfaces.Oracle;
-import de.ls5.jlearn.interfaces.Word;
+import learner.Main;
 import util.ObservationTree;
 import util.exceptions.CacheInconsistencyException;
+
+import java.util.Scanner;
 
 public class NonDeterminismTreePrunerAsker extends NonDeterminismTreePruner {
 	public NonDeterminismTreePrunerAsker(ObservationTree tree, Oracle oracle) {
 		super(tree, oracle);
 	}
-	
+
 	protected void prune(CacheInconsistencyException cacheException) {
 		Scanner scanner = new Scanner(System.in);
 		Main.writeCacheTree(tree, false);
