@@ -14,5 +14,5 @@ sutParams:
     runsPerQuery: 2
     confidence: 85
     sutPort: 3333
-    sutIP: 127.0.0.1
+    sutIP: adapter
     oracle: client
