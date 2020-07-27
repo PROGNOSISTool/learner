@@ -428,7 +428,7 @@ public class Main {
 
 	private static Tuple2<Oracle, Oracle> buildOraclesFromConfig(SUTParams quic) {
 		System.out.println("Building SUT wrapper...");
-		sutWrapper = new SimpleSutWrapper(quic.sutPort);
+		sutWrapper = new SimpleSutWrapper(quic.sutIP, quic.sutPort);
 
 		System.out.println("Building cache tree...");
 		tree = readCacheTree(CACHE_FILE);
@@ -484,10 +484,10 @@ public class Main {
 		LearnLog.addAppender(new PrintStreamLoggingAppender(LogLevel.DEBUG,
 				learnOut));
 
-		// read/disp TCP config
-		SUTParams tcp = config.sutParams;
-		tcp.printParams(absTraceOut);
-		return tcp;
+		// read/disp SUT config
+		SUTParams sut = config.sutParams;
+		sut.printParams(absTraceOut);
+		return sut;
 	}
 
 	public static SutInterface createSutInterface(Config config)

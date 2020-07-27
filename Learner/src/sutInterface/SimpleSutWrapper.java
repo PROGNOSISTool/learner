@@ -4,8 +4,8 @@ package sutInterface;
 public class SimpleSutWrapper implements SutWrapper {
 	private SocketWrapper socket;
 
-	public SimpleSutWrapper(int port) {
-		socket = new SocketWrapper(port);
+	public SimpleSutWrapper(String host, int port) {
+		socket = new SocketWrapper(host, port);
 	}
 
 	public String sendInput(String symbolicInput) {

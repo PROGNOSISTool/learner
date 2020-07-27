@@ -101,7 +101,7 @@ public class TraceRunner {
 		TCPMapper tcpMapper = new TCPMapper(initOracle);*/
 		//TCPSutWrapper sutWrapper = new TCPSutWrapper(tcp.sutPort, tcpMapper, tcp.exitIfInvalid);
 
-		SimpleSutWrapper sutWrapper = new SimpleSutWrapper(tcp.sutPort);
+		SimpleSutWrapper sutWrapper = new SimpleSutWrapper(tcp.sutIP, tcp.sutPort);
 		TraceRunner traceRunner = new TraceRunner(trace, sutWrapper);
 		traceRunner.testTrace(iterations);
 		sutWrapper.close();
