@@ -2,8 +2,8 @@ learningParams:
     seed: 1299777356020
     minValue: 0
     maxValue: 300
-    minTraceLength: 6
-    maxTraceLength: 6
+    minTraceLength: 1
+    maxTraceLength: 4
     maxNumTraces: 20000
     sutInterface: sutinfo.yaml
 # windows/freebsd/linux
