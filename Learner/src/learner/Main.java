@@ -448,7 +448,7 @@ public class Main {
 				.logger()
 				.cacheReaderWriter(tree)
 				//.probablisticNonDeterminismValidator(10, 0.8, tree)
-				.askOnNonDeterminsm(tree)
+				.crashAndPruneTree(tree)
 				.resetCounter(nrResets)
 				.uniqueQueryCounter(nrUniqueEquivalenceQueries)
 				.queryCounter(nrEquivalenceQueries)
@@ -461,7 +461,7 @@ public class Main {
 				.logger()
 				.cacheReaderWriter(tree)
 				//.probablisticNonDeterminismValidator(10, 0.8, tree)
-				.askOnNonDeterminsm(tree)
+				.crashAndPruneTree(tree)
 				.resetCounter(nrResets)
 				.queryCounter(nrMembershipQueries)
 				.learnerInterface();
