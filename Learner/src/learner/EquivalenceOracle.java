@@ -8,6 +8,9 @@ import de.ls5.jlearn.interfaces.Word;
 import de.ls5.jlearn.shared.SymbolImpl;
 import de.ls5.jlearn.shared.WordImpl;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class EquivalenceOracle implements ExtendedOracle {
 	private static final long serialVersionUID = -5409624854115451929L;
 	private SutWrapper sutWrapper;
@@ -34,12 +37,22 @@ public class EquivalenceOracle implements ExtendedOracle {
 				(uniqueEquivCounter == null ? "" : " (" + uniqueEquivCounter.value + ")"));
 
 
-		for (Symbol currentSymbol : query.getSymbolList()) {
-			String outputString = sendInput(currentSymbol.toString());
-			result.addSymbol(new SymbolImpl(outputString));
-		}
+		result = sendQuery(query);
 
 		System.out.println("Returning to LearnLib: " + result);
+		return result;
+	}
+
+	public Word sendQuery(Word inputQuery) {
+		StringBuilder inputQueryString = new StringBuilder();
+		for (Symbol currentSymbol : inputQuery.getSymbolList()) {
+			inputQueryString.append(currentSymbol.toString());
+		}
+		String resultString = sendInput(inputQueryString.toString());
+		Word result = new WordImpl();
+		for (String symbol : resultString.split(" ")) {
+			result.addSymbol(new SymbolImpl(symbol));
+		}
 		return result;
 	}
 

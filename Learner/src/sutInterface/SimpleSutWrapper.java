@@ -18,6 +18,7 @@ public class SimpleSutWrapper implements SutWrapper {
 
 	public void sendReset() {
 		socket.writeInput("RESET");
+		socket.readOutput();
 	}
 
 	public void close() {

@@ -27,13 +27,23 @@ public class MembershipOracle implements ExtendedOracle {
 		System.out.println("Membership query number: " + this.membershipCounter.value);
 		System.out.println("Query: " + query);
 
-		for (Symbol currentSymbol : query.getSymbolList()) {
-			String outputString = sendInput(currentSymbol.toString());
-			result.addSymbol(new SymbolImpl(outputString));
-		}
+		result = sendQuery(query);
 
 		System.out.println("Returning to LearnLib: " + result);
 
+		return result;
+	}
+
+	public Word sendQuery(Word inputQuery) {
+		StringBuilder inputQueryString = new StringBuilder();
+		for (Symbol currentSymbol : inputQuery.getSymbolList()) {
+			inputQueryString.append(currentSymbol.toString());
+		}
+		String resultString = sendInput(inputQueryString.toString());
+		Word result = new WordImpl();
+		for (String symbol : resultString.split(" ")) {
+			result.addSymbol(new SymbolImpl(symbol));
+		}
 		return result;
 	}
 
