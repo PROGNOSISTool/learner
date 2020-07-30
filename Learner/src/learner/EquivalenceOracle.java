@@ -3,13 +3,11 @@ package learner;
 import sutInterface.SutWrapper;
 import util.Container;
 import de.ls5.jlearn.abstractclasses.LearningException;
-import de.ls5.jlearn.interfaces.Symbol;
 import de.ls5.jlearn.interfaces.Word;
 import de.ls5.jlearn.shared.SymbolImpl;
 import de.ls5.jlearn.shared.WordImpl;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.stream.Collectors;
 
 public class EquivalenceOracle implements ExtendedOracle {
 	private static final long serialVersionUID = -5409624854115451929L;
@@ -44,11 +42,11 @@ public class EquivalenceOracle implements ExtendedOracle {
 	}
 
 	public Word sendQuery(Word inputQuery) {
-		StringBuilder inputQueryString = new StringBuilder();
-		for (Symbol currentSymbol : inputQuery.getSymbolList()) {
-			inputQueryString.append(currentSymbol.toString());
-		}
-		String resultString = sendInput(inputQueryString.toString());
+		String inputQueryString = inputQuery.getSymbolList().stream()
+				.map(Object::toString)
+				.collect(Collectors.joining(" "));
+
+		String resultString = sendInput(inputQueryString);
 		Word result = new WordImpl();
 		for (String symbol : resultString.split(" ")) {
 			result.addSymbol(new SymbolImpl(symbol));
