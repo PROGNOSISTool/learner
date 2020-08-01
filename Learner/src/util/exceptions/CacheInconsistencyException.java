@@ -12,19 +12,19 @@ import de.ls5.jlearn.shared.WordImpl;
 public class CacheInconsistencyException extends NonDeterminismException {
 	private static final long serialVersionUID = 9265414L;
 	private final Word oldOutput, newOutput;
-	
+
 	public CacheInconsistencyException(Word input, Word oldOutput, Word newOutput) {
 		super(input);
 		this.oldOutput = oldOutput;
 		this.newOutput = newOutput;
 	}
-	
+
 	public CacheInconsistencyException(String message, Word input, Word oldOutput, Word newOutput) {
 		super(message, input);
 		this.oldOutput = oldOutput;
 		this.newOutput = newOutput;
 	}
-	
+
 
 	/**
 	 * The shortest cached output word which does not correspond with the new output
@@ -33,7 +33,7 @@ public class CacheInconsistencyException extends NonDeterminismException {
 	public Word getOldOutput() {
 		return this.oldOutput;
 	}
-	
+
 	/**
 	 * The full new output word
 	 * @return
@@ -51,9 +51,10 @@ public class CacheInconsistencyException extends NonDeterminismException {
 	    while (oldOutput.getSymbolByIndex(indexOfInconsistency).equals(newOutput.getSymbolByIndex(indexOfInconsistency))) {
 	        indexOfInconsistency ++;
 	    }
+		System.out.println("CIE: INPUT: " + this.toString());
 		return WordConverter.toWord(WordConverter.toSymbolList(this.input).subList(0, indexOfInconsistency));
 	}
-	
+
 	@Override
 	public String toString() {
 		return "full input:\n" + this.input + "\nfull new output:\n" + this.newOutput + "\nold output:\n" + this.oldOutput;
