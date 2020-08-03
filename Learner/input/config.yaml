@@ -5,7 +5,7 @@ learningParams:
     minTraceLength: 1
     maxTraceLength: 2
     maxNumTraces: 1000000
-    sutInterface: input/sutinfo.yaml
+    sutInterface: Learner/input/sutinfo.yaml
 # windows/freebsd/linux
     mapper: linux
 sutParams:
