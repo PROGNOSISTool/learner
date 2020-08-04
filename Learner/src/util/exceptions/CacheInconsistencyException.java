@@ -49,9 +49,8 @@ public class CacheInconsistencyException extends NonDeterminismException {
 	public Word getShortestInconsistentInput() {
 	    int indexOfInconsistency = 0;
 	    while (oldOutput.getSymbolByIndex(indexOfInconsistency).equals(newOutput.getSymbolByIndex(indexOfInconsistency))) {
-	        indexOfInconsistency ++;
-	    }
-		System.out.println("CIE: INPUT: " + this.toString());
+			indexOfInconsistency++;
+		}
 		return WordConverter.toWord(WordConverter.toSymbolList(this.input).subList(0, indexOfInconsistency));
 	}
 

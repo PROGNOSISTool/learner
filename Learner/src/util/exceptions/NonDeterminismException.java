@@ -5,14 +5,16 @@ import de.ls5.jlearn.interfaces.Word;
 
 public class NonDeterminismException extends LearningException {
 	protected final Word input;
-	
+
 	public NonDeterminismException(String msg, Word input) {
 		super(msg);
 		this.input = input;
+		System.out.println("NIE: INPUT: " + this.input.toString());
 	}
-	
+
 	public NonDeterminismException(Word input) {
 		this.input = input;
+		System.out.println("NIE: INPUT: " + this.input.toString());
 	}
 
 	/**
