@@ -13,6 +13,7 @@ sutParams:
 # add confidence that there were no missed/wrong responses
     runsPerQuery: 3
     confidence: 85
+    maxAttempts: 150
     sutPort: 3333
     sutIP: adapter
     oracle: client

@@ -436,7 +436,8 @@ public class Main {
 			tree = new ObservationTree();
 		}
 
-		int minAttempts = quic.runsPerQuery, maxAttempts = 100;
+		int minAttempts = quic.runsPerQuery;
+		int maxAttempts = quic.maxAttempts;
 		double probFraction = (double) quic.confidence / 100;
 
 		SutInterfaceBuilder builder = new SutInterfaceBuilder();

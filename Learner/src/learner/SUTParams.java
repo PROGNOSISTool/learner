@@ -46,6 +46,7 @@ public class SUTParams {
 
 	public int runsPerQuery = 1;
     public int confidence = 100;
+	public int maxAttempts = 100;
 
 	/**
 	 * Escape in case one of the numbers received from server cannot be matched, signaling that learning is out-of-synch
