@@ -9,11 +9,13 @@ public class NonDeterminismException extends SULException {
 	public NonDeterminismException(String msg, Word<?> input) {
 		super(new Throwable(msg));
 		this.input = input;
+		System.out.println("NIE: INPUT: " + this.input.toString());
 	}
 
 	public NonDeterminismException(Word<?> input) {
 		super(new Throwable());
 		this.input = input;
+		System.out.println("NIE: INPUT: " + this.input.toString());
 	}
 
 	/**

@@ -1,6 +1,6 @@
-<project name="TCPLearner" default="dist" basedir=".">
+<project name="QUICLearner" default="dist" basedir=".">
     <description>
-        TCP Learner build file
+        QIUC Learner build file
     </description>
   <!-- set global properties for this build -->
   <property name="src" location="src"/>
@@ -32,8 +32,8 @@
     <!-- Create the distribution directory -->
     <mkdir dir="${dist}/lib"/>
 
-    <!-- Put everything in ${build} into the TCPLearner-${DSTAMP}.jar file -->
-    <jar jarfile="${dist}/TCPLearner-${DSTAMP}.jar" basedir="${build}"/>
+    <!-- Put everything in ${build} into the QUICLearner.jar file -->
+    <jar jarfile="${dist}/QUICLearner.jar" basedir="${build}"/>
   </target>
 
   <target name="clean"

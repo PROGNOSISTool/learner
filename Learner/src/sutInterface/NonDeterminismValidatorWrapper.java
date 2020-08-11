@@ -4,7 +4,7 @@ import java.util.List;
 
 import learner.Main;
 
-import sutInterface.tcp.NonDeterminismTreePruner;
+import sutInterface.quic.NonDeterminismTreePruner;
 import util.Counter;
 import util.Log;
 import util.ObservationTree;
@@ -21,7 +21,7 @@ public class NonDeterminismValidatorWrapper extends NonDeterminismTreePruner {
     private static final long serialVersionUID = 1L;
     private int numberTries;
     private final Oracle afterCache;
-    
+
     public NonDeterminismValidatorWrapper(int numberTries, ObservationTree tree, Oracle oracle, Oracle afterCache) {
     	super(tree, oracle);
         this.numberTries = numberTries;
@@ -36,7 +36,7 @@ public class NonDeterminismValidatorWrapper extends NonDeterminismTreePruner {
         	return recover(word, nonDet);
     	}
     }
-    
+
     private Word recover(Word word, NonDeterminismException nonDet) throws LearningException {
     	if (numberTries <= 0) {
     		throw nonDet;
@@ -74,7 +74,7 @@ public class NonDeterminismValidatorWrapper extends NonDeterminismTreePruner {
     		throw nonDet;
     	}
     }
-    
+
     /**
      * When recovering and trying out some traces, which trace to conclude from the given observations.
      * Concludes a trace when that was the only trace observed, null otherwise

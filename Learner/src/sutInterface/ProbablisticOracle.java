@@ -16,7 +16,7 @@ public class ProbablisticOracle implements Oracle {
 	private final Oracle oracle;
 	private final int minimumAttempts, maximumAttempts;
 	private final double minimumFraction;
-	
+
 	public ProbablisticOracle(Oracle oracle, int minimumAttempts, double minimumFraction, int maximumAttempts) {
 		this.oracle = oracle;
 		if (minimumAttempts > maximumAttempts) {
@@ -37,29 +37,29 @@ public class ProbablisticOracle implements Oracle {
 		boolean finished = false;
 		boolean firstAttempt = true;
 		do {
-		    
+
 			if (responseCounter.getTotalNumber() >= this.maximumAttempts) {
+				Log.err("Non-determinism found by probablistic oracle for input\n" + inputWord + "\noutputs:\n" + responseCounter);
 			    if (firstAttempt) {
                     try {
-                        Log.err("Sleeping 3 minutes to check if the non-det will clear");
-                        Thread.sleep(180000);
+                        Log.err("Sleeping 1 minutes to check if the non-det will clear");
+                        Thread.sleep(60000);
                         firstAttempt = false;
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                     responseCounter.reset();
-    			} 
+    			}
 			    else {
-    				Log.err("Non-determinism found by probablistic oracle for input\n" + inputWord + "\noutputs:\n" + responseCounter);
     				throw new NonDeterminismException(inputWord);
 			    }
 			}
 			List<Symbol> output = this.oracle.processQuery(inputWord).getSymbolList();
 			responseCounter.count(output);
-			finished = responseCounter.getTotalNumber() >= this.minimumAttempts && 
+			finished = responseCounter.getTotalNumber() >= this.minimumAttempts &&
 					(responseCounter.getHighestFrequencyFraction() >= this.minimumFraction  || responseCounter.getObjectsCounted() == 1);
 		} while (!finished);
-		
+
 		List<Symbol> mostFrequent = responseCounter.getMostFrequent();
 		if (responseCounter.getObjectsCounted() > 1) {
 			Log.err("Non-determinism detected on input\n" + input + "\nResponses:\n" + responseCounter + "\naccepted most frequent:\n" + mostFrequent);

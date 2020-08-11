@@ -25,10 +25,10 @@ import java.util.Random;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
+import sutInterface.SimpleSutWrapper;
 import sutInterface.SutInfo;
-import sutInterface.tcp.LearnResult;
-import sutInterface.tcp.MapperSutWrapper;
-import sutInterface.tcp.SutInterfaceBuilder;
+import sutInterface.quic.LearnResult;
+import sutInterface.quic.SutInterfaceBuilder;
 import util.Chmod;
 import util.Container;
 import util.FileManager;
@@ -59,7 +59,7 @@ import de.ls5.jlearn.util.DotUtil;
 
 public class Main {
 	public static final String CACHE_FILE = "cache.ser";
-	
+
 	private static File sutConfigFile = null;
 	public static LearningParams learningParams;
 	private static long timeSnap = System.currentTimeMillis();;
@@ -74,7 +74,7 @@ public class Main {
 	public static Config config;
 	private static File sutInterfaceFile;
 	private static ObservationTree tree;
-	private static MapperSutWrapper sutWrapper;
+	private static SimpleSutWrapper sutWrapper;
 	private static Container<Integer>
 				nrMembershipQueries = new Container<>(),
 				nrEquivalenceQueries = new Container<>(),
@@ -82,7 +82,7 @@ public class Main {
 				nrResets = new Container<>();
 	private static IOEquivalenceOracle yanOracle;
 	private static IOEquivalenceOracle yanOracle2;
-				
+
 	private static List<Runnable> shutdownHooks = new ArrayList<>();
 
 	public static void main(String[] args) throws LearningException, IOException, Exception {
@@ -91,34 +91,34 @@ public class Main {
 			runLearner(args);
 		} catch (CorruptedLearningException e) {
 			System.exit(42);
-		} 
+		}
 	}
-					
+
 	public static void runLearner(String[] args) throws LearningException, IOException, Exception {
 		nrMembershipQueries.value = nrEquivalenceQueries.value = nrResets.value = nrUniqueEquivalenceQueries.value = 0;
-		
+
 		System.out.println("Reading program arguments");
 		handleArgs(args);
-		
+
 		System.out.println("Setting up output directory...");
 		setupOutput(outputDir);
 
 		System.out.println("Reading config...");
 		Config config = createConfig();
 		Main.config = config;
-		
+
 		System.out.println("Creating SUT interface...");
 		SutInterface sutInterface = createSutInterface(config);
-	
+
 		System.out.println("Reading TCP parameters...");
-		TCPParams tcp = readConfig(config, sutInterface);
-		
+		SUTParams tcp = readConfig(config, sutInterface);
+
 		Log.setLogLevel(tcp.logLevel);
 
 		// first is the membership, second is the equivalence oracle
 		System.out.println("Building oracles...");
 		Tuple2<Oracle,Oracle> tcpOracles = buildOraclesFromConfig(tcp);
-		
+
 		Learner learner;
 
 		LearnResult learnResult;
@@ -136,7 +136,7 @@ public class Main {
 
 		System.out.println("Starting learner...");
 		learnResult = learn(learner, eqOracle, ceReducer);
-		
+
 
 		// final output to out.txt
 		absTraceOut.println("Seed: " + learningParams.seed);
@@ -152,7 +152,7 @@ public class Main {
 		statsOut
 				.println("Total states in learned abstract Mealy machine: "
 						+ learnResult.learnedModel.getAllStates().size());
-		
+
 		Statistics.getStats().printStats(statsOut);
 
 		// output learned model with start state highlighted to dot file :
@@ -163,7 +163,7 @@ public class Main {
 
 		LinkedList<State> highlights = new LinkedList<State>();
 		highlights.add(startState);
-		
+
 		writeOutputFiles(learnResult, highlights);
 
 		errOut.println("Learner Finished!");
@@ -171,7 +171,7 @@ public class Main {
 		// bips to notify that learning is done :)
 		SoundUtils.success();
 	}
-	
+
 	private static void copyInputsToOutputFolder() {
 		File inputFolder = sutConfigFile.getParentFile();
 		if (!inputFolder.getName().equalsIgnoreCase("input")) {
@@ -197,7 +197,7 @@ public class Main {
 		//outputFolder.mkdirs();
 		File dotFile = new File(outputFolder.getAbsolutePath() + File.separator + "learnresult.dot");
 		File pdfFile = new File(outputFolder.getAbsolutePath() + File.separator + "learnresult.pdf");
-		
+
 		try (BufferedWriter out = new BufferedWriter(new FileWriter(dotFile))) {
 			DotUtil.writeDot(learnResult.learnedModel, out, learnResult.learnedModel.getAlphabet()
 					.size(), highlights, "");
@@ -212,7 +212,7 @@ public class Main {
 			System.err.println(e.getMessage());
 		}
 	}
-	
+
 	public static void setupOutput(final String outputDir) throws FileNotFoundException {
 		outputFolder = new File(outputDir);
 		outputFolder.mkdirs();
@@ -226,7 +226,7 @@ public class Main {
 	    errOut = new PrintStream(
 	                new FileOutputStream(outputDir + File.separator + "err.txt", false));
 	    Log.setErrorPrintStream(errOut);
-		
+
 		statsOut = new PrintStream(
 				new FileOutputStream(outputDir + File.separator + "statistics.txt", false));
 		registerShutdownHook(new Runnable() {
@@ -241,7 +241,7 @@ public class Main {
 
 				closeOutputStreams();
 				//InitCacheManager mgr = new InitCacheManager();
-				//mgr.dump(outputDir + File.separator +  "cache.txt"); 
+				//mgr.dump(outputDir + File.separator +  "cache.txt");
 				if (done == false) {
 					SoundUtils.failure();
 				}
@@ -283,18 +283,18 @@ public class Main {
 					stats.totalTimeMemQueries += endtmp - starttmp;
 					starttmp = System.currentTimeMillis();
 					absTraceOut.flush();
-	
+
 					// stable hypothesis after membership queries
 					Automaton hyp = learner.getResult();
 					String hypFileName = outputDir + File.separator + "tmp-learnresult"
 							+ hypCounter + ".dot";
 					String hypPdfFileName = outputDir + File.separator + "tmp-learnresult"
 							+ hypCounter + ".pdf";
-					
+
 					File hypPDF = new File(hypPdfFileName);
 					DotDo.writeDotFile(hyp, hypFileName );
 					DotUtil.invokeDot(hypFileName, "pdf", hypPDF);
-	
+
 					absTraceOut.println("starting equivalence query");
 					absTraceOut.flush();
 					errOut.flush();
@@ -304,7 +304,7 @@ public class Main {
 						.findCounterExample(hyp);
 					int nrHypTests = getNrHypTests();
 					stats.addNrHypothesisEquivalenceQueries(nrHypTests);
-					
+
 					stats.totalEquivQueries = nrEquivalenceQueries.value;
 					stats.totalUniqueEquivQueries = nrUniqueEquivalenceQueries.value;
 					absTraceOut.flush();
@@ -313,14 +313,14 @@ public class Main {
 					endtmp = System.currentTimeMillis();
 					stats.totalTimeEquivQueries += endtmp - starttmp;
 					starttmp = System.currentTimeMillis();
-	
+
 					// no counter example -> learning is done
 					if (o == null) {
 						done = true;
 						continue;
-					} 
+					}
 					o = ceReducer.reducedCounterexample(o, hyp);
-					
+
 					logCounterExampleAnalysis(hyp, hypCounter, o);
 					hypCounter ++;
 					absTraceOut.println("Sending CE to LearnLib.");
@@ -345,13 +345,13 @@ public class Main {
 		learnResult.learnedModel = learner.getResult();
 		return learnResult;
 	}
-	
+
 	private static int getNrHypTests() {
 	    int nrTests = 0;
 	    if (yanOracle != null) {
-            nrTests += yanOracle.getNrHypthesisTests(); 
+            nrTests += yanOracle.getNrHypthesisTests();
             yanOracle.clearNrHypTests();
-        }   
+        }
         if (yanOracle2 != null) {
             nrTests += yanOracle2.getNrHypthesisTests();
             yanOracle2.clearNrHypTests();
@@ -368,17 +368,17 @@ public class Main {
 		List<Symbol> inputSymbols = new ArrayList<Symbol>();
 		List<Symbol> hypOutput = hyp.getTraceOutput(ceInputWord).getSymbolList();
 		out.print("\n Counterexample for hyp"+hypCounter +"\n");
-		
+
 		for (int i = 0; i < ceInputSymbols.size(); i++) {
 			inputSymbols.add(ceInputSymbols.get(i));
 			Word inputWord = new WordImpl((Symbol[]) inputSymbols.toArray(new Symbol[inputSymbols.size()]));
 			out.println(ceInputSymbols.get(i));
 			out.println("!" +hypOutput.get(i) + " s" + hyp.getTraceState(inputWord, i+1).getId());
-			
+
 			if (! hypOutput.get(i).equals( sutOutput.get(i))) {
 				out.println("#!" +sutOutput.get(i));
 				break;
-			} 
+			}
 		}
 		out.close();
 	}
@@ -390,7 +390,7 @@ public class Main {
 		learnOut.close();
 		errOut.close();
 	}
-	
+
 	// I hacked in the additional yannakakis command
 	private static de.ls5.jlearn.interfaces.EquivalenceOracle buildEquivalenceOracle(LearningParams learningParams, Oracle queryOracle) {
 		List<de.ls5.jlearn.interfaces.EquivalenceOracle> eqOracles = new ArrayList<de.ls5.jlearn.interfaces.EquivalenceOracle>();
@@ -406,7 +406,7 @@ public class Main {
             WordCheckingEquivalenceOracle wordEqOracle = new WordCheckingEquivalenceOracle(queryOracle, learningParams.testTraces);
             eqOracles.add(wordEqOracle);
         }
-		
+
 		if (learningParams.yanCommand != null) {
 		    yanOracle = new IOEquivalenceOracle(queryOracle, learningParams.maxNumTraces, learningParams.yanCommand, nrUniqueEquivalenceQueries);
 			eqOracles.add(yanOracle);
@@ -425,20 +425,21 @@ public class Main {
 	    }
 		return eqOracle;
 	}
-	
-	private static Tuple2<Oracle, Oracle> buildOraclesFromConfig(TCPParams tcp) {
+
+	private static Tuple2<Oracle, Oracle> buildOraclesFromConfig(SUTParams quic) {
 		System.out.println("Building SUT wrapper...");
-		sutWrapper = new MapperSutWrapper(tcp.sutPort, Main.learningParams.mapper);
-		
+		sutWrapper = new SimpleSutWrapper(quic.sutIP, quic.sutPort);
+
 		System.out.println("Building cache tree...");
 		tree = readCacheTree(CACHE_FILE);
 		if (tree == null) {
 			tree = new ObservationTree();
 		}
-		
-		int minAttempts = tcp.runsPerQuery, maxAttempts = 100;
-		double probFraction = (double) tcp.confidence / 100;
-		
+
+		int minAttempts = quic.runsPerQuery;
+		int maxAttempts = quic.maxAttempts;
+		double probFraction = (double) quic.confidence / 100;
+
 		SutInterfaceBuilder builder = new SutInterfaceBuilder();
 		Oracle eqOracleRunner = builder
 				.sutWrapper(sutWrapper)
@@ -448,7 +449,7 @@ public class Main {
 				.logger()
 				.cacheReaderWriter(tree)
 				//.probablisticNonDeterminismValidator(10, 0.8, tree)
-				.askOnNonDeterminsm(tree)
+				.crashAndPruneTree(tree)
 				.resetCounter(nrResets)
 				.uniqueQueryCounter(nrUniqueEquivalenceQueries)
 				.queryCounter(nrEquivalenceQueries)
@@ -461,40 +462,40 @@ public class Main {
 				.logger()
 				.cacheReaderWriter(tree)
 				//.probablisticNonDeterminismValidator(10, 0.8, tree)
-				.askOnNonDeterminsm(tree)
+				.crashAndPruneTree(tree)
 				.resetCounter(nrResets)
 				.queryCounter(nrMembershipQueries)
 				.learnerInterface();
-		
+
 		return new Tuple2<Oracle,Oracle>(memOracleRunner, eqOracleRunner);
 	}
 
-	public static TCPParams readConfig(Config config, SutInterface sutInterface) {
+	public static SUTParams readConfig(Config config, SutInterface sutInterface) {
 		// read/disp config params for learner
 		learningParams = config.learningParams;
 		learningParams.printParams(absTraceOut);
-		
+
 		// read sut interface information
 		SutInfo.setMinValue(learningParams.minValue);
 		SutInfo.setMaxValue(learningParams.maxValue);
-		
+
 		SutInfo.setInputSignatures(sutInterface.inputInterfaces);
 		SutInfo.setOutputSignatures(sutInterface.outputInterfaces);
 
 		LearnLog.addAppender(new PrintStreamLoggingAppender(LogLevel.DEBUG,
 				learnOut));
 
-		// read/disp TCP config
-		TCPParams tcp = config.tcpParams;
-		tcp.printParams(absTraceOut);
-		return tcp;
+		// read/disp SUT config
+		SUTParams sut = config.sutParams;
+		sut.printParams(absTraceOut);
+		return sut;
 	}
 
 	public static SutInterface createSutInterface(Config config)
 			throws FileNotFoundException {
 		sutInterfaceFile = new File(sutConfigFile
 				.getParentFile().getAbsolutePath()
-				+ File.separator 
+				+ File.separator
 				+ config.learningParams.sutInterface);
 		InputStream sutInterfaceInput = new FileInputStream(sutInterfaceFile);
 		Yaml yaml = new Yaml(new Constructor(SutInterface.class));
@@ -527,15 +528,15 @@ public class Main {
 		System.out
 				.println(" config_file     - .yaml config file describing the sut/learning.");
 	}
-	
+
 	public static int cachedTreeNum = 0;
-	
+
 	public static ObservationTree getTree() {
 	    return tree;
 	}
-	
+
 	public static void writeCacheTree(ObservationTree tree, boolean isFinal) {
-	    
+
 	    String cachePath = CACHE_FILE;
 	    String indexedCachePath = cachedTreeNum + CACHE_FILE;
 		writeCacheTree(tree, isFinal?cachePath:indexedCachePath);
@@ -545,7 +546,7 @@ public class Main {
     		writeCacheTree(tree, isFinal?cachePath:indexedCachePath);
 		}
 	}
-	
+
 	public static void writeCacheTree(ObservationTree tree, String fileName) {
 		if (tree == null) {
 			System.err.println("Could not write uninitialized observation tree");
@@ -558,13 +559,13 @@ public class Main {
 				) {
 			output.writeObject(new Tuple2<>(tree, Statistics.getStats().totalUniqueEquivQueries));
 			output.close();
-		}  
+		}
 		catch (IOException ex){
 			System.err.println("Could not write observation tree");
 		}
 		Main.cachedTreeNum += 1;
 	}
-	
+
 	public static ObservationTree readCacheTree(String fileName) {
 		try(
 				InputStream file = new FileInputStream(fileName);
@@ -585,7 +586,7 @@ public class Main {
 			return null;
 		}
 	}
-	
+
 	public static void registerShutdownHook(Runnable r) {
 		Runtime.getRuntime().addShutdownHook(new Thread(r));
 		shutdownHooks.add(r);
