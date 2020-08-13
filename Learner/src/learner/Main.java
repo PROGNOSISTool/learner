@@ -16,19 +16,38 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.lang.reflect.Member;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+import de.learnlib.algorithms.lstar.mealy.ClassicLStarMealy;
+import de.learnlib.algorithms.lstar.mealy.ClassicLStarMealyBuilder;
+import de.learnlib.algorithms.lstar.mealy.ExtensibleLStarMealy;
+import de.learnlib.algorithms.lstar.mealy.ExtensibleLStarMealyBuilder;
+import de.learnlib.api.SUL;
+import de.learnlib.api.algorithm.LearningAlgorithm;
+import de.learnlib.api.oracle.EquivalenceOracle;
+import de.learnlib.api.oracle.MembershipOracle;
+import de.learnlib.api.query.DefaultQuery;
+import de.learnlib.filter.cache.LearningCacheOracle;
+import de.learnlib.oracle.equivalence.MealyRandomWordsEQOracle;
+import de.learnlib.oracle.equivalence.RandomWordsEQOracle;
+import de.learnlib.oracle.equivalence.mealy.RandomWalkEQOracle;
+import de.learnlib.oracle.membership.SULOracle;
+import de.learnlib.util.mealy.MealyUtil;
+import net.automatalib.automata.transducers.MealyMachine;
+import net.automatalib.words.Alphabet;
+import net.automatalib.words.Word;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
-import sutInterface.SimpleSutWrapper;
+import sutInterface.CacheReaderOracle;
+import sutInterface.ProbabilisticOracle;
 import sutInterface.SutInfo;
 import sutInterface.quic.LearnResult;
-import sutInterface.quic.SutInterfaceBuilder;
 import util.Chmod;
 import util.Container;
 import util.FileManager;
@@ -41,20 +60,10 @@ import util.exceptions.CacheInconsistencyException;
 import util.exceptions.CorruptedLearningException;
 import util.learnlib.DotDo;
 import de.ls5.jlearn.abstractclasses.LearningException;
-import de.ls5.jlearn.algorithms.packs.ObservationPack;
-import de.ls5.jlearn.equivalenceoracles.RandomWalkEquivalenceOracle;
 import de.ls5.jlearn.exceptions.ObservationConflictException;
-import de.ls5.jlearn.interfaces.Automaton;
-import de.ls5.jlearn.interfaces.EquivalenceOracleOutput;
-import de.ls5.jlearn.interfaces.Learner;
-import de.ls5.jlearn.interfaces.Oracle;
-import de.ls5.jlearn.interfaces.State;
-import de.ls5.jlearn.interfaces.Symbol;
-import de.ls5.jlearn.interfaces.Word;
 import de.ls5.jlearn.logging.LearnLog;
 import de.ls5.jlearn.logging.LogLevel;
 import de.ls5.jlearn.logging.PrintStreamLoggingAppender;
-import de.ls5.jlearn.shared.WordImpl;
 import de.ls5.jlearn.util.DotUtil;
 
 public class Main {
@@ -62,7 +71,7 @@ public class Main {
 
 	private static File sutConfigFile = null;
 	public static LearningParams learningParams;
-	private static long timeSnap = System.currentTimeMillis();;
+	private static final long timeSnap = System.currentTimeMillis();;
 	public static final String outputDir = "output" + File.separator + timeSnap;
 	private static File outputFolder = null;
 	public static PrintStream learnOut;
@@ -72,18 +81,15 @@ public class Main {
 	public static PrintStream statsOut;
 	private static boolean done;
 	public static Config config;
-	private static File sutInterfaceFile;
 	private static ObservationTree tree;
-	private static SimpleSutWrapper sutWrapper;
-	private static Container<Integer>
-				nrMembershipQueries = new Container<>(),
-				nrEquivalenceQueries = new Container<>(),
-				nrUniqueEquivalenceQueries = new Container<>(),
-				nrResets = new Container<>();
-	private static IOEquivalenceOracle yanOracle;
-	private static IOEquivalenceOracle yanOracle2;
+	private static Alphabet<String> alphabet;
+	private static final Container<Integer>
+				nrMembershipQueries = new Container<>();
+	private static final Container<Integer> nrEquivalenceQueries = new Container<>();
+	private static final Container<Integer> nrUniqueEquivalenceQueries = new Container<>();
+	private static final Container<Integer> nrResets = new Container<>();
 
-	private static List<Runnable> shutdownHooks = new ArrayList<>();
+	private static final List<Runnable> shutdownHooks = new ArrayList<>();
 
 	public static void main(String[] args) throws LearningException, IOException, Exception {
 		try{
@@ -111,31 +117,24 @@ public class Main {
 		SutInterface sutInterface = createSutInterface(config);
 
 		System.out.println("Reading TCP parameters...");
-		SUTParams tcp = readConfig(config, sutInterface);
+		SULConfig sul = readConfig(config, sutInterface);
 
-		Log.setLogLevel(tcp.logLevel);
+		Log.setLogLevel(sul.logLevel);
 
 		// first is the membership, second is the equivalence oracle
-		System.out.println("Building oracles...");
-		Tuple2<Oracle,Oracle> tcpOracles = buildOraclesFromConfig(tcp);
-
-		Learner learner;
-
-		LearnResult learnResult;
+		System.out.println("Building membership oracle...");
+		MembershipOracle<String, Word<String>> memOracle = buildMembershipOracle(sul);
 
 		System.out.println("Building equivalence oracle...");
-		de.ls5.jlearn.interfaces.EquivalenceOracle eqOracle = buildEquivalenceOracle(learningParams, tcpOracles.tuple1);
-		SingleTransitionReducer ceReducer = new SingleTransitionReducer(tcpOracles.tuple1);
+		EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> eqOracle = buildEquivalenceOracle(learningParams, memOracle);
 
-		learner = new ObservationPack();
-		//learner = new Angluin();
-		learner.setOracle(tcpOracles.tuple0);
-
-		learner.setAlphabet(SutInfo.generateInputAlphabet());
+		System.out.println("Building Learner...");
+		alphabet = SutInfo.generateInputAlphabet();
 		SutInfo.generateOutputAlphabet();
+		ExtensibleLStarMealy<String, String> learner = new ExtensibleLStarMealyBuilder<String, String>().withAlphabet(alphabet).withOracle(memOracle).create();
 
 		System.out.println("Starting learner...");
-		learnResult = learn(learner, eqOracle, ceReducer);
+		LearnResult learnResult = learn(learner, eqOracle);
 
 
 		// final output to out.txt
@@ -144,31 +143,17 @@ public class Main {
 		absTraceOut.println("Done.");
 		errOut.println("Successful run.");
 
-		// output needed for equivalence checking
-		// - learnresult.dot : learned state machine
-		// - output.json : abstraction,concrete alphabet, start state
-		State startState = learnResult.learnedModel.getStart();
-
-		statsOut
-				.println("Total states in learned abstract Mealy machine: "
-						+ learnResult.learnedModel.getAllStates().size());
-
-		Statistics.getStats().printStats(statsOut);
-
 		// output learned model with start state highlighted to dot file :
 		// notes:
 		// - make start state the only highlighted state in dot file
 		// - learnlib makes highlighted state by setting attribute color='red'
 		// on state
 
-		LinkedList<State> highlights = new LinkedList<State>();
-		highlights.add(startState);
-
-		writeOutputFiles(learnResult, highlights);
+		writeOutputFiles(learnResult);
 
 		errOut.println("Learner Finished!");
 
-		// bips to notify that learning is done :)
+		// beeps to notify that learning is done :)
 		SoundUtils.success();
 	}
 
@@ -190,19 +175,14 @@ public class Main {
 		}
 	}
 
-	private static void writeOutputFiles(LearnResult learnResult,
-			LinkedList<State> highlights) {
+	private static void writeOutputFiles(LearnResult learnResult) {
 		// output learned state machine as dot and pdf file :
 		//File outputFolder = new File(outputDir + File.separator + learnResult.startTime);
 		//outputFolder.mkdirs();
 		File dotFile = new File(outputFolder.getAbsolutePath() + File.separator + "learnresult.dot");
-		File pdfFile = new File(outputFolder.getAbsolutePath() + File.separator + "learnresult.pdf");
 
 		try (BufferedWriter out = new BufferedWriter(new FileWriter(dotFile))) {
-			DotUtil.writeDot(learnResult.learnedModel, out, learnResult.learnedModel.getAlphabet()
-					.size(), highlights, "");
-			// write pdf
-			DotUtil.invokeDot(dotFile, "pdf", pdfFile);
+			DotDo.write(learnResult.learnedModel, alphabet, out);
 		} catch (IOException e1) {
 			System.err.println("could not write to dot file");
 		}
@@ -235,27 +215,22 @@ public class Main {
 				System.err.println("Running shutdown hook");
 				copyInputsToOutputFolder();
 				writeCacheTree(tree, true);
-				Statistics.getStats().printStats(statsOut);
-				Statistics.getStats().printStats(System.out);
 				statsOut.flush();
 
 				closeOutputStreams();
 				//InitCacheManager mgr = new InitCacheManager();
 				//mgr.dump(outputDir + File.separator +  "cache.txt");
-				if (done == false) {
+				if (!done) {
 					SoundUtils.failure();
 				}
 			}
 		});
 	}
 
-	private static LearnResult learn(Learner learner,
-			de.ls5.jlearn.interfaces.EquivalenceOracle eqOracle, SingleTransitionReducer ceReducer)
+	private static LearnResult learn(LearningAlgorithm<MealyMachine<?,String,?,String>, String, Word<String>> learner,
+									 EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> eqOracle)
 			throws LearningException, ObservationConflictException, IOException {
 		LearnResult learnResult = new LearnResult();
-		Statistics stats = Statistics.getStats();
-		stats.startTime = System.currentTimeMillis();
-		long starttmp = stats.startTime;
 		int hypCounter = 1;
 		long endtmp;
 		done = false;
@@ -264,123 +239,65 @@ public class Main {
 		absTraceOut.println("starting learning\n");
 		//try {
 			while (!done) {
-				absTraceOut.println("		RUN NUMBER: " + ++stats.runs);
 				absTraceOut.println("");
 				absTraceOut.flush();
 				errOut.flush();
 
 				try {
 					// execute membership queries
-					learner.learn();
+					learner.startLearning();
 					absTraceOut.flush();
 					errOut.flush();
 					absTraceOut.println("done learning");
-					endtmp = System.currentTimeMillis();
-					statsOut
-							.println("Running time of membership queries: "
-									+ (endtmp - starttmp) + "ms.");
-					stats.totalMemQueries = nrMembershipQueries.value;
-					stats.totalTimeMemQueries += endtmp - starttmp;
-					starttmp = System.currentTimeMillis();
 					absTraceOut.flush();
 
 					// stable hypothesis after membership queries
-					Automaton hyp = learner.getResult();
+					MealyMachine<?, String, ?, String> hyp = learner.getHypothesisModel();
 					String hypFileName = outputDir + File.separator + "tmp-learnresult"
 							+ hypCounter + ".dot";
 					String hypPdfFileName = outputDir + File.separator + "tmp-learnresult"
 							+ hypCounter + ".pdf";
 
 					File hypPDF = new File(hypPdfFileName);
-					DotDo.writeDotFile(hyp, hypFileName );
+					DotDo.writeDotFile(hyp, alphabet, hypFileName);
 					DotUtil.invokeDot(hypFileName, "pdf", hypPDF);
 
 					absTraceOut.println("starting equivalence query");
 					absTraceOut.flush();
 					errOut.flush();
 					// search for counterexample
-					EquivalenceOracleOutput o = null;
-					o = eqOracle
-						.findCounterExample(hyp);
-					int nrHypTests = getNrHypTests();
-					stats.addNrHypothesisEquivalenceQueries(nrHypTests);
+					DefaultQuery<String, Word<String>> o = null;
+					o = eqOracle.findCounterExample(hyp, alphabet);
 
-					stats.totalEquivQueries = nrEquivalenceQueries.value;
-					stats.totalUniqueEquivQueries = nrUniqueEquivalenceQueries.value;
 					absTraceOut.flush();
 					errOut.flush();
 					absTraceOut.println("done equivalence query");
-					endtmp = System.currentTimeMillis();
-					stats.totalTimeEquivQueries += endtmp - starttmp;
-					starttmp = System.currentTimeMillis();
 
 					// no counter example -> learning is done
 					if (o == null) {
 						done = true;
 						continue;
 					}
-					o = ceReducer.reducedCounterexample(o, hyp);
+					o = MealyUtil.shortenCounterExample(hyp, o);
+					assert o != null;
 
-					logCounterExampleAnalysis(hyp, hypCounter, o);
 					hypCounter ++;
 					absTraceOut.println("Sending CE to LearnLib.");
 					absTraceOut.println("Counter Example: "
-							+ o.getCounterExample().toString());
+							+ o.toString());
 					absTraceOut.flush();
 					errOut.flush();
 					// return counter example to the learner, so that it can use
 					// it to generate new membership queries
-					learner.addCounterExample(o.getCounterExample(),
-							o.getOracleOutput());
+					learner.refineHypothesis(o);
 					absTraceOut.flush();
 					errOut.flush();
 				} catch (CacheInconsistencyException e) {
-					stats.totalEquivQueries = nrEquivalenceQueries.value;
-					stats.totalUniqueEquivQueries = nrUniqueEquivalenceQueries.value;
-					stats.totalMemQueries = nrMembershipQueries.value;
 					throw e;
 				}
 			}
-		stats.endTime = System.currentTimeMillis();
-		learnResult.learnedModel = learner.getResult();
+		learnResult.learnedModel = learner.getHypothesisModel();
 		return learnResult;
-	}
-
-	private static int getNrHypTests() {
-	    int nrTests = 0;
-	    if (yanOracle != null) {
-            nrTests += yanOracle.getNrHypthesisTests();
-            yanOracle.clearNrHypTests();
-        }
-        if (yanOracle2 != null) {
-            nrTests += yanOracle2.getNrHypthesisTests();
-            yanOracle2.clearNrHypTests();
-        }
-        return nrTests;
-    }
-
-    private static void logCounterExampleAnalysis(Automaton hyp, int hypCounter, EquivalenceOracleOutput o) throws IOException {
-		PrintStream out = new PrintStream( new FileOutputStream(outputDir + File.separator +"cexanalysis.txt", true));
-		Word ceInputWord = o.getCounterExample();
-		Word oracleOutputWord = o.getOracleOutput();
-		List<Symbol> ceInputSymbols = ceInputWord.getSymbolList();
-		List<Symbol> sutOutput = oracleOutputWord.getSymbolList();
-		List<Symbol> inputSymbols = new ArrayList<Symbol>();
-		List<Symbol> hypOutput = hyp.getTraceOutput(ceInputWord).getSymbolList();
-		out.print("\n Counterexample for hyp"+hypCounter +"\n");
-
-		for (int i = 0; i < ceInputSymbols.size(); i++) {
-			inputSymbols.add(ceInputSymbols.get(i));
-			Word inputWord = new WordImpl((Symbol[]) inputSymbols.toArray(new Symbol[inputSymbols.size()]));
-			out.println(ceInputSymbols.get(i));
-			out.println("!" +hypOutput.get(i) + " s" + hyp.getTraceState(inputWord, i+1).getId());
-
-			if (! hypOutput.get(i).equals( sutOutput.get(i))) {
-				out.println("#!" +sutOutput.get(i));
-				break;
-			}
-		}
-		out.close();
 	}
 
 	private static void closeOutputStreams() {
@@ -391,93 +308,52 @@ public class Main {
 		errOut.close();
 	}
 
-	// I hacked in the additional yannakakis command
-	private static de.ls5.jlearn.interfaces.EquivalenceOracle buildEquivalenceOracle(LearningParams learningParams, Oracle queryOracle) {
-		List<de.ls5.jlearn.interfaces.EquivalenceOracle> eqOracles = new ArrayList<de.ls5.jlearn.interfaces.EquivalenceOracle>();
-		if (learningParams.yanCommand == null) {
-			Random random = new Random(learningParams.seed);
-			RandomWalkEquivalenceOracle randEqOracle = new RandomWalkEquivalenceOracle(learningParams.maxNumTraces,
-					learningParams.minTraceLength, learningParams.maxTraceLength);
-			randEqOracle.setOracle(queryOracle);
-			randEqOracle.setRandom(random);
-			eqOracles.add(randEqOracle);
-		}
-		if (learningParams.testTraces != null && !learningParams.testTraces.isEmpty()) {
-            WordCheckingEquivalenceOracle wordEqOracle = new WordCheckingEquivalenceOracle(queryOracle, learningParams.testTraces);
-            eqOracles.add(wordEqOracle);
-        }
+	private static MembershipOracle<String, Word<String>> buildMembershipOracle(SULConfig sulConfig) {
+		System.out.println("Building SUL Oracle...");
+		SUL<String, String> socketSUL = new SocketSUL(sulConfig);
+		SULOracle<String, String> sulOracle = new SULOracle<>(socketSUL);
 
-		if (learningParams.yanCommand != null) {
-		    yanOracle = new IOEquivalenceOracle(queryOracle, learningParams.maxNumTraces, learningParams.yanCommand, nrUniqueEquivalenceQueries);
-			eqOracles.add(yanOracle);
-		}
-	    if (learningParams.yanCommand2 != null) {
-	        yanOracle2 = new IOEquivalenceOracle(queryOracle, Integer.MAX_VALUE, learningParams.yanCommand2, nrUniqueEquivalenceQueries);
-	        eqOracles.add(yanOracle2);
-	    }
-	    de.ls5.jlearn.interfaces.EquivalenceOracle eqOracle = null;
-	    if (eqOracles.isEmpty()) {
-	        throw new BugException("No equivalence oracle could be defined");
-	    } else if (eqOracles.size() == 1) {
-	        eqOracle = eqOracles.get(0);
-	    } else {
-	        eqOracle = new CompositeEquivalenceOracle(eqOracles.toArray(new de.ls5.jlearn.interfaces.EquivalenceOracle [eqOracles.size()]));
-	    }
-		return eqOracle;
-	}
+		System.out.println("Building Probabilistic Oracle...");
+		double probFraction = (double) sulConfig.confidence / 100;
+		MembershipOracle<String, Word<String>> probabilisticOracle = new ProbabilisticOracle(sulOracle, sulConfig.runsPerQuery, probFraction, sulConfig.maxAttempts);
 
-	private static Tuple2<Oracle, Oracle> buildOraclesFromConfig(SUTParams quic) {
-		System.out.println("Building SUT wrapper...");
-		sutWrapper = new SimpleSutWrapper(quic.sutIP, quic.sutPort);
-
-		System.out.println("Building cache tree...");
+		System.out.println("Building Cache Tree...");
 		tree = readCacheTree(CACHE_FILE);
 		if (tree == null) {
 			tree = new ObservationTree();
 		}
 
-		int minAttempts = quic.runsPerQuery;
-		int maxAttempts = quic.maxAttempts;
-		double probFraction = (double) quic.confidence / 100;
-
-		SutInterfaceBuilder builder = new SutInterfaceBuilder();
-		Oracle eqOracleRunner = builder
-				.sutWrapper(sutWrapper)
-				.equivalenceOracle(nrEquivalenceQueries, nrUniqueEquivalenceQueries)
-				//.runMultipleTimes(2)
-				.probablisticOracle(minAttempts, probFraction, maxAttempts)
-				.logger()
-				.cacheReaderWriter(tree)
-				//.probablisticNonDeterminismValidator(10, 0.8, tree)
-				.crashAndPruneTree(tree)
-				.resetCounter(nrResets)
-				.uniqueQueryCounter(nrUniqueEquivalenceQueries)
-				.queryCounter(nrEquivalenceQueries)
-				.learnerInterface();
-		Oracle memOracleRunner = builder
-				.sutWrapper(sutWrapper)
-				.membershipOracle(nrMembershipQueries)
-				//.runMultipleTimes(2)
-				.probablisticOracle(minAttempts, probFraction, maxAttempts)
-				.logger()
-				.cacheReaderWriter(tree)
-				//.probablisticNonDeterminismValidator(10, 0.8, tree)
-				.crashAndPruneTree(tree)
-				.resetCounter(nrResets)
-				.queryCounter(nrMembershipQueries)
-				.learnerInterface();
-
-		return new Tuple2<Oracle,Oracle>(memOracleRunner, eqOracleRunner);
+		System.out.println("Building Cache Oracle...");
+		return new CacheReaderOracle(tree, probabilisticOracle);
 	}
 
-	public static SUTParams readConfig(Config config, SutInterface sutInterface) {
+	private static EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> buildEquivalenceOracle(LearningParams learningParams, MembershipOracle<String, Word<String>> queryOracle) {
+		List<EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>>> eqOracles = new ArrayList<>();
+
+		Random random = new Random(learningParams.seed);
+		RandomWordsEQOracle<MealyMachine<?, String, ?, String>, String, Word<String>> randEqOracle = new RandomWordsEQOracle<>(queryOracle, learningParams.minTraceLength, learningParams.maxTraceLength, learningParams.maxNumTraces, random);
+		eqOracles.add(randEqOracle);
+
+		if (learningParams.testTraces != null && !learningParams.testTraces.isEmpty()) {
+            WordCheckingEquivalenceOracle wordEqOracle = new WordCheckingEquivalenceOracle(queryOracle, learningParams.testTraces);
+            eqOracles.add(wordEqOracle);
+        }
+
+		EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> eqOracle = null;
+	    if (eqOracles.isEmpty()) {
+	        throw new BugException("No equivalence oracle could be defined");
+	    } else if (eqOracles.size() == 1) {
+	        eqOracle = eqOracles.get(0);
+	    } else {
+	        eqOracle = new CompositeEquivalenceOracle(eqOracles);
+	    }
+		return eqOracle;
+	}
+
+	public static SULConfig readConfig(Config config, SutInterface sutInterface) {
 		// read/disp config params for learner
 		learningParams = config.learningParams;
 		learningParams.printParams(absTraceOut);
-
-		// read sut interface information
-		SutInfo.setMinValue(learningParams.minValue);
-		SutInfo.setMaxValue(learningParams.maxValue);
 
 		SutInfo.setInputSignatures(sutInterface.inputInterfaces);
 		SutInfo.setOutputSignatures(sutInterface.outputInterfaces);
@@ -486,28 +362,26 @@ public class Main {
 				learnOut));
 
 		// read/disp SUT config
-		SUTParams sut = config.sutParams;
+		SULConfig sut = config.sulConfig;
 		sut.printParams(absTraceOut);
 		return sut;
 	}
 
 	public static SutInterface createSutInterface(Config config)
 			throws FileNotFoundException {
-		sutInterfaceFile = new File(sutConfigFile
+		File sutInterfaceFile = new File(sutConfigFile
 				.getParentFile().getAbsolutePath()
 				+ File.separator
 				+ config.learningParams.sutInterface);
 		InputStream sutInterfaceInput = new FileInputStream(sutInterfaceFile);
 		Yaml yaml = new Yaml(new Constructor(SutInterface.class));
-		SutInterface sutInterface = (SutInterface) yaml.load(sutInterfaceInput);
-		return sutInterface;
+		return (SutInterface) yaml.load(sutInterfaceInput);
 	}
 
 	public static Config createConfig() throws FileNotFoundException {
 		InputStream configInput = new FileInputStream(sutConfigFile);
 		Yaml yaml = new Yaml(new Constructor(Config.class));
-		Config config = (Config) yaml.load(configInput);
-		return config;
+		return (Config) yaml.load(configInput);
 	}
 
 	public static void handleArgs(String[] args) {
@@ -516,17 +390,12 @@ public class Main {
 			System.exit(-1);
 		}
 		sutConfigFile = new File(args[0]);
-		if (sutConfigFile.exists() == false) {
+		if (!sutConfigFile.exists()) {
 			errOut.println("The sut config file " + args[0]
 					+ " does not exist");
 			System.exit(-1);
 		}
 		sutConfigFile = sutConfigFile.getAbsoluteFile();
-	}
-
-	public static void printUsage() {
-		System.out
-				.println(" config_file     - .yaml config file describing the sut/learning.");
 	}
 
 	public static int cachedTreeNum = 0;
@@ -557,7 +426,7 @@ public class Main {
 				OutputStream buffer = new BufferedOutputStream(file);
 				ObjectOutput output = new ObjectOutputStream(buffer);
 				) {
-			output.writeObject(new Tuple2<>(tree, Statistics.getStats().totalUniqueEquivQueries));
+			output.writeObject(tree);
 			output.close();
 		}
 		catch (IOException ex){
@@ -574,7 +443,6 @@ public class Main {
 				) {
 			@SuppressWarnings("unchecked")
 			Tuple2<ObservationTree, Integer> deserialised = (Tuple2<ObservationTree, Integer>) input.readObject();
-			Statistics.getStats().totalUniqueEquivQueries = deserialised.tuple1;
 			return deserialised.tuple0;
 		}
 		catch(ClassNotFoundException ex) {

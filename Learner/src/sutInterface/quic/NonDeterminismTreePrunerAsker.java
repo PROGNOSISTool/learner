@@ -1,14 +1,15 @@
 package sutInterface.quic;
 
-import de.ls5.jlearn.interfaces.Oracle;
+import de.learnlib.api.oracle.MembershipOracle;
 import learner.Main;
+import net.automatalib.words.Word;
 import util.ObservationTree;
 import util.exceptions.CacheInconsistencyException;
 
 import java.util.Scanner;
 
 public class NonDeterminismTreePrunerAsker extends NonDeterminismTreePruner {
-	public NonDeterminismTreePrunerAsker(ObservationTree tree, Oracle oracle) {
+	public NonDeterminismTreePrunerAsker(ObservationTree tree, MembershipOracle<String, Word<String>> oracle) {
 		super(tree, oracle);
 	}
 

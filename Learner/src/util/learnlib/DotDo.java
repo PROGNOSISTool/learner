@@ -1,9 +1,6 @@
 package util.learnlib;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.Collection;
 
 import net.automatalib.automata.FiniteAlphabetAutomaton;
@@ -19,7 +16,7 @@ import net.automatalib.serialization.dot.GraphDOT;
 
 public class DotDo {
 	// policy : convert into method throwing unchecked exception
-	public static <O> MealyMachine<?, String, ?, O> readDotFile(String filepath)  {
+	public static CompactMealy<String, String> readDotFile(String filepath)  {
 		try {
 			return readFile(filepath);
 		} catch (IOException ex) {
@@ -27,11 +24,11 @@ public class DotDo {
 		}
 	}
 
-	public static <O> MealyMachine<?, String, ?, O> readFile(String filename) throws IOException {
+	public static CompactMealy<String, String> readFile(String filename) throws IOException {
 		File file = new File(filename);
 		InputModelDeserializer<String, CompactMealy<String,String>> parser = DOTParsers.mealy();
 		InputModelData<String, CompactMealy<String, String>> machine = parser.readModel(file);
-		return (MealyMachine<?, String, ?, O>) machine.model;
+		return machine.model;
 	}
 
     // policy : convert into method throwing unchecked exception

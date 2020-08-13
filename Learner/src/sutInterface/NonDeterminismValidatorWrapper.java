@@ -1,9 +1,10 @@
 package sutInterface;
 
-import java.util.List;
-
+import de.learnlib.api.exception.SULException;
+import de.learnlib.api.oracle.MembershipOracle;
 import learner.Main;
 
+import net.automatalib.words.Word;
 import sutInterface.quic.NonDeterminismTreePruner;
 import util.Counter;
 import util.Log;
@@ -11,52 +12,42 @@ import util.ObservationTree;
 import util.exceptions.CorruptedLearningException;
 import util.exceptions.CacheInconsistencyException;
 import util.exceptions.NonDeterminismException;
-import util.learnlib.WordConverter;
-import de.ls5.jlearn.abstractclasses.LearningException;
-import de.ls5.jlearn.interfaces.Oracle;
-import de.ls5.jlearn.interfaces.Symbol;
-import de.ls5.jlearn.interfaces.Word;
 
 public class NonDeterminismValidatorWrapper extends NonDeterminismTreePruner {
-    private static final long serialVersionUID = 1L;
-    private int numberTries;
-    private final Oracle afterCache;
+    private final int numberTries;
+    private final MembershipOracle<String, Word<String>> afterCache;
 
-    public NonDeterminismValidatorWrapper(int numberTries, ObservationTree tree, Oracle oracle, Oracle afterCache) {
+    public NonDeterminismValidatorWrapper(int numberTries, ObservationTree tree, MembershipOracle<String, Word<String>> oracle, MembershipOracle<String, Word<String>> afterCache) {
     	super(tree, oracle);
         this.numberTries = numberTries;
         this.afterCache = afterCache;
     }
 
     @Override
-    public Word processQuery(Word word) throws LearningException {
-        try {
-            return oracle.processQuery(word);
-        } catch (NonDeterminismException nonDet) {
-        	return recover(word, nonDet);
-    	}
+    public Word<String> answerQuery(Word<String> word) {
+		return oracle.answerQuery(word);
     }
 
-    private Word recover(Word word, NonDeterminismException nonDet) throws LearningException {
+    private Word<String> recover(Word<String> word, NonDeterminismException nonDet) throws SULException {
     	if (numberTries <= 0) {
     		throw nonDet;
     	}
         Log.err("Rerunning word which caused non-determinism: \n" + word);
-    	Counter<Word> outputs = new Counter<>();
+    	Counter<Word<String>> outputs = new Counter<>();
     	for (int i = 0; i < numberTries; i++) {
-    		Word output2;
-			output2 = afterCache.processQuery(word);
+    		Word<String> output2;
+			output2 = afterCache.answerQuery(word);
     		outputs.count(output2);
     	}
-    	Word recoveredOutput = concludeRecoveryTrace(outputs);
+    	Word<String> recoveredOutput = concludeRecoveryTrace(outputs);
     	if (recoveredOutput != null) {
     		Log.err("Recovered from non-determinism");
     		if (nonDet instanceof CacheInconsistencyException) {
-	    		List<Symbol> oldOutput = WordConverter.toSymbolList(((CacheInconsistencyException)nonDet).getOldOutput());
+	    		Word<String> oldOutput = ((CacheInconsistencyException)nonDet).getOldOutput();
 	    		// if the old and recovered observation are not consistent, you have to abort learning (wrong info was
 	    		// then previously passed to the learner with the old observation)
-	    		if (!WordConverter.toSymbolList(recoveredOutput).subList(0, oldOutput.size()).equals(oldOutput)) {
-	    			Log.err("Traces for checking non-determinism are consistent with eachother:\n" + outputs +
+	    		if  (!recoveredOutput.subWord(0, oldOutput.size()).equals(oldOutput)) {
+	    			Log.err("Traces for checking non-determinism are consistent with each other:\n" + outputs +
 	    					"Recovered output is inconsistent with the old output, so a wrong output was passed to the learner earlier\n" +
 	    					"Aborting learning, but written the new observation to the tree");
 	                Main.writeCacheTree(tree, false);
@@ -81,7 +72,7 @@ public class NonDeterminismValidatorWrapper extends NonDeterminismTreePruner {
      * @param recoveryObservations
      * @return the single observed trace, or null otherwise
      */
-    protected Word concludeRecoveryTrace(Counter<Word> recoveryObservations) {
+    protected Word<String> concludeRecoveryTrace(Counter<Word<String>> recoveryObservations) {
     	if (recoveryObservations.getObjectsCounted() == 1) {
     		return recoveryObservations.getMostFrequent();
     	} else {

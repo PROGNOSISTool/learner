@@ -1,6 +1,5 @@
 package util.exceptions;
 
-import util.learnlib.WordConverter;
 import net.automatalib.words.Word;
 
 /**
@@ -9,15 +8,15 @@ import net.automatalib.words.Word;
  */
 public class CacheInconsistencyException extends NonDeterminismException {
 	private static final long serialVersionUID = 9265414L;
-	private final Word<?> oldOutput, newOutput;
+	private final Word<String> oldOutput, newOutput;
 
-	public CacheInconsistencyException(Word<?> input, Word<?> oldOutput, Word<?> newOutput) {
+	public CacheInconsistencyException(Word<String> input, Word<String> oldOutput, Word<String> newOutput) {
 		super(input);
 		this.oldOutput = oldOutput;
 		this.newOutput = newOutput;
 	}
 
-	public CacheInconsistencyException(String message, Word<?> input, Word<?> oldOutput, Word<?> newOutput) {
+	public CacheInconsistencyException(String message, Word<String> input, Word<String> oldOutput, Word<String> newOutput) {
 		super(message, input);
 		this.oldOutput = oldOutput;
 		this.newOutput = newOutput;
@@ -28,7 +27,7 @@ public class CacheInconsistencyException extends NonDeterminismException {
 	 * The shortest cached output word which does not correspond with the new output
 	 * @return
 	 */
-	public Word<?> getOldOutput() {
+	public Word<String> getOldOutput() {
 		return this.oldOutput;
 	}
 
@@ -36,7 +35,7 @@ public class CacheInconsistencyException extends NonDeterminismException {
 	 * The full new output word
 	 * @return
 	 */
-	public Word<?> getNewOutput() {
+	public Word<String> getNewOutput() {
 		return this.newOutput;
 	}
 
@@ -44,12 +43,12 @@ public class CacheInconsistencyException extends NonDeterminismException {
 	 * The shortest sublist of the input word which still shows non-determinism
 	 * @return
 	 */
-	public Word<?> getShortestInconsistentInput() {
+	public Word<String> getShortestInconsistentInput() {
 	    int indexOfInconsistency = 0;
-	    while (oldOutput.getSymbolByIndex(indexOfInconsistency).equals(newOutput.getSymbolByIndex(indexOfInconsistency))) {
+	    while (oldOutput.getSymbol(indexOfInconsistency).equals(newOutput.getSymbol(indexOfInconsistency))) {
 			indexOfInconsistency++;
 		}
-		return WordConverter.toWord(WordConverter.toSymbolList(this.input).subList(0, indexOfInconsistency));
+		return this.input.subWord(0, indexOfInconsistency);
 	}
 
 	@Override

@@ -9,7 +9,7 @@ import java.io.PrintStream;
  * 		 the listening Python adapter, which itself has the
  * 		 ip and port of the TPC server
  */
-public class SUTParams {
+public class SULConfig {
 
 	/**
 	 * The IP address of the SUT.

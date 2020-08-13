@@ -5,9 +5,6 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import de.ls5.jlearn.interfaces.Symbol;
-
 import learner.Main;
 
 public class TreePruneApp {
@@ -27,7 +24,7 @@ public class TreePruneApp {
 			System.exit(1);
 		}
 		System.out.println("Do you want to remove an input (0), an output (1) or an input/output transition(2)");
-		int option = Integer.valueOf(scanner.nextLine().trim());
+		int option = Integer.parseInt(scanner.nextLine().trim());
 		String msgType = option==1 ? "input" : option == 2? "output" : "transition";
 		System.out.println("Which " + msgType + "  do you want to remove? You can use a java-regex, such as '.*PSH.*'. For transitions use input|output");
 		String matchPattern = scanner.nextLine();
@@ -35,7 +32,7 @@ public class TreePruneApp {
 		switch(option) {
 		case 0: branchMatcher = new BranchWithInput(Pattern.compile(matchPattern)); break;
 		case 1: branchMatcher = new BranchWithOutput(Pattern.compile(matchPattern)); break;
-		default: 
+		default:
 		    String [] io = matchPattern.split("\\|");
 		    branchMatcher = new BranchWithTransition(Pattern.compile(io[0]), Pattern.compile(io[1]));
 		}
@@ -44,10 +41,10 @@ public class TreePruneApp {
 		System.out.println("Tree written");
 		scanner.close();
 	}
-	
+
 	private static void sanitizeBranch(ObservationTree tree, BranchMatcher branchMatcher) {
-		Set<Symbol> inputs = new HashSet<>(tree.getInputs());
-		for (Symbol input : inputs) {
+		Set<String> inputs = new HashSet<String>(tree.getInputs());
+		for (String input : inputs) {
 		    ObservationTree child = tree.getState(input);
 		    String inputString = input.toString();
 		    String outputString = tree.getOutput(input).toString();
@@ -59,7 +56,7 @@ public class TreePruneApp {
 		    }
 		}
 	}
-	
+
 	static class BranchWithTransition implements BranchMatcher{
 
         private BranchWithInput inputMatcher;
@@ -69,15 +66,15 @@ public class TreePruneApp {
 	        this.inputMatcher = new BranchWithInput(inputMatch);
 	        this.outputMatcher = new BranchWithOutput(outputMatch);
 	    }
-	    
+
         public boolean isMatch(String input, String output) {
             return this.inputMatcher.isMatch(input, output) && this.outputMatcher.isMatch(input, output);
         }
-	    
+
 	}
-	
-	
-	
+
+
+
     static class BranchWithInput implements BranchMatcher{
         private Pattern inputMatch;
 
@@ -90,7 +87,7 @@ public class TreePruneApp {
             return m.matches();
         }
     }
-	
+
     static class BranchWithOutput implements BranchMatcher{
 	    private Pattern outputMatch;
 
@@ -103,9 +100,9 @@ public class TreePruneApp {
             return m.matches();
         }
 	}
-	
+
 	static interface BranchMatcher {
-	   
+
 	    public boolean isMatch(String input, String output);
 	}
 }

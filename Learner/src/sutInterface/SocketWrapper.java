@@ -16,26 +16,21 @@ public class SocketWrapper {
 	protected Socket sock;
 	protected PrintWriter sockout;
 	protected BufferedReader sockin;
-	
 
-	public SocketWrapper(String sutIP, int sutPort) {
-		try {
-			if(socketMap.containsKey(sutPort)) {
-				sock = socketMap.get(sutPort);
-			} else {
-				sock = new Socket(sutIP, sutPort);
-				socketMap.put(sutPort, sock);
-			}
-			sockout = new PrintWriter(sock.getOutputStream(), true);
-			sockin = new BufferedReader(new InputStreamReader(
-					sock.getInputStream()));
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(0);
+
+	public SocketWrapper(String sutIP, int sutPort) throws IOException {
+		if(socketMap.containsKey(sutPort)) {
+			sock = socketMap.get(sutPort);
+		} else {
+			sock = new Socket(sutIP, sutPort);
+			socketMap.put(sutPort, sock);
 		}
+		sockout = new PrintWriter(sock.getOutputStream(), true);
+		sockin = new BufferedReader(new InputStreamReader(
+				sock.getInputStream()));
 	}
-	
-	public SocketWrapper(int sutPort) {
+
+	public SocketWrapper(int sutPort) throws IOException {
 		this("localhost", sutPort);
 	}
 
@@ -63,18 +58,12 @@ public class SocketWrapper {
 
 	public void close() {
 	    if (sockout != null) {
-		sockout.write("exit");
+		sockout.write("STOP");
 		try {
 			sock.close();
 		} catch (IOException ex) {
 
 		}
 	    }
-		/*sockout.close();
-		try {
-			sockin.close();
-		} catch (IOException ex) {
-
-		}*/
 	}
 }

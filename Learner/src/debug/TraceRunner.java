@@ -14,11 +14,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import learner.Config;
-import learner.Main;
-import learner.SutInterface;
-import learner.SUTParams;
-import sutInterface.SimpleSutWrapper;
+import learner.*;
 import util.Log;
 import util.Tuple2;
 import de.ls5.jlearn.interfaces.Symbol;
@@ -31,8 +27,8 @@ public class TraceRunner {
 	public static final String SEPARATOR = 	"\n****** OUTPUTS ******\n";
 	public static final String END = 		"\n*********************\n";
 
-	private Map<List<String>, Integer> outcomes = new HashMap<List<String>, Integer>();
-	private final SimpleSutWrapper sutWrapper;
+	private final Map<List<String>, Integer> outcomes = new HashMap<List<String>, Integer>();
+	private final SocketSUL socketSul;
 	private final List<String> inputTrace;
 	//private final CacheInputValidator validator;
 
@@ -88,61 +84,49 @@ public class TraceRunner {
 
 		SutInterface sutInterface = Main.createSutInterface(config);
 
-		SUTParams tcp = Main.readConfig(config, sutInterface);
-		tcp.exitIfInvalid = false;
+		SULConfig sulConfig = Main.readConfig(config, sutInterface);
+		sulConfig.exitIfInvalid = false;
 
-		/*InitOracle initOracle;
-		// in a normal init-oracle ("functional") TCP setup, we use the conventional eq/mem oracles
-		if(! "adaptive".equalsIgnoreCase(tcp.oracle)) {
-			initOracle = new FunctionalInitOracle();
-		} else {
-			initOracle = new CachedInitOracle(new InitCacheManager());
-		}
-		TCPMapper tcpMapper = new TCPMapper(initOracle);*/
-		//TCPSutWrapper sutWrapper = new TCPSutWrapper(tcp.sutPort, tcpMapper, tcp.exitIfInvalid);
-
-		SimpleSutWrapper sutWrapper = new SimpleSutWrapper(tcp.sutIP, tcp.sutPort);
-		TraceRunner traceRunner = new TraceRunner(trace, sutWrapper);
+		SocketSUL sul = new SocketSUL(sulConfig);
+		TraceRunner traceRunner = new TraceRunner(trace, sul);
 		traceRunner.testTrace(iterations);
-		sutWrapper.close();
+		sul.stop();
 		System.out.println(traceRunner.getResults());
 	}
 
 	public String getResults() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(START);
-		sb.append("input:" + this.inputTrace);
+		sb.append("input:").append(this.inputTrace);
 		sb.append(SEPARATOR);
 		List<Entry<List<String>, Integer>> orderedEntries = new ArrayList<>(this.outcomes.size());
-		for (Entry<List<String>, Integer> entry : this.outcomes.entrySet()) {
-			orderedEntries.add(entry);
-		}
-		Collections.sort(orderedEntries, new Comparator<Entry<List<String>, Integer>>() {
+		orderedEntries.addAll(this.outcomes.entrySet());
+		orderedEntries.sort(new Comparator<Entry<List<String>, Integer>>() {
 			@Override
 			public int compare(Entry<List<String>, Integer> arg0,
-					Entry<List<String>, Integer> arg1) {
+							   Entry<List<String>, Integer> arg1) {
 				return Integer.compare(arg0.getValue(), arg1.getValue());
 			}
 		});
 		for (Entry<List<String>, Integer> entry : orderedEntries) {
-			sb.append(entry.getValue().toString() + ": " + entry.getKey() + "\n");
+			sb.append(entry.getValue().toString()).append(": ").append(entry.getKey()).append("\n");
 		}
 		sb.append(END);
 		return sb.toString();
 	}
 
-	public TraceRunner(Word word, SimpleSutWrapper sutWrapper) {
+	public TraceRunner(Word word, SocketSUL socketSul) {
 		List<String> inputString = new ArrayList<>(word.size());
 		for (Symbol symbol : word.getSymbolList()) {
 			inputString.add(symbol.toString());
 		}
 		this.inputTrace = inputString;
-		this.sutWrapper = sutWrapper;
+		this.socketSul = socketSul;
 	}
 
-	public TraceRunner(List<String> inputTrace, SimpleSutWrapper sutWrapper) {
+	public TraceRunner(List<String> inputTrace, SocketSUL socketSul) {
 		this.inputTrace = inputTrace;
-		this.sutWrapper = sutWrapper;
+		this.socketSul = socketSul;
 	}
 
 	public void testTrace(int iterations) {
@@ -153,22 +137,22 @@ public class TraceRunner {
 			}
 
 		}
-	    sutWrapper.sendReset();
+		socketSul.pre();
 	}
 
 	protected boolean runTrace(int printNumber) {
 		List<String> outcome = new LinkedList<String>();
 		boolean checkResult = true;
-		sutWrapper.sendReset();
+		socketSul.pre();
 		System.out.println("# " + printNumber);
 		//System.out.println("# " + number + " @@@ " + this.sutWrapper.toString());
 		for (String input : inputTrace) {
 			String output;
 			if (input.equals("RESET")) {
-				this.sutWrapper.sendReset();
+				this.socketSul.pre();
 				output = "RESET";
 			} else {
-				output = this.sutWrapper.sendInput(input);
+				output = this.socketSul.step(input);
 			}
 			//System.out.println("# " + number + " >>> " + input + " >>> " + output);
 			//System.out.println("# " + number + " @@@ " + this.sutWrapper.toString());

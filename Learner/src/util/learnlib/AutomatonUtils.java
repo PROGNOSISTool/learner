@@ -8,18 +8,15 @@ import java.util.List;
 import java.util.Set;
 import java.util.Queue;
 
-import util.Tuple2;
-
-import net.automatalib.automata.FiniteAlphabetAutomaton;
+import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.automata.concepts.StateIDs;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
+import util.Tuple2;
 
-public class AutomatonUtils<S, I, T> {
+public class AutomatonUtils {
 
-	public List<S> getStatesInBFSOrder(FiniteAlphabetAutomaton<S, I, T> automaton) {
-		Alphabet<I> alphabet = automaton.getInputAlphabet();
-
+	public static <S, I, T, O> List<S> getStatesInBFSOrder(MealyMachine<S, I, T, O> automaton, Alphabet<I> alphabet) {
 		Queue<S> statestovisit = new LinkedList<S>();
 		List<S> result = new ArrayList<S>();
 		HashSet<S> states = new HashSet<S>(); // to check if state is not seen already by other transition
@@ -52,9 +49,9 @@ public class AutomatonUtils<S, I, T> {
 		return result;
 	}
 
-	public List<I> traceToState(FiniteAlphabetAutomaton<S, I, T> automaton, int stateId) {
+	public static <S, I, T, O> List<I> traceToState(MealyMachine<S, I, T, O> automaton, Alphabet<I> alphabet, int stateId) {
 		S state = get(automaton, stateId);
-		return traceToState(automaton, state);
+		return traceToState(automaton, alphabet, state);
 	}
 
 	/**
@@ -63,16 +60,14 @@ public class AutomatonUtils<S, I, T> {
 	 * return one. The length is the first order. Traces of equal length are order by the position of the last input
 	 * in the alphabet.
 	 */
-	public List<I> traceToState(FiniteAlphabetAutomaton<S, I, T> automaton, S state) {
-		Alphabet<I> alphabet = automaton.getInputAlphabet();
+	public static <S, I, T, O> List<I> traceToState(MealyMachine<S, I, T, O> automaton, Alphabet<I> alphabet, S state) {
 		StateIDs<S> stateIDs = automaton.stateIDs();
 		List<I> selectedMiddlePart = new ArrayList<I>();
 		List<List<I>> middleParts = new ArrayList<List<I>>();
 		middleParts.add(selectedMiddlePart);
 		List<S> reachedStates = new ArrayList<S>();
 		while(true) {
-			List<I> traceToState = new ArrayList<I>();
-			traceToState.addAll(selectedMiddlePart);
+			List<I> traceToState = new ArrayList<I>(selectedMiddlePart);
 			S reachedState = getState(automaton, traceToState);
 			if (stateIDs.getStateId(reachedState) == stateIDs.getStateId(state)) {
 				break;
@@ -95,37 +90,35 @@ public class AutomatonUtils<S, I, T> {
 		return selectedMiddlePart;
 	}
 
-	public List<I> distinguishingSeq(FiniteAlphabetAutomaton<S, I, T> automaton, int stateId1, int stateId2) {
-		Alphabet<I> alphabet = automaton.getInputAlphabet();
+	public static <S, I, T, O> List<I> distinguishingSeq(MealyMachine<S, I, T, O> automaton, Alphabet<I> alphabet, int stateId1, int stateId2) {
 		S state1 = get(automaton, stateId1);
 		S state2 = get(automaton, stateId2);
-		List<I> distSeq = getDistinguishingSeq(automaton, alphabet, state1, state2);
-		return distSeq;
+		return getDistinguishingSeq(automaton, alphabet, state1, state2);
 	}
 
-	public Word<I> createWordFromSymbols(List<I> symbols) {
+	public static <I> Word<I> createWordFromSymbols(List<I> symbols) {
 		return Word.fromList(symbols);
 	}
 
-	public int indexOf(FiniteAlphabetAutomaton<S, I, T> automaton, S state) {
+	public static <S, I, T, O> int indexOf(MealyMachine<S, I, T, O> automaton, S state) {
 		StateIDs<S> stateIds = automaton.stateIDs();
 		return stateIds.getStateId(state);
 	}
 
-	public S get(FiniteAlphabetAutomaton<S, I, T> automaton, int stateId) {
+	public static <S, I, T, O> S get(MealyMachine<S, I, T, O> automaton, int stateId) {
 		StateIDs<S> stateIds = automaton.stateIDs();
 		return stateIds.getState(stateId);
 	}
 
-	public List<I> buildSymbols(Collection<I> trace) {
+	public static <I> List<I> buildSymbols(Collection<I> trace) {
 		return new ArrayList<I>(trace);
 	}
 
-	private List<I> getDistinguishingSeq(FiniteAlphabetAutomaton<S, I, T> automaton,
-		Collection<I> symbols, S state1, S state2) {
+	private static <S, I, T, O> List<I> getDistinguishingSeq(MealyMachine<S, I, T, O> automaton,
+		Alphabet<I> alphabet, S state1, S state2) {
 		List<List<I>> middleParts = new ArrayList<List<I>>();
-		List<I> traceToState1 = traceToState(automaton, state1);
-		List<I> traceToState2 = traceToState(automaton, state2);
+		List<I> traceToState1 = traceToState(automaton, alphabet, state1);
+		List<I> traceToState2 = traceToState(automaton, alphabet, state2);
 		List<Tuple2<S,S>> reachedSatePairs = new ArrayList<>();
 
 		List<I> selectedMiddlePart = new ArrayList<I>();
@@ -141,7 +134,7 @@ public class AutomatonUtils<S, I, T> {
 			S reachedStateFrom2 = getState(automaton, traceFromState2);
 
 			boolean diffFound = false;
-			for (I input : symbols) {
+			for (I input : alphabet) {
 				S successorOfInputAndState1 = automaton.getSuccessors(reachedStateFrom1, input).iterator().next();
 				S successorOfInputAndState2 = automaton.getSuccessors(reachedStateFrom2, input).iterator().next();
 				if (!successorOfInputAndState1.equals(successorOfInputAndState2)) {
@@ -163,7 +156,7 @@ public class AutomatonUtils<S, I, T> {
 			reachedSatePairs.add(reachedStatePair);
 
 			middleParts.remove(0);
-			for (I input : symbols) {
+			for (I input : alphabet) {
 				S successorOfInputAndState1 = automaton.getSuccessors(reachedStateFrom1, input).iterator().next();
 				S successorOfInputAndState2 = automaton.getSuccessors(reachedStateFrom2, input).iterator().next();
 				Tuple2<S, S> statePairAfterSymbol = new Tuple2<S, S>(successorOfInputAndState1, successorOfInputAndState2);
@@ -177,11 +170,10 @@ public class AutomatonUtils<S, I, T> {
 		}
 		return selectedMiddlePart;
 	}
-	
-	public S getState(FiniteAlphabetAutomaton<S, I, T> automaton, List<I> symbols) {
-		S startState = automaton.getInitialStates().iterator().next();
-		S currentState = startState;
-		for (I symbol : symbols) {
+
+	public static <S, I, T, O> S getState(MealyMachine<S, I, T, O> automaton, List<I> alphabet) {
+		S currentState = automaton.getInitialStates().iterator().next();
+		for (I symbol : alphabet) {
 			currentState = automaton.getSuccessors(currentState, symbol).iterator().next();
 		}
 

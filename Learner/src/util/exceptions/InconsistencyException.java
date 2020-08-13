@@ -4,20 +4,20 @@ import net.automatalib.words.Word;
 
 public class InconsistencyException extends Exception {
 	private static final long serialVersionUID = 14324L;
-	public final Word<?> oldWord, newWord;
+	protected final Word<String> oldWord, newWord;
 
-	public InconsistencyException(Word<?> oldWord, Word<?> newWord) {
+	public InconsistencyException(Word<String> oldWord, Word<String> newWord) {
 		super("previously encountered\n" +
 				oldWord + "\nNow encountering\n" + newWord);
 		this.oldWord = oldWord;
 		this.newWord = newWord;
 	}
 
-	public Word<?> getOldWord() {
+	public Word<String> getOldWord() {
 		return this.oldWord;
 	}
 
-	public Word<?> getNewWord() {
+	public Word<String> getNewWord() {
 		return this.newWord;
 	}
 }

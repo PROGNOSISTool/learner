@@ -15,7 +15,7 @@ public class CacheViewer {
 	private static ObservationTree root, current;
 	private static boolean exit = false;
 	private static Scanner scanner;
-	
+
 	public static void main(String[] args) {
 	 	try {
 	 		scanner = new Scanner(System.in);
@@ -41,7 +41,7 @@ public class CacheViewer {
 			scanner.close();
 		}
 	}
-	
+
 	private static void process(String arg) {
 		switch(arg) {
 		case "exit":
@@ -96,12 +96,12 @@ public class CacheViewer {
 			break;
 		}
 	}
-	
-	
-	
+
+
+
 	private static boolean applyInput(String arg) {
-	    LinkedList<Symbol> input = new LinkedList<>();
-        input.add(new SymbolImpl(arg));
+	    LinkedList<String> input = new LinkedList<>();
+	    input.add(arg);
         ObservationTree child = current.getState(input);
         if (child == null) {
             System.out.println("No input '" + arg + "' in the current node");
@@ -111,5 +111,5 @@ public class CacheViewer {
             current = child;
             return true;
         }
-	} 
+	}
 }

@@ -16,60 +16,60 @@ import util.learnlib.WordConverter;
 
 import net.automatalib.words.Word;
 
-public class ObservationTree<I> implements Serializable {
+public class ObservationTree implements Serializable {
 	private static final long serialVersionUID = 6001736L;
-	private final ObservationTree<I> parent;
-	private final I parentOutput;
-	private final Map<I, ObservationTree<I>> children;
-	private final Map<I, I> outputs;
+	private final ObservationTree parent;
+	private final String parentOutput;
+	private final Map<String, ObservationTree> children;
+	private final Map<String, String> outputs;
 
 	public ObservationTree() {
 		this(null, null);
 	}
 
-	private ObservationTree(ObservationTree<I> parent, I parentSymbol) {
+	private ObservationTree(ObservationTree parent, String parentSymbol) {
 		this.children = new HashMap<>();
 		this.outputs = new HashMap<>();
 		this.parent = parent;
 		this.parentOutput = parentSymbol;
 	}
 
-	public I getOutput(I input) {
+	public String getOutput(String input) {
 		return this.outputs.get(input);
 	}
 
-	public ObservationTree<I> getState(I input) {
+	public ObservationTree getState(String input) {
 		return this.children.get(input);
 	}
 
 	/**
 	 * @return The outputs observed from the root of the tree until this node
 	 */
-	private List<I> getOutputChain() {
+	private List<String> getOutputChain() {
 		if (this.parent == null) {
-			return new LinkedList<I>();
+			return new LinkedList<String>();
 		} else {
-			List<I> parentChain = this.parent.getOutputChain();
+			List<String> parentChain = this.parent.getOutputChain();
 			parentChain.add(parentOutput);
 			return parentChain;
 		}
 	}
 
-	public List<I> getInputOutputChain() {
+	public List<String> getInputOutputChain() {
 	    if (this.parent == null) {
-	        return new LinkedList<I>();
+	        return new LinkedList<String>();
     	} else {
-    	    List<I> parentChain = this.parent.getInputOutputChain();
+    	    List<String> parentChain = this.parent.getInputOutputChain();
     	    parentChain.add(getInputFromParent());
     	    parentChain.add(parentOutput);
     	    return parentChain;
     	}
 	}
 
-	private I getInputFromParent() {
+	private String getInputFromParent() {
 	    if (this.parent != null) {
-	        Set<Entry<I, ObservationTree<I>>> set = this.parent.children.entrySet();
-	        for (Entry<I, ObservationTree<I>> a : set) {
+	        Set<Entry<String, ObservationTree>> set = this.parent.children.entrySet();
+	        for (Entry<String, ObservationTree> a : set) {
 	            if (a.getValue() == this)
 	                return a.getKey();
 	        }
@@ -86,19 +86,19 @@ public class ObservationTree<I> implements Serializable {
 	 * @return the next node
 	 * @throws InconsistencyException
 	 */
-	public ObservationTree<I> addObservation(I input, I output, boolean overwriteOnInconsistency) throws InconsistencyException {
-		I previousOutput = this.outputs.get(input);
+	public ObservationTree addObservation(String input, String output, boolean overwriteOnInconsistency) throws InconsistencyException {
+		String previousOutput = this.outputs.get(input);
 		boolean createNewBranch = previousOutput == null || overwriteOnInconsistency;
 		if (createNewBranch) {
 			// input hasn't been queried before, make a new branch for it and traverse
 			this.outputs.put(input, output);
-			ObservationTree<I> child = new ObservationTree<I>(this, output);
+			ObservationTree child = new ObservationTree(this, output);
 			this.children.put(input, child);
 			return child;
 		} else if (!previousOutput.equals(output)) {
 			// input is inconsistent with previous observations, throw exception
-			List<I> oldOutputChain = this.children.get(input).getOutputChain();
-			List<I> newOutputChain = this.getOutputChain();
+			List<String> oldOutputChain = this.children.get(input).getOutputChain();
+			List<String> newOutputChain = this.getOutputChain();
 			newOutputChain.add(output);
 			/*boolean action = removeOnNonDet; //askForRemoval(oldOutputChain, newOutputChain);
 			if (action) {
@@ -106,14 +106,14 @@ public class ObservationTree<I> implements Serializable {
     			this.children.remove(input);
     			this.outputs.remove(input);
 			}*/
-			throw new InconsistencyException(WordConverter.toWord(oldOutputChain), WordConverter.toWord(newOutputChain));
+			throw new InconsistencyException(Word.fromList(oldOutputChain), Word.fromList(newOutputChain));
 		} else {
 			// input is consistent with previous observations, just traverse
 			return this.children.get(input);
 		}
 	}
 
-	private boolean askForRemoval(List<I> oldOutputChain, List<I> newOutputChain) {
+	private boolean askForRemoval(List<String> oldOutputChain, List<String> newOutputChain) {
 	    System.out.println("Do you want the input removed from the tree? (1/0)");
 	    System.out.println("Old output chain: " + oldOutputChain);
 	    System.out.println("New output chain: " + newOutputChain);
@@ -141,7 +141,7 @@ public class ObservationTree<I> implements Serializable {
 	 * @param outputs
 	 * @throws CacheInconsistencyException Inconsistency between new and stored observations
 	 */
-	public void addObservation(Word<I> inputs, Word<I> outputs) throws CacheInconsistencyException {
+	public void addObservation(Word<String> inputs, Word<String> outputs) throws CacheInconsistencyException {
 		addObservation(inputs, outputs, false);
 	}
 
@@ -153,42 +153,42 @@ public class ObservationTree<I> implements Serializable {
 	 * ones
 	 * @throws CacheInconsistencyException Inconsistency, when not set to overwrite
 	 */
-	public void addObservation(Word<I> inputs, Word<I> outputs, boolean overwriteOnInconsistency) throws CacheInconsistencyException {
+	public void addObservation(Word<String> inputs, Word<String> outputs, boolean overwriteOnInconsistency) throws CacheInconsistencyException {
 		addObservation(WordConverter.toSymbolList(inputs), WordConverter.toSymbolList(outputs), overwriteOnInconsistency);
 	}
 
-	public void addObservation(List<I> inputs, List<I> outputs, boolean overwriteOnInconsistency) throws CacheInconsistencyException {
+	public void addObservation(List<String> inputs, List<String> outputs, boolean overwriteOnInconsistency) throws CacheInconsistencyException {
 		if (inputs.isEmpty() && outputs.isEmpty()) {
 			return;
 		} else if (inputs.isEmpty() || outputs.isEmpty()) {
 			throw new RuntimeException("Input and output words should have the same length:\n" + inputs + "\n" + outputs);
 		} else {
-			I firstInput = inputs.get(0), firstOutput = outputs.get(0);
+			String firstInput = inputs.get(0), firstOutput = outputs.get(0);
 			try {
 				this.addObservation(firstInput, firstOutput, overwriteOnInconsistency)
 					.addObservation(inputs.subList(1, inputs.size()), outputs.subList(1, outputs.size()), overwriteOnInconsistency);
 			} catch (InconsistencyException e) {
-				throw new CacheInconsistencyException(WordConverter.toWord(inputs), e.oldWord, WordConverter.toWord(outputs));
+				throw new CacheInconsistencyException(Word.fromList(inputs), e.getOldWord(), Word.fromList(outputs));
 			} catch (CacheInconsistencyException e) {
 				throw new CacheInconsistencyException(WordConverter.toWord(inputs), e.getOldOutput(), WordConverter.toWord(outputs));
 			}
 		}
 	}
 
-	public Word<I> getObservation(Word<I> inputs) {
-		List<I> outputs = getObservation(new LinkedList<>(inputs.asList()));
+	public Word<String> getObservation(Word<String> inputs) {
+		List<String> outputs = getObservation(new LinkedList<>(inputs.asList()));
 		if (outputs == null) {
 			return null;
 		}
 		return WordConverter.toWord(outputs);
 	}
 
-	public ObservationTree<I> getState(List<I> inputs) {
+	public ObservationTree getState(List<String> inputs) {
 		if (inputs.isEmpty()) {
 			return this;
 		} else {
-			I firstInput = inputs.get(0);
-			ObservationTree<I> child = null;
+			String firstInput = inputs.get(0);
+			ObservationTree child = null;
 			if ((child = this.children.get(firstInput)) == null) {
 				return null;
 			} else {
@@ -197,18 +197,18 @@ public class ObservationTree<I> implements Serializable {
 		}
 	}
 
-	public List<I> getObservation(List<I> inputs) {
+	public List<String> getObservation(List<String> inputs) {
 		if (inputs.isEmpty()) {
 			return new LinkedList<>();
 		} else {
-			I firstInput = inputs.get(0);
-			List<I> observationTail = null;
-			ObservationTree<I> child = null;
+			String firstInput = inputs.get(0);
+			List<String> observationTail = null;
+			ObservationTree child = null;
 			if ((child = this.children.get(firstInput)) == null
 					|| (observationTail = child.getObservation(inputs.subList(1, inputs.size()))) == null) {
 				return null;
 			} else {
-				I firstOutput = this.outputs.get(firstInput);
+				String firstOutput = this.outputs.get(firstInput);
 				observationTail.add(0, firstOutput);
 				return observationTail;
 			}
@@ -219,10 +219,10 @@ public class ObservationTree<I> implements Serializable {
 		if (this.parent == null) {
 			throw new RuntimeException("Cannot remove root node");
 		}
-		for (ObservationTree<I> subTree : this.getAllSubTrees()) {
+		for (ObservationTree subTree : this.getAllSubTrees()) {
             System.out.println(subTree.getInputOutputChain());
         }
-		for (I symbol : this.parent.children.keySet()) {
+		for (String symbol : this.parent.children.keySet()) {
 			if (this == this.parent.children.get(symbol)) {
 				this.parent.children.remove(symbol);
 				this.parent.outputs.remove(symbol);
@@ -231,16 +231,16 @@ public class ObservationTree<I> implements Serializable {
 		}
 	}
 
-	public void remove(Word<I> accessSequence) {
+	public void remove(Word<String> accessSequence) {
 		this.remove(WordConverter.toSymbolList(accessSequence));
 	}
 
-	private Set<ObservationTree<I>> getAllSubTrees() {
+	private Set<ObservationTree> getAllSubTrees() {
 	    if (this.children.isEmpty()) {
-	        return new LinkedHashSet<ObservationTree<I>>();
+	        return new LinkedHashSet<ObservationTree>();
 	    } else {
-			LinkedHashSet<ObservationTree<I>> childSet = new LinkedHashSet<>(children.values());
-	        for (ObservationTree<I> child : new LinkedHashSet<>(childSet)) {
+			LinkedHashSet<ObservationTree> childSet = new LinkedHashSet<>(children.values());
+	        for (ObservationTree child : new LinkedHashSet<>(childSet)) {
 	            childSet.addAll(child.getAllSubTrees());
 	        }
 
@@ -248,17 +248,17 @@ public class ObservationTree<I> implements Serializable {
 	    }
 	}
 
-	public void remove(List<I> accessSequence) throws RemovalException {
+	public void remove(List<String> accessSequence) throws RemovalException {
 
 		if (accessSequence.isEmpty()) {
 		    System.out.println("Removing: " + getInputOutputChain());
 		    System.out.println("Also removing subtrees branches");
-		    for (ObservationTree<I> subTree : this.getAllSubTrees()) {
+		    for (ObservationTree subTree : this.getAllSubTrees()) {
 		        System.out.println(subTree.getInputOutputChain());
 		    }
 			this.remove();
 		} else {
-			ObservationTree<I> child = this.children.get(accessSequence.get(0));
+			ObservationTree child = this.children.get(accessSequence.get(0));
 			if (child == null) {
 				throw new RemovalException("Cannot remove branch which is not present for input\n" + accessSequence);
 			}
@@ -289,20 +289,20 @@ public class ObservationTree<I> implements Serializable {
 		}
 	}
 
-	public Set<?> getInputs() {
+	public Set<String> getInputs() {
 		return this.children.keySet();
 	}
 
 	public int getDepth() {
 		int max = 1;
-		for (ObservationTree<I> child : this.children.values()) {
+		for (ObservationTree child : this.children.values()) {
 			max = Math.max(max, child.getDepth());
 		}
 		return max + 1;
 	}
 
 	public static void main(String[] args) {
-		ObservationTree<String> tree = new ObservationTree<String>();
+		ObservationTree tree = new ObservationTree();
 		LinkedList<String> in = new LinkedList<String>(), out1 = new LinkedList<>(), out2 = new LinkedList<String>();
 		in.add("a");
 		in.add("b");
