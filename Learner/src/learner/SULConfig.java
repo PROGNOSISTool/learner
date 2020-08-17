@@ -1,5 +1,7 @@
 package learner;
 
+import de.learnlib.api.logging.LearnLogger;
+
 import java.io.PrintStream;
 
 /***
@@ -55,8 +57,8 @@ public class SULConfig {
 
 	public String logLevel = "INFO";
 
-	public void printParams(PrintStream stdout) {
-		stdout.printf("SUT endpoint: (%s,%s)\n", this.sutIP, String.valueOf(this.sutPort));
-		stdout.println("Reset oracle: " + oracle);
+	public void printParams(LearnLogger logger) {
+		logger.logConfig(String.format("SUT endpoint: (%s,%s)\n", this.sutIP, String.valueOf(this.sutPort)));
+		logger.logConfig("Reset oracle: " + oracle);
 	}
 }

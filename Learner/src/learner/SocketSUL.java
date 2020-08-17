@@ -4,6 +4,9 @@ import de.learnlib.api.SUL;
 import sutInterface.SocketWrapper;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 public class SocketSUL implements SUL<String, String> {
 	private SocketWrapper socket;
@@ -31,6 +34,10 @@ public class SocketSUL implements SUL<String, String> {
 	public String step(String input) {
 		socket.writeInput(input);
 		return socket.readOutput();
+	}
+
+	public List<String> step(List<String> inputs) {
+		return Arrays.asList(step(String.join(" ", inputs)).split(" "));
 	}
 
 	public void stop() {

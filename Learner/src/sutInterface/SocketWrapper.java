@@ -8,8 +8,6 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
-import util.Log;
-
 // Wrapper around the java Socket so we have clear segmentation of inputs and outputs
 public class SocketWrapper {
 	private static Map<Integer, Socket> socketMap = new HashMap<Integer, Socket>();
@@ -36,7 +34,6 @@ public class SocketWrapper {
 
 	public void writeInput(String input) {
 	    if (sockout != null) {
-		Log.info("IN: "+ input);
 		sockout.println(input);
 		sockout.flush();
 	    }
@@ -49,7 +46,6 @@ public class SocketWrapper {
 			if (output == null) {
 				throw new RuntimeException("socket closed!");
 			}
-			Log.info("OUT: "+ output);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

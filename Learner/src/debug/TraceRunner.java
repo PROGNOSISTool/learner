@@ -5,7 +5,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -14,11 +13,12 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import de.learnlib.api.logging.LearnLogger;
+import de.learnlib.api.oracle.MembershipOracle;
 import learner.*;
+import net.automatalib.words.Word;
 import util.Log;
 import util.Tuple2;
-import de.ls5.jlearn.interfaces.Symbol;
-import de.ls5.jlearn.interfaces.Word;
 
 public class TraceRunner {
 	private static final String PATH = "testtrace.txt";
@@ -81,10 +81,9 @@ public class TraceRunner {
 
 		Main.setupOutput("trace runner output.txt");
 		Config config = Main.createConfig();
-
+		LearnLogger logger = LearnLogger.getLogger("Trace Runner");
 		SutInterface sutInterface = Main.createSutInterface(config);
-
-		SULConfig sulConfig = Main.readConfig(config, sutInterface);
+		SULConfig sulConfig = Main.readConfig(logger, config, sutInterface);
 		sulConfig.exitIfInvalid = false;
 
 		SocketSUL sul = new SocketSUL(sulConfig);
@@ -115,12 +114,8 @@ public class TraceRunner {
 		return sb.toString();
 	}
 
-	public TraceRunner(Word word, SocketSUL socketSul) {
-		List<String> inputString = new ArrayList<>(word.size());
-		for (Symbol symbol : word.getSymbolList()) {
-			inputString.add(symbol.toString());
-		}
-		this.inputTrace = inputString;
+	public TraceRunner(Word<String> word, SocketSUL socketSul) {
+		this.inputTrace = word.asList();
 		this.socketSul = socketSul;
 	}
 
@@ -141,23 +136,11 @@ public class TraceRunner {
 	}
 
 	protected boolean runTrace(int printNumber) {
-		List<String> outcome = new LinkedList<String>();
 		boolean checkResult = true;
 		socketSul.pre();
 		System.out.println("# " + printNumber);
-		//System.out.println("# " + number + " @@@ " + this.sutWrapper.toString());
-		for (String input : inputTrace) {
-			String output;
-			if (input.equals("RESET")) {
-				this.socketSul.pre();
-				output = "RESET";
-			} else {
-				output = this.socketSul.step(input);
-			}
-			//System.out.println("# " + number + " >>> " + input + " >>> " + output);
-			//System.out.println("# " + number + " @@@ " + this.sutWrapper.toString());
-			outcome.add(output);
-		}
+		List<String> outcome = this.socketSul.step(inputTrace);
+		System.out.println(outcome.toString());
 		Integer currentCounter = outcomes.get(outcome);
 		if (currentCounter == null) {
 			currentCounter = 0;

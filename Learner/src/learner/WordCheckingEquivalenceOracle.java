@@ -10,7 +10,6 @@ import de.learnlib.api.oracle.MembershipOracle;
 import de.learnlib.api.query.DefaultQuery;
 import net.automatalib.automata.transducers.MealyMachine;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import util.LearnlibUtils;
 import util.Log;
 
 import net.automatalib.words.Word;
@@ -28,7 +27,7 @@ public class WordCheckingEquivalenceOracle implements EquivalenceOracle<MealyMac
 	private List<Word<String>> parseTestWords(List<List<String>> inputTracesToCheck) {
 		List<Word<String>> testWords = new ArrayList<Word<String>>();
 		for(List<String> traceToCheck : inputTracesToCheck) {
-			Word<String> testWord = LearnlibUtils.symbolsToWords(traceToCheck);
+			Word<String> testWord = Word.fromList(traceToCheck);
 			testWords.add(testWord);
 		}
 		return testWords;

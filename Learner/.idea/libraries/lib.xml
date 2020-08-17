@@ -13,6 +13,7 @@
       <root url="jar://$PROJECT_DIR$/lib/choco-solver-3.3.1-with-dependencies.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/learnlib-distribution-0.15.0-dependencies-bundle.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/jsr305-3.0.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/slf4j-jdk14-1.7.9.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
