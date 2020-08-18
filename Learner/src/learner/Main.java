@@ -277,7 +277,8 @@ public class Main {
 		CounterOracle<String, Word<String>> counterOracle = new ExtendedCounterOracle(LearnLogger.getLogger("Equivalence Oracle"), queryOracle, "Equivalence Queries");
 		equivalenceCounter = counterOracle.getCounter();
 
-		WpMethodEQOracle<MealyMachine<?, String, ?, String>, String, Word<String>> randEqOracle = new WpMethodEQOracle<>(counterOracle, learningParams.maxTraceLength);
+		Random random = new Random(learningParams.seed);
+		RandomWordsEQOracle<MealyMachine<?, String, ?, String>, String, Word<String>> randEqOracle = new RandomWordsEQOracle<>(counterOracle, learningParams.minTraceLength, learningParams.maxTraceLength, learningParams.maxNumTraces, random);
 		eqOracles.add(randEqOracle);
 
 		if (learningParams.testTraces != null && !learningParams.testTraces.isEmpty()) {
