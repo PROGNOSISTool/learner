@@ -1,5 +1,7 @@
 package learner;
 
+import de.learnlib.api.logging.LearnLogger;
+
 import java.io.PrintStream;
 import java.util.List;
 
@@ -20,15 +22,14 @@ public class LearningParams {
 	public int nonDeterminismTestIterations;
 	public String equivalenceCriterion;
 	public String yanMode;
-	
-	public void printParams(PrintStream stdout) {
+
+	public void printParams(LearnLogger logger) {
 		String seedStr = Long.toString(seed) + " - Set statically";
 
-		stdout.println("Maximum number of traces: " + this.maxNumTraces);
-		stdout.println("Minimum length of traces: " + this.minTraceLength);
-		stdout.println("Maximim length of traces: " + this.maxTraceLength);
-		stdout.println("Mapper: " + this.mapper);
-		stdout.println("Seed: " + seedStr);
-		stdout.flush();
+		logger.logConfig("Maximum number of traces: " + this.maxNumTraces);
+		logger.logConfig("Minimum length of traces: " + this.minTraceLength);
+		logger.logConfig("Maximim length of traces: " + this.maxTraceLength);
+		logger.logConfig("Mapper: " + this.mapper);
+		logger.logConfig("Seed: " + seedStr);
 	}
 }

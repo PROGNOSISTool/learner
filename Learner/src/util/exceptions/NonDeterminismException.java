@@ -1,27 +1,34 @@
 package util.exceptions;
 
-import de.ls5.jlearn.abstractclasses.LearningException;
-import de.ls5.jlearn.interfaces.Word;
+import de.learnlib.api.exception.SULException;
+import net.automatalib.words.Word;
 
-public class NonDeterminismException extends LearningException {
-	protected final Word input;
+public class NonDeterminismException extends SULException {
+	protected final Word<String> input;
 
-	public NonDeterminismException(String msg, Word input) {
-		super(msg);
+	public NonDeterminismException(String msg, Word<String> input) {
+		super(new Throwable(msg));
 		this.input = input;
 		System.out.println("NIE: INPUT: " + this.input.toString());
 	}
 
-	public NonDeterminismException(Word input) {
+	public NonDeterminismException(Word<String> input) {
+		super(new Throwable());
 		this.input = input;
+		System.out.println("NIE: INPUT: " + this.input.toString());
+	}
+
+	public NonDeterminismException(Word<String> prefix, Word<String> suffix) {
+		super(new Throwable());
+		this.input = prefix.concat(suffix);
 		System.out.println("NIE: INPUT: " + this.input.toString());
 	}
 
 	/**
 	 * The full input for which the non-determinism was observed
-	 * @return
+	 * @return Word<String>
 	 */
-	public Word getInput() {
+	public Word<String> getInput() {
 		return this.input;
 	}
 }

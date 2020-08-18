@@ -14,29 +14,31 @@ import java.util.Deque;
 import java.util.List;
 import java.util.ListIterator;
 
-import de.ls5.jlearn.interfaces.Automaton;
 import de.ls5.jlearn.interfaces.State;
 import de.ls5.jlearn.interfaces.Symbol;
+import net.automatalib.automata.FiniteAlphabetAutomaton;
+import net.automatalib.automata.transducers.MealyMachine;
+import net.automatalib.automata.transducers.impl.compact.CompactMealy;
 
 public class AutomatonApp {
-	private BufferedReader in;
-	private PrintStream out;
-	private Deque<String> commands;
-	
+	private final BufferedReader in;
+	private final PrintStream out;
+	private final Deque<String> commands;
+
 	public AutomatonApp(BufferedReader in, PrintStream out) {
 		this.in = in;
 		this.out = out;
 		this.commands = new ArrayDeque<String>();
 	}
-	
+
 	public AutomatonApp() {
 		this(new BufferedReader(new InputStreamReader(System.in)), System.out);
 	}
-	
+
 	public void bufferCommands(Collection<String> commands) {
 		this.commands.addAll(commands);
 	}
-	
+
 	private String ask(String msg) throws IOException{
 		out.println(msg);
 		if (!commands.isEmpty()) {
@@ -44,12 +46,11 @@ public class AutomatonApp {
 		}
 		return in.readLine().trim();
 	}
-	
+
 	public List<String> readTrace(String PATH) throws IOException {
 		List<String> trace;
 		trace = Files.readAllLines(Paths.get(PATH), StandardCharsets.US_ASCII);
 		ListIterator<String> it = trace.listIterator();
-		int i = 1;
 		while(it.hasNext()) {
 			String line = it.next();
 			if (line.startsWith("#") || line.startsWith("!")) {
@@ -60,7 +61,7 @@ public class AutomatonApp {
 					 while (it.hasNext()) {
 						 it.next();
 						 it.remove();
-					 } 
+					 }
 				 } else {
 					 System.out.println();
 				 }
@@ -68,31 +69,33 @@ public class AutomatonApp {
 		}
 		return trace;
 	}
-	
-	public Collection<String> getRoute(Automaton automaton, State startingState, List<Symbol> inputSeq) throws AppException{
+
+	public Collection<String> getRoute(CompactMealy<String, String> automaton, Integer startingState, List<String> inputSeq) throws AppException{
 		Deque<String> strings = new ArrayDeque<String>();
-		State currentState = startingState;
-		for (Symbol input : inputSeq) {
-			if (currentState.getTransitionOutput(input) == null) {
-				throw new AppException("Input " + input + " not defined for state s" + currentState.getId());
+
+		Integer currentState = startingState;
+		for (String input : inputSeq) {
+			String transitionOutput = automaton.getTransitionOutput(automaton.getTransition(currentState, input));
+			if (transitionOutput == null) {
+				throw new AppException("Input " + input + " not defined for state s" + automaton.getState(currentState));
 			}
-			strings.add(input.toString() +"\\"+ currentState.getTransitionOutput(input) + " (" + AutomatonUtils.indexOf(automaton, currentState.getTransitionState(input)) + ") " );
+			strings.add(input +"\\"+ transitionOutput + " (" + AutomatonUtils.indexOf(automaton, automaton.getSuccessor(currentState, input)) + ") " );
 			if (inputSeq.size() > 5) {
 				strings.add("\n");
 			}
-			currentState = currentState.getTransitionState(input);
+			currentState = automaton.getSuccessor(currentState, input);
 		}
 		return strings;
-	} 
-	
+	}
+
 	static class AppException extends Exception{
 		public AppException(String cause) {
 			super(cause);
 		}
 	}
-	
+
 	public void play() throws IOException {
-		Automaton loadedHyp = null;
+		CompactMealy<String, String> loadedHyp = null;
 		while (true) {
 			try {
 			out.println("Welcome to the hyp assistent. Today you can: " +
@@ -100,7 +103,7 @@ public class AutomatonApp {
 					"3. Get distinguishing seq between two states \n 4. Run trace \n " +
 					"5. Relabel state machine based on access sequence mapping and dump it \n" +
 					"6. Quit");
-			
+
 			String command = ask("Command:");
 			switch(command) {
 			case "1":
@@ -114,11 +117,11 @@ public class AutomatonApp {
 				if (loadedHyp == null) {
 					out.println("Load a hyp first!");
 				} else {
-					int stateId = Integer.valueOf(ask("State ID:"));
-					List<Symbol> traceToState = AutomatonUtils.traceToState(loadedHyp, stateId);
-					Collection<String> strings = getRoute(loadedHyp, loadedHyp.getStart(), traceToState);
-					out.println("Trace to state: " + traceToState); 
-					out.println("Trace to state(full):  " + strings); 
+					int stateId = Integer.parseInt(ask("State ID:"));
+					List<String> traceToState = AutomatonUtils.traceToState(loadedHyp, loadedHyp.getInputAlphabet(), stateId);
+					Collection<String> strings = getRoute(loadedHyp, loadedHyp.getInitialState(), traceToState);
+					out.println("Trace to state: " + traceToState);
+					out.println("Trace to state(full):  " + strings);
 				}
 				break;
 
@@ -126,26 +129,26 @@ public class AutomatonApp {
 				if (loadedHyp == null) {
 					out.println("Load a hyp first!");
 				} else {
-					int stateId1 = Integer.valueOf(ask("State ID1:"));
-					int stateId2 = Integer.valueOf(ask("State ID2:"));
-					List<Symbol> distSeq = AutomatonUtils.distinguishingSeq(loadedHyp, stateId1, stateId2);
-					out.println("Distinguishing trace: " + distSeq); 
+					int stateId1 = Integer.parseInt(ask("State ID1:"));
+					int stateId2 = Integer.parseInt(ask("State ID2:"));
+					List<String> distSeq = AutomatonUtils.distinguishingSeq(loadedHyp, loadedHyp.getInputAlphabet(), stateId1, stateId2);
+					out.println("Distinguishing trace: " + distSeq);
 					Collection<String> strings1 = getRoute(loadedHyp, AutomatonUtils.get(loadedHyp, stateId1), distSeq);
 					Collection<String> strings2 = getRoute(loadedHyp, AutomatonUtils.get(loadedHyp, stateId2), distSeq);
 					out.println("Trace from state1: " + strings1);
 					out.println("Trace from state2: " + strings2);
 				}
 				break;
-				
+
 			case "4":
 				if (loadedHyp == null) {
 					out.println("Load a hyp first!");
 				} else {
 					Collection<String> trace = readTrace("testtrace.txt");
-					List<Symbol> traceSymbols = AutomatonUtils.buildSymbols(trace);
-					Collection<String> strings = getRoute(loadedHyp, loadedHyp.getStart(), traceSymbols);
+					List<String> traceSymbols = AutomatonUtils.buildSymbols(trace);
+					Collection<String> strings = getRoute(loadedHyp, loadedHyp.getInitialState(), traceSymbols);
 					out.println("Trace run:" + strings);
-					
+
 				}
 				break;
 
@@ -154,7 +157,7 @@ public class AutomatonApp {
 				if (loadedHyp == null) {
 					out.println("Load a hyp first!");
 				} else {
-					TCPDot.writeDotFile(loadedHyp, "tcp.dot");					
+					DotDo.writeDotFile(loadedHyp, loadedHyp.getInputAlphabet(), "tcp.dot");
 				}
 				break;
 			case "6":
@@ -167,14 +170,12 @@ public class AutomatonApp {
 		}
 	}
 
-
-
-	public static void main(String args[]) throws IOException {
+	public static void main(String[] args) throws IOException {
 		AutomatonApp app = new AutomatonApp();
 		if (args.length > 0) {
 			app.bufferCommands(Arrays.asList(args));
 		}
 		app.play();
 	}
-	
+
 }

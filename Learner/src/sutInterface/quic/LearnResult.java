@@ -1,10 +1,10 @@
 package sutInterface.quic;
 
-import de.ls5.jlearn.interfaces.Automaton;
+import net.automatalib.automata.transducers.MealyMachine;
 
 public class LearnResult {
 	public long startTime, endTime,  totalTimeMemQueries, totalTimeEquivQueries;
 	public int totalMemQueries, totalEquivQueries;
-	public Automaton learnedModel;
+	public MealyMachine<?, String, ?, String> learnedModel;
 
 }

@@ -8,40 +8,32 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
-import util.Log;
-
 // Wrapper around the java Socket so we have clear segmentation of inputs and outputs
 public class SocketWrapper {
 	private static Map<Integer, Socket> socketMap = new HashMap<Integer, Socket>();
 	protected Socket sock;
 	protected PrintWriter sockout;
 	protected BufferedReader sockin;
-	
 
-	public SocketWrapper(String sutIP, int sutPort) {
-		try {
-			if(socketMap.containsKey(sutPort)) {
-				sock = socketMap.get(sutPort);
-			} else {
-				sock = new Socket(sutIP, sutPort);
-				socketMap.put(sutPort, sock);
-			}
-			sockout = new PrintWriter(sock.getOutputStream(), true);
-			sockin = new BufferedReader(new InputStreamReader(
-					sock.getInputStream()));
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(0);
+
+	public SocketWrapper(String sutIP, int sutPort) throws IOException {
+		if(socketMap.containsKey(sutPort)) {
+			sock = socketMap.get(sutPort);
+		} else {
+			sock = new Socket(sutIP, sutPort);
+			socketMap.put(sutPort, sock);
 		}
+		sockout = new PrintWriter(sock.getOutputStream(), true);
+		sockin = new BufferedReader(new InputStreamReader(
+				sock.getInputStream()));
 	}
-	
-	public SocketWrapper(int sutPort) {
+
+	public SocketWrapper(int sutPort) throws IOException {
 		this("localhost", sutPort);
 	}
 
 	public void writeInput(String input) {
 	    if (sockout != null) {
-		Log.info("IN: "+ input);
 		sockout.println(input);
 		sockout.flush();
 	    }
@@ -54,7 +46,6 @@ public class SocketWrapper {
 			if (output == null) {
 				throw new RuntimeException("socket closed!");
 			}
-			Log.info("OUT: "+ output);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -63,18 +54,12 @@ public class SocketWrapper {
 
 	public void close() {
 	    if (sockout != null) {
-		sockout.write("exit");
+		sockout.write("STOP");
 		try {
 			sock.close();
 		} catch (IOException ex) {
 
 		}
 	    }
-		/*sockout.close();
-		try {
-			sockin.close();
-		} catch (IOException ex) {
-
-		}*/
 	}
 }

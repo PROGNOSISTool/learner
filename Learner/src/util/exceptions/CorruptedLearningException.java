@@ -1,6 +1,6 @@
 package util.exceptions;
 
-import de.ls5.jlearn.abstractclasses.LearningException;
+import de.learnlib.api.exception.SULException;
 
 /**
  * Used to denote that the learning process has been corrupted with wrong
@@ -8,14 +8,14 @@ import de.ls5.jlearn.abstractclasses.LearningException;
  * is found to be erroneous
  *
  */
-public class CorruptedLearningException extends LearningException {
+public class CorruptedLearningException extends SULException {
 	private static final long serialVersionUID = 3618393099207301314L;
-	
+
 	public CorruptedLearningException(String msg) {
-		super(msg);
+		super(new Throwable(msg));
 	}
-	
+
 	public CorruptedLearningException() {
-		super();
+		super(new Throwable());
 	}
 }
