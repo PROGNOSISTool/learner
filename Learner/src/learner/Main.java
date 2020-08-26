@@ -57,7 +57,7 @@ public class Main {
 	private static File sutConfigFile = null;
 	public static LearningParams learningParams;
 	private static final long timeSnap = System.currentTimeMillis();;
-	public static final String outputDir = "output" + File.separator + timeSnap;
+	public static String outputDir = "output" + File.separator + timeSnap;
 	private static File outputFolder = null;
 	private static LearnLogger logger;
 	private static boolean done;
@@ -119,6 +119,10 @@ public class Main {
 		logger.logConfig("Seed: " + learningParams.seed);
 		logger.logEvent("Done.");
 		logger.logEvent("Successful run.");
+		outputDir = "output" + File.separator + "final-" + timeSnap;
+		File finalFolder = new File(outputDir);
+		outputFolder.renameTo(finalFolder);
+		outputFolder = finalFolder;
 
 		logger.logStatistic(queryCounter);
 		logger.logStatistic(membershipCounter);
@@ -212,9 +216,7 @@ public class Main {
 			logger.logEvent("starting equivalence query");
 
 			// search for counterexample
-			DefaultQuery<String, Word<String>> o = null;
-			o = eqOracle.findCounterExample(hyp, alphabet);
-
+			DefaultQuery<String, Word<String>> o = eqOracle.findCounterExample(hyp, alphabet);
 			logger.logEvent("done equivalence query");
 
 			// no counter example -> learning is done
@@ -268,33 +270,25 @@ public class Main {
 	private static MembershipOracle<String, Word<String>> buildMembershipOracle(MembershipOracle<String, Word<String>> queryOracle) {
 		CounterOracle<String, Word<String>> counterOracle = new ExtendedCounterOracle(LearnLogger.getLogger("Membership Oracle"),  queryOracle, "Membership Queries");
 		membershipCounter = counterOracle.getCounter();
-		return counterOracle;
+		return new LogOracle(outputDir + File.separator + "memQueries.txt", counterOracle);
 	}
 
 	private static EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> buildEquivalenceOracle(LearningParams learningParams, MembershipOracle<String, Word<String>> queryOracle) {
-		List<EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>>> eqOracles = new ArrayList<>();
+		EQOracleChain<MealyMachine<?, String, ?, String>, String, Word<String>> eqOracles = new EQOracleChain<>();
 
 		CounterOracle<String, Word<String>> counterOracle = new ExtendedCounterOracle(LearnLogger.getLogger("Equivalence Oracle"), queryOracle, "Equivalence Queries");
 		equivalenceCounter = counterOracle.getCounter();
 
 		Random random = new Random(learningParams.seed);
-		RandomWordsEQOracle<MealyMachine<?, String, ?, String>, String, Word<String>> randEqOracle = new RandomWordsEQOracle<>(counterOracle, learningParams.minTraceLength, learningParams.maxTraceLength, learningParams.maxNumTraces, random);
-		eqOracles.add(randEqOracle);
+		RandomWordsEQOracle<MealyMachine<?, String, ?, String>, String, Word<String>> eqOracle = new RandomWordsEQOracle<>(counterOracle, learningParams.minTraceLength, learningParams.maxTraceLength, learningParams.maxNumTraces, random);
+//		WpMethodEQOracle<MealyMachine<?, String, ?, String>, String, Word<String>> eqOracle = new WpMethodEQOracle<>(counterOracle, 3);
+		LogOracle fsOracle = new LogOracle(outputDir + File.separator + "cexOut.txt", eqOracle);
+		eqOracles.addOracle(fsOracle);
 
-		if (learningParams.testTraces != null && !learningParams.testTraces.isEmpty()) {
-            WordCheckingEquivalenceOracle wordEqOracle = new WordCheckingEquivalenceOracle(counterOracle, learningParams.testTraces);
-            eqOracles.add(wordEqOracle);
-        }
+		ExternalEquivalenceOracle extOracle = new ExternalEquivalenceOracle(counterOracle, "cexIn.txt");
+		eqOracles.addOracle(extOracle);
 
-		EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> eqOracle = null;
-	    if (eqOracles.isEmpty()) {
-	        throw new BugException("No equivalence oracle could be defined");
-	    } else if (eqOracles.size() == 1) {
-	        eqOracle = eqOracles.get(0);
-	    } else {
-	        eqOracle = new EQOracleChain<>(eqOracles);
-	    }
-		return eqOracle;
+		return eqOracles;
 	}
 
 	public static SULConfig readConfig(LearnLogger logger, Config config, SutInterface sutInterface) {

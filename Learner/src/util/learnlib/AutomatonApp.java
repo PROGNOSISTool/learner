@@ -14,10 +14,6 @@ import java.util.Deque;
 import java.util.List;
 import java.util.ListIterator;
 
-import de.ls5.jlearn.interfaces.State;
-import de.ls5.jlearn.interfaces.Symbol;
-import net.automatalib.automata.FiniteAlphabetAutomaton;
-import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.automata.transducers.impl.compact.CompactMealy;
 
 public class AutomatonApp {
