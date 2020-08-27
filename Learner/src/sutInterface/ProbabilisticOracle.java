@@ -3,14 +3,15 @@ package sutInterface;
 import java.util.Collection;
 import java.util.List;
 
+import de.learnlib.api.logging.LearnLogger;
 import de.learnlib.api.oracle.MembershipOracle;
 import de.learnlib.api.query.Query;
 import net.automatalib.words.Word;
 import util.Counter;
-import util.Log;
 import util.exceptions.NonDeterminismException;
 
 public class ProbabilisticOracle implements MembershipOracle<String, Word<String>> {
+	private static final LearnLogger logger = LearnLogger.getLogger("Learner");
 	private final MembershipOracle<String, Word<String>> oracle;
 	private final int minimumAttempts, maximumAttempts;
 	private final double minimumFraction;
@@ -37,10 +38,10 @@ public class ProbabilisticOracle implements MembershipOracle<String, Word<String
 		do {
 
 			if (responseCounter.getTotalNumber() >= this.maximumAttempts) {
-				Log.err("Non-determinism found by probablistic oracle for input\n" + inputs + "\noutputs:\n" + responseCounter);
+				logger.error("Non-determinism found by probablistic oracle for input\n" + inputs + "\noutputs:\n" + responseCounter);
 				if (firstAttempt) {
 					try {
-						Log.err("Sleeping 1 minute to check if the non-det will clear");
+						logger.info("Sleeping 1 minute to check if the non-det will clear");
 						Thread.sleep(60000);
 						firstAttempt = false;
 					} catch (InterruptedException e) {
@@ -60,9 +61,9 @@ public class ProbabilisticOracle implements MembershipOracle<String, Word<String
 
 		List<String> mostFrequent = responseCounter.getMostFrequent();
 		if (responseCounter.getObjectsCounted() > 1) {
-			Log.err("Non-determinism detected on input\n" + inputs + "\nResponses:\n" + responseCounter + "\naccepted most frequent:\n" + mostFrequent);
+			logger.info("Non-determinism detected on input\n" + inputs + "\nResponses:\n" + responseCounter + "\naccepted most frequent:\n" + mostFrequent);
 		} else {
-			Log.err("Concluded unanimously in " + responseCounter.getTotalNumber() + " attempts:\n" + mostFrequent);
+			logger.info("Concluded unanimously in " + responseCounter.getTotalNumber() + " attempts:\n" + mostFrequent);
 		}
 		return Word.fromList(mostFrequent);
 	}

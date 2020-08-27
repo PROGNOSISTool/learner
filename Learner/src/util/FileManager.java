@@ -1,5 +1,6 @@
 package util;
 
+import de.learnlib.api.logging.LearnLogger;
 import net.automatalib.words.Word;
 
 import java.io.*;
@@ -10,6 +11,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 public class FileManager {
+	private static final LearnLogger logger = LearnLogger.getLogger("Learner");
 
 	public static void copyFromTo(String from, String to) throws Exception{
 		Path fromPath = FileSystems.getDefault().getPath(from);
@@ -87,10 +89,48 @@ public class FileManager {
 			}
 			fr.close();
 		} catch(FileNotFoundException e) {
-			System.out.println("External CounterExamples not found, creating pass-throw oracle.");
+			logger.info("External CounterExamples not found, creating pass-throw oracle.");
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
 		return queries;
+	}
+
+	public static <T> void writeStateToFile(T state, String filename) {
+		if (state == null) {
+			logger.error("Could not write uninitialized cache state.");
+			return;
+		}
+
+		try {
+			File file = new File(filename);
+			Files.createDirectories(file.getParentFile().toPath());
+		} catch (IOException e) {
+			logger.error("Failed to create parent directories: " + e.toString());
+		}
+
+		try (OutputStream stream = new FileOutputStream(filename);
+			 OutputStream buffer = new BufferedOutputStream(stream);
+			 ObjectOutput output = new ObjectOutputStream(buffer)) {
+			output.writeObject(state);
+		} catch (IOException ex){
+			System.err.println("Could not write cache state: (" + ex.toString() + ")");
+		}
+	}
+
+	public static <T> T readStateFromFile(String fileName) {
+		try (InputStream file = new FileInputStream(fileName);
+			 InputStream buffer = new BufferedInputStream(file);
+			 ObjectInput input = new ObjectInputStream (buffer)) {
+			@SuppressWarnings("unchecked")
+			T state = (T) input.readObject();
+			return state;
+		} catch(ClassNotFoundException ex) {
+			logger.error("Cache state file corrupt");
+			return null;
+		} catch(IOException ex) {
+			logger.error("Could not read cache file");
+			return null;
+		}
 	}
 }

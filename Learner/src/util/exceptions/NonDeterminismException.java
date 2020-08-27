@@ -3,23 +3,23 @@ package util.exceptions;
 import de.learnlib.api.exception.SULException;
 import net.automatalib.words.Word;
 
-public class NonDeterminismException extends SULException {
+public class NonDeterminismException extends CorruptedLearningException {
 	protected final Word<String> input;
 
 	public NonDeterminismException(String msg, Word<String> input) {
-		super(new Throwable(msg));
+		super(msg);
 		this.input = input;
 		System.out.println("NIE: INPUT: " + this.input.toString());
 	}
 
 	public NonDeterminismException(Word<String> input) {
-		super(new Throwable());
+		super();
 		this.input = input;
 		System.out.println("NIE: INPUT: " + this.input.toString());
 	}
 
 	public NonDeterminismException(Word<String> prefix, Word<String> suffix) {
-		super(new Throwable());
+		super();
 		this.input = prefix.concat(suffix);
 		System.out.println("NIE: INPUT: " + this.input.toString());
 	}

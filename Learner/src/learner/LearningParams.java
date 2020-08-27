@@ -23,9 +23,9 @@ public class LearningParams {
 	public String equivalenceCriterion;
 	public String yanMode;
 
-	public void printParams(LearnLogger logger) {
+	public void printParams() {
 		String seedStr = Long.toString(seed) + " - Set statically";
-
+		LearnLogger logger = LearnLogger.getLogger("Learner");
 		logger.logConfig("Maximum number of traces: " + this.maxNumTraces);
 		logger.logConfig("Minimum length of traces: " + this.minTraceLength);
 		logger.logConfig("Maximim length of traces: " + this.maxTraceLength);

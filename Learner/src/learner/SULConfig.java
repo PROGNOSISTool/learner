@@ -33,7 +33,8 @@ public class SULConfig {
 	 */
 	public boolean exitIfInvalid = true;
 
-	public void printParams(LearnLogger logger) {
+	public void printParams() {
+		LearnLogger logger = LearnLogger.getLogger("Learner");
 		logger.logConfig(String.format("SUT endpoint: (%s,%s)\n", this.sutIP, String.valueOf(this.sutPort)));
 	}
 }

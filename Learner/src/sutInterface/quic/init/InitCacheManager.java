@@ -1,6 +1,6 @@
 package sutInterface.quic.init;
 
-import util.Log;
+import de.learnlib.api.logging.LearnLogger;
 import util.exceptions.BugException;
 
 import java.io.*;
@@ -14,6 +14,7 @@ import java.util.Map;
  * Traces are serialized and deserialized via separators.
  */
 public class InitCacheManager {
+	private static final LearnLogger logger = LearnLogger.getLogger("Init Cache Manager");
 	private static final String SEP = "_";
 	private static final String SEP2 = " ";
 	private static final Map<String, Boolean> cachedTraces = new LinkedHashMap<String, Boolean>();
@@ -49,9 +50,9 @@ public class InitCacheManager {
 		String outputTrace = buildTraceEntry(outputs);
 		if(cachedResults.containsKey(inputTrace)) {
 			if(!cachedResults.get(inputTrace).equalsIgnoreCase(outputTrace)) {
-				Log.err("Non determinism for input trace: " + inputTrace);
-				Log.err("First got: " + cachedResults.get(inputTrace));
-				Log.err("Now got: " + outputTrace);
+				logger.error("Non determinism for input trace: " + inputTrace);
+				logger.error("First got: " + cachedResults.get(inputTrace));
+				logger.error("Now got: " + outputTrace);
 				System.exit(0);
 			}
 		} else {
@@ -118,7 +119,7 @@ public class InitCacheManager {
 			}
 			reader.close();
 		} catch (FileNotFoundException e) {
-			Log.err("Invalid cache file path " + fileName);
+			logger.error("Invalid cache file path " + fileName);
 			e.printStackTrace();
 			System.exit(0);
 		} catch (IOException e) {

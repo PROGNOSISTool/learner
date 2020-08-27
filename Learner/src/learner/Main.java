@@ -1,25 +1,18 @@
 package learner;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import de.learnlib.algorithms.lstar.AutomatonLStarState;
 import de.learnlib.algorithms.lstar.mealy.ExtensibleLStarMealy;
 import de.learnlib.algorithms.lstar.mealy.ExtensibleLStarMealyBuilder;
 import de.learnlib.api.algorithm.LearningAlgorithm;
@@ -31,12 +24,11 @@ import de.learnlib.filter.cache.mealy.MealyCacheOracle;
 import de.learnlib.filter.statistic.Counter;
 import de.learnlib.filter.statistic.oracle.CounterOracle;
 import de.learnlib.oracle.equivalence.EQOracleChain;
-import de.learnlib.oracle.equivalence.MealyWpMethodEQOracle;
 import de.learnlib.oracle.equivalence.RandomWordsEQOracle;
-import de.learnlib.oracle.equivalence.WpMethodEQOracle;
 import de.learnlib.oracle.membership.SULOracle;
 import de.learnlib.util.mealy.MealyUtil;
 import net.automatalib.automata.transducers.MealyMachine;
+import net.automatalib.automata.transducers.impl.compact.CompactMealy;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
 import org.yaml.snakeyaml.Yaml;
@@ -47,22 +39,24 @@ import sutInterface.quic.LearnResult;
 import util.Chmod;
 import util.FileManager;
 import util.SoundUtils;
-import util.exceptions.BugException;
 import util.exceptions.CorruptedLearningException;
 import util.learnlib.DotDo;
 
 public class Main {
-	public static final String CACHE_FILE = "cache.ser";
+	public static final String SUL_CACHE_FILE = "cache" + File.separator + "sul.ser";
+	public static final String LEARNER_CACHE_FILE = "cache" + File.separator + "learner.ser";
 
 	private static File sutConfigFile = null;
 	public static LearningParams learningParams;
 	private static final long timeSnap = System.currentTimeMillis();;
 	public static String outputDir = "output" + File.separator + timeSnap;
 	private static File outputFolder = null;
-	private static LearnLogger logger;
+	private static final LearnLogger logger = LearnLogger.getLogger("Learner");
+	private static boolean learning;
 	private static boolean done;
 	public static Config config;
 	private static Alphabet<String> alphabet;
+	private static ExtensibleLStarMealy<String, String> learner;
 	private static final List<Runnable> shutdownHooks = new ArrayList<>();
 	private static MealyCacheOracle<String, String> cacheOracle;
 	private static Counter queryCounter;
@@ -79,8 +73,6 @@ public class Main {
 	}
 
 	public static void runLearner(String[] args) throws Exception {
-		logger = LearnLogger.getLogger(Main.class);
-
 		logger.logEvent("Reading program arguments");
 		handleArgs(args);
 
@@ -95,7 +87,7 @@ public class Main {
 		SutInterface sutInterface = createSutInterface(config);
 
 		logger.logEvent("Reading TCP parameters...");
-		SULConfig sul = readConfig(logger, config, sutInterface);
+		SULConfig sul = readConfig(config, sutInterface);
 		alphabet = SutInfo.generateInputAlphabet();
 		SutInfo.generateOutputAlphabet();
 
@@ -108,8 +100,16 @@ public class Main {
 		logger.logEvent("Building equivalence oracle...");
 		EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> eqOracle = buildEquivalenceOracle(learningParams, queryOracle);
 
+		logger.logEvent("Building Learner State...");
+		AutomatonLStarState<String, Word<String>, CompactMealy<String, String>, Integer> learnerState = FileManager.readStateFromFile(LEARNER_CACHE_FILE);
+
 		logger.logEvent("Building Learner...");
-		ExtensibleLStarMealy<String, String> learner = new ExtensibleLStarMealyBuilder<String, String>().withAlphabet(alphabet).withOracle(memOracle).create();
+		learning = false;
+		learner = new ExtensibleLStarMealyBuilder<String, String>().withAlphabet(alphabet).withOracle(memOracle).create();
+		if (learnerState != null) {
+			learner.resume(learnerState);
+			learning = true;
+		}
 
 		logger.logEvent("Starting learner...");
 		LearnResult learnResult = learn(learner, eqOracle);
@@ -186,7 +186,8 @@ public class Main {
 			logger.info("Running shutdown hook");
 			MealyCacheOracle.MealyCacheOracleState<String, String> cacheState = cacheOracle.suspend();
 			logger.info("Cache size: " + cacheOracle.getCacheSize());
-			writeCacheTree(cacheState, true);
+			saveState(cacheState, SUL_CACHE_FILE);
+			saveState(learner.suspend(), LEARNER_CACHE_FILE);
 			copyInputsToOutputFolder();
 
 			if (!done) {
@@ -202,8 +203,10 @@ public class Main {
 		int hypCounter = 1;
 		done = false;
 
-		logger.info("Start Learning");
-		learner.startLearning();
+		if (!learning) {
+			logger.info("Start Learning");
+			learner.startLearning();
+		}
 
 		while (!done) {
 			// stable hypothesis after membership queries
@@ -256,7 +259,7 @@ public class Main {
 		MembershipOracle<String, Word<String>> probabilisticOracle = new ProbabilisticOracle(logOracle, sulConfig.runsPerQuery, probFraction, sulConfig.maxAttempts);
 
 		System.out.println("Building Cache Tree...");
-		MealyCacheOracle.MealyCacheOracleState<String, String> cacheState = readCacheTree(CACHE_FILE);
+		MealyCacheOracle.MealyCacheOracleState<String, String> cacheState = FileManager.readStateFromFile(SUL_CACHE_FILE);
 
 		System.out.println("Building Cache Oracle...");
 		cacheOracle = MealyCacheOracle.createDAGCacheOracle(alphabet, probabilisticOracle);
@@ -291,17 +294,17 @@ public class Main {
 		return eqOracles;
 	}
 
-	public static SULConfig readConfig(LearnLogger logger, Config config, SutInterface sutInterface) {
+	public static SULConfig readConfig(Config config, SutInterface sutInterface) {
 		// read/disp config params for learner
 		learningParams = config.learningParams;
-		learningParams.printParams(logger);
+		learningParams.printParams();
 
 		SutInfo.setInputSignatures(sutInterface.inputInterfaces);
 		SutInfo.setOutputSignatures(sutInterface.outputInterfaces);
 
 		// read/disp SUT config
 		SULConfig sul = config.sulConfig;
-		sul.printParams(logger);
+		sul.printParams();
 		return sul;
 	}
 
@@ -335,56 +338,11 @@ public class Main {
 		sutConfigFile = sutConfigFile.getAbsoluteFile();
 	}
 
-	public static int cachedTreeNum = 0;
-
-	public static void writeCacheTree(MealyCacheOracle.MealyCacheOracleState<String, String> cacheState, boolean isFinal) {
-
-	    String cachePath = CACHE_FILE;
-	    String indexedCachePath = cachedTreeNum + CACHE_FILE;
-		writeCacheTree(cacheState, isFinal ? cachePath : indexedCachePath);
+	public static <T> void saveState(T state, String filename) {
+		FileManager.writeStateToFile(state, filename);
 		if (outputFolder != null) {
-    		cachePath = outputDir + File.separator + cachePath;
-    		indexedCachePath = outputDir + File.separator + indexedCachePath;
-    		writeCacheTree(cacheState, isFinal ? cachePath : indexedCachePath);
-		}
-	}
-
-	public static void writeCacheTree(MealyCacheOracle.MealyCacheOracleState<String, String> cacheState, String fileName) {
-		if (cacheState == null) {
-			logger.error("Could not write uninitialized cache state.");
-			return;
-		}
-		try (
-				OutputStream file = new FileOutputStream(fileName);
-				OutputStream buffer = new BufferedOutputStream(file);
-				ObjectOutput output = new ObjectOutputStream(buffer);
-				) {
-			output.writeObject(cacheState);
-		}
-		catch (IOException ex){
-			System.err.println("Could not write cache state.");
-		}
-		Main.cachedTreeNum += 1;
-	}
-
-	public static MealyCacheOracle.MealyCacheOracleState<String, String> readCacheTree(String fileName) {
-		try(
-				InputStream file = new FileInputStream(fileName);
-				InputStream buffer = new BufferedInputStream(file);
-				ObjectInput input = new ObjectInputStream (buffer);
-				) {
-			@SuppressWarnings("unchecked")
-			MealyCacheOracle.MealyCacheOracleState<String, String> cacheState =
-					(MealyCacheOracle.MealyCacheOracleState<String, String>) input.readObject();
-			return cacheState;
-		}
-		catch(ClassNotFoundException ex) {
-			System.err.println("Cache state file corrupt");
-			return null;
-		}
-		catch(IOException ex) {
-			System.err.println("Could not read cache file");
-			return null;
+			filename = outputDir + File.separator + filename;
+			FileManager.writeStateToFile(state, filename);
 		}
 	}
 

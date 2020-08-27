@@ -17,11 +17,11 @@ import de.learnlib.api.logging.LearnLogger;
 import de.learnlib.api.oracle.MembershipOracle;
 import learner.*;
 import net.automatalib.words.Word;
-import util.Log;
 import util.Tuple2;
 
 public class TraceRunner {
 	private static final String PATH = "testtrace.txt";
+	private static final LearnLogger logger = LearnLogger.getLogger("Trace Runner");
 
 	public static final String START = 		"\n****** INPUTS  ******\n";
 	public static final String SEPARATOR = 	"\n****** OUTPUTS ******\n";
@@ -77,13 +77,12 @@ public class TraceRunner {
 		List<String> trace = traceAndIncrement.tuple0;
 		Integer iterations = traceAndIncrement.tuple1;
 
-		Log.fatal("Start running trace " + iterations + " times");
+		logger.info("Start running trace " + iterations + " times");
 
 		Main.setupOutput("trace runner output.txt");
 		Config config = Main.createConfig();
-		LearnLogger logger = LearnLogger.getLogger("Trace Runner");
 		SutInterface sutInterface = Main.createSutInterface(config);
-		SULConfig sulConfig = Main.readConfig(logger, config, sutInterface);
+		SULConfig sulConfig = Main.readConfig(config, sutInterface);
 		sulConfig.exitIfInvalid = false;
 
 		SocketSUL sul = new SocketSUL(sulConfig);
