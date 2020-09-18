@@ -15,6 +15,9 @@ import java.util.Random;
 import de.learnlib.algorithms.lstar.AutomatonLStarState;
 import de.learnlib.algorithms.lstar.mealy.ExtensibleLStarMealy;
 import de.learnlib.algorithms.lstar.mealy.ExtensibleLStarMealyBuilder;
+import de.learnlib.algorithms.ttt.base.TTTLearnerState;
+import de.learnlib.algorithms.ttt.mealy.TTTLearnerMealy;
+import de.learnlib.algorithms.ttt.mealy.TTTLearnerMealyBuilder;
 import de.learnlib.api.algorithm.LearningAlgorithm;
 import de.learnlib.api.logging.LearnLogger;
 import de.learnlib.api.oracle.EquivalenceOracle;
@@ -56,7 +59,7 @@ public class Main {
 	private static boolean done;
 	public static Config config;
 	private static Alphabet<String> alphabet;
-	private static ExtensibleLStarMealy<String, String> learner;
+	private static TTTLearnerMealy<String, String> learner;
 	private static final List<Runnable> shutdownHooks = new ArrayList<>();
 	private static MealyCacheOracle<String, String> cacheOracle;
 	private static Counter queryCounter;
@@ -101,11 +104,11 @@ public class Main {
 		EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> eqOracle = buildEquivalenceOracle(learningParams, queryOracle);
 
 		logger.logEvent("Building Learner State...");
-		AutomatonLStarState<String, Word<String>, CompactMealy<String, String>, Integer> learnerState = FileManager.readStateFromFile(LEARNER_CACHE_FILE);
+		TTTLearnerState<String, Word<String>> learnerState = FileManager.readStateFromFile(LEARNER_CACHE_FILE);
 
 		logger.logEvent("Building Learner...");
 		learning = false;
-		learner = new ExtensibleLStarMealyBuilder<String, String>().withAlphabet(alphabet).withOracle(memOracle).create();
+		learner = new TTTLearnerMealyBuilder<String, String>().withAlphabet(alphabet).withOracle(memOracle).create();
 		if (learnerState != null) {
 			learner.resume(learnerState);
 			learning = true;
@@ -113,7 +116,6 @@ public class Main {
 
 		logger.logEvent("Starting learner...");
 		LearnResult learnResult = learn(learner, eqOracle);
-
 
 		// final output to out.txt
 		logger.logConfig("Seed: " + learningParams.seed);

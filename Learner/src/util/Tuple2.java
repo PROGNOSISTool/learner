@@ -1,21 +1,22 @@
 package util;
 
+import net.automatalib.commons.util.nid.MutableNumericID;
+
 import java.io.Serializable;
 
 /* Taken from tomte */
 public class Tuple2<T0,T1> implements Serializable {
 	private static final long serialVersionUID = 7482940805458320647L;
-	public  T0 tuple0;
-	public  T1 tuple1;
-	
-	
-	public Tuple2(){}	
-	
+	public T0 tuple0;
+	public T1 tuple1;
+
+	public Tuple2(){}
+
 	public Tuple2(T0 tuple0,T1 tuple1){
 		 this.tuple0 = tuple0;
-		 this.tuple1 = tuple1;		
+		 this.tuple1 = tuple1;
 	}
-	
+
 	public String toString(){
 		return "(" + this.tuple0.toString() + "," + this.tuple1.toString()  + ")";
 	}
@@ -52,8 +53,5 @@ public class Tuple2<T0,T1> implements Serializable {
 			return false;
 		return true;
 	}
-	
-	
-	
 }
 
