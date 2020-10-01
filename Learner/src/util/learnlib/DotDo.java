@@ -27,7 +27,6 @@ public class DotDo {
 	public static CompactMealy<String, String> readFile(String filename) throws IOException {
 		File file = new File(filename);
 		InputModelDeserializer<String, CompactMealy<String,String>> parser = DOTParsers.mealy();
-		// FIXME: https://github.com/LearnLib/automatalib/issues/40
 		InputModelData<String, CompactMealy<String, String>> machine = parser.readModel(file);
 		return machine.model;
 	}

@@ -71,7 +71,12 @@ public class FileManager {
 	}
 
 
-	public static Set<Word<String>> readQueriesFromFile(String filename)  {
+	public static void writeQueriesToFile(String filename, Set<Word<String>> queries) {
+		File file = createFile(filename, true);
+		appendToFile(file, queries);
+	}
+
+	public static Set<Word<String>> readQueriesFromFile(String filename) {
 		Set<Word<String>> queries = new HashSet<>();
 		try {
 			File file = new File(filename);

@@ -9,9 +9,9 @@
       <root url="jar://$PROJECT_DIR$/lib/InvlangReader.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/tomte-0.2.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/snakeyaml-1.9.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/learnlib-distribution-0.15.0-dependencies-bundle.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/jsr305-3.0.2.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/slf4j-jdk14-1.7.9.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/learnlib-0.16.0-SNAPSHOT-dependencies-bundle.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
