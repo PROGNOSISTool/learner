@@ -15,6 +15,7 @@ import java.util.Random;
 import de.learnlib.algorithms.lstar.AutomatonLStarState;
 import de.learnlib.algorithms.lstar.mealy.ExtensibleLStarMealy;
 import de.learnlib.algorithms.lstar.mealy.ExtensibleLStarMealyBuilder;
+import de.learnlib.algorithms.ttt.base.StateLimitException;
 import de.learnlib.algorithms.ttt.base.TTTLearnerState;
 import de.learnlib.algorithms.ttt.mealy.TTTLearnerMealy;
 import de.learnlib.algorithms.ttt.mealy.TTTLearnerMealyBuilder;
@@ -108,7 +109,11 @@ public class Main {
 
 		logger.logEvent("Building Learner...");
 		learning = false;
-		learner = new TTTLearnerMealyBuilder<String, String>().withAlphabet(alphabet).withOracle(memOracle).create();
+		learner = new TTTLearnerMealyBuilder<String, String>()
+				.withAlphabet(alphabet)
+				.withOracle(memOracle)
+				.withStateLimit(12)
+				.create();
 		if (learnerState != null) {
 			learner.resume(learnerState);
 			learning = true;
@@ -205,40 +210,45 @@ public class Main {
 		int hypCounter = 1;
 		done = false;
 
-		if (!learning) {
-			logger.info("Start Learning");
-			learner.startLearning();
-		}
-
-		while (!done) {
-			// stable hypothesis after membership queries
-			MealyMachine<?, String, ?, String> hyp = learner.getHypothesisModel();
-			String hypFileName = outputDir + File.separator + "tmp-learnresult"
-					+ hypCounter + ".dot";
-
-			DotDo.writeDotFile(hyp, alphabet, hypFileName);
-
-			logger.logEvent("starting equivalence query");
-
-			// search for counterexample
-			DefaultQuery<String, Word<String>> o = eqOracle.findCounterExample(hyp, alphabet);
-			logger.logEvent("done equivalence query");
-
-			// no counter example -> learning is done
-			if (o == null) {
-				done = true;
-				continue;
+		try {
+			if (!learning) {
+				logger.info("Start Learning");
+				learner.startLearning();
 			}
-			o = MealyUtil.shortenCounterExample(hyp, o);
-			assert o != null;
 
-			hypCounter ++;
-			logger.logEvent("Sending CE to LearnLib.");
-			logger.logCounterexample(o.toString());
-			// return counter example to the learner, so that it can use
-			// it to generate new membership queries
-			learner.refineHypothesis(o);
+			while (!done) {
+				// stable hypothesis after membership queries
+				MealyMachine<?, String, ?, String> hyp = learner.getHypothesisModel();
+				String hypFileName = outputDir + File.separator + "tmp-learnresult"
+						+ hypCounter + ".dot";
+
+				DotDo.writeDotFile(hyp, alphabet, hypFileName);
+
+				logger.logEvent("starting equivalence query");
+
+				// search for counterexample
+				DefaultQuery<String, Word<String>> o = eqOracle.findCounterExample(hyp, alphabet);
+				logger.logEvent("done equivalence query");
+
+				// no counter example -> learning is done
+				if (o == null) {
+					done = true;
+					continue;
+				}
+				o = MealyUtil.shortenCounterExample(hyp, o);
+				assert o != null;
+
+				hypCounter ++;
+				logger.logEvent("Sending CE to LearnLib.");
+				logger.logCounterexample(o.toString());
+				// return counter example to the learner, so that it can use
+				// it to generate new membership queries
+				learner.refineHypothesis(o);
+			}
+		} catch(StateLimitException ignored) {
+			logger.logEvent("Reached state limit. Wrapping up...");
 		}
+
 		learnResult.learnedModel = learner.getHypothesisModel();
 		return learnResult;
 	}

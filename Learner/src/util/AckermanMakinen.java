@@ -25,10 +25,8 @@ public class AckermanMakinen {
 		LinkedList<Word<String>> words = new LinkedList<>();
 		while (i < max && numCEC < numberOfStates) {
 			LinkedList<HashSet<Integer>> stateStack = new LinkedList<>();
-			for (int x = 0; x <= max; x++) {
-				stateStack.push(null);
-			}
-			stateStack.set(0, new HashSet<>(nfa.getInitialStates()));
+			stateStack.push(new HashSet<>(nfa.getInitialStates()));
+
 			Tuple2<LinkedList<HashSet<Integer>>, Word<String>> wordResult = minWordLM(stateStack, len, nfa);
 			stateStack = wordResult.tuple0;
 			Word<String> word = wordResult.tuple1;
@@ -39,6 +37,7 @@ public class AckermanMakinen {
 				numCEC = 0;
 				while (word != null && i < max) {
 					words.add(word);
+					System.out.println(word.toString());
 					Tuple2<LinkedList<HashSet<Integer>>, Word<String>> nextWordResult = nextWord(stateStack, word, nfa);
 					stateStack = nextWordResult.tuple0;
 					word = nextWordResult.tuple1;
@@ -52,14 +51,15 @@ public class AckermanMakinen {
 
 	public static Tuple2<LinkedList<HashSet<Integer>>, Word<String>>  nextWord(LinkedList<HashSet<Integer>> stateStack, Word<String> word, CompactNFA<String> nfa) {
 		LinkedList<String> sortedAlphabet = getSortedAlphabet(nfa);
+
 		HashMap<Tuple2<Integer, Integer>, Boolean> iCompletenessTable = preprocessingAMBoolean(word.size(), nfa);
 
 		for (int i = word.size(); i > 0; i--) {
-			stateStack.set(i - 1, stateStack.peek());
+			HashSet<Integer> setIMinusOne = stateStack.peek();
 
 			HashSet<Integer> RStates = new HashSet<>();
 			HashSet<Integer> successorStates = new HashSet<>();
-			for (Integer state : stateStack.get(i - 1)) {
+			for (Integer state : setIMinusOne) {
 				for (String symbol : sortedAlphabet) {
 					successorStates.addAll(nfa.getSuccessors(state, symbol));
 				}
@@ -77,7 +77,7 @@ public class AckermanMakinen {
 			HashSet<String> ASymbols = new HashSet<>();
 			for (String symbol : sortedAlphabet) {
 				HashSet<Integer> stateSet = new HashSet<>();
-				for (Integer state : stateStack.get(i - 1)) {
+				for (Integer state : setIMinusOne) {
 					stateSet.addAll(nfa.getSuccessors(state, symbol));
 				}
 				stateSet.retainAll(RStates);
@@ -109,7 +109,7 @@ public class AckermanMakinen {
 				bSymbol = BAlphabet.getFirst();
 
 				HashSet<Integer> newSi = new HashSet<>();
-				for (Integer state : stateStack.get(i - 1)) {
+				for (Integer state : setIMinusOne) {
 					for (Integer successorState : nfa.getSuccessors(state, bSymbol)) {
 						if (iCompletenessTable.containsKey(new Tuple2<>(successorState, word.size() - i))) {
 							if (iCompletenessTable.get(new Tuple2<>(successorState, word.size() - i))) {
@@ -118,8 +118,6 @@ public class AckermanMakinen {
 						}
 					}
 				}
-
-				stateStack.set(i, newSi);
 
 				if (i != word.size()) {
 					stateStack.push(newSi);
@@ -190,10 +188,11 @@ public class AckermanMakinen {
 		HashSet<Integer> finalStates = getFinalStates(nfa);
 		LinkedList<String> sortedAlphabet = getSortedAlphabet(nfa);
 
+		HashSet<Integer> set0 = stateStack.peek();
 		boolean shouldReturn = true;
-		for (Integer initialState : nfa.getInitialStates()) {
+		for (Integer fromState : set0) {
 			for (Integer finalState : finalStates) {
-				if (adjacencyMatrices.get(n).get(initialState, finalState)) {
+				if (adjacencyMatrices.get(n).get(fromState, finalState)) {
 					shouldReturn = false;
 					break;
 				}
@@ -205,21 +204,20 @@ public class AckermanMakinen {
 
 		Word<String> word = Word.epsilon();
 		for (int i = 0; i < n; i++) {
-			String nextSymbol = null;
-			alphabetLoop:
+			LinkedList<String> symbols = new LinkedList<>();
 			for (String symbol : sortedAlphabet) {
 				for (Integer state : stateStack.get(i)) {
 					for (Integer finalState : finalStates) {
 						for(Integer successorState : nfa.getSuccessors(state, symbol)) {
 							if (adjacencyMatrices.get(n - 1 - i).get(successorState, finalState)) {
-								nextSymbol = symbol;
-								break alphabetLoop;
+								symbols.add(symbol);
 							}
 						}
 					}
 				}
 			}
-
+			symbols.sort((o1, o2) -> Collator.getInstance().compare(o1,o2));
+			String nextSymbol = symbols.getFirst();
 			word = word.append(nextSymbol);
 
 			if (i != n - 1) {
@@ -234,7 +232,7 @@ public class AckermanMakinen {
 					}
 				}
 
-				stateStack.set(i + 1, nextStateSet);
+				stateStack.addLast(nextStateSet);
 			}
 		}
 
@@ -295,29 +293,6 @@ public class AckermanMakinen {
 		nfa.addTransition(init0, "c", acc3);
 		nfa.addTransition(acc3, "b", init0);
 
-//		Integer state1 = nfa.addState(false);
-//		Integer state2 = nfa.addState(false);
-//		Integer state3 = nfa.addState(true);
-//
-//		nfa.addTransition(init0, "a", state1);
-//		nfa.addTransition(state1, "b", state2);
-//		nfa.addTransition(state1, "a", state2);
-//		nfa.addTransition(state2, "c", state3);
-
-//		LinkedList<HashSet<Integer>> stateStack = new LinkedList<>();
-//		for (int i = 0; i < 3; i++) {
-//			stateStack.push(new HashSet<>());
-//		}
-//		HashSet<Integer> init = new HashSet<>();
-//		init.add(init0);
-//		stateStack.set(0, init);
-
-//		Tuple2<LinkedList<HashSet<Integer>>, Word<String>> result = minWordLM(stateStack, 3, nfa);
-//		System.out.println(result.tuple1.toString());
-
 		LinkedList<Word<String>> enumerated = enumerate(50, nfa);
-		for (Word<String> word : enumerated) {
-			System.out.println(word.toString());
-		}
 	}
 }
