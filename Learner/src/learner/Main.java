@@ -29,6 +29,7 @@ import de.learnlib.filter.statistic.Counter;
 import de.learnlib.filter.statistic.oracle.CounterOracle;
 import de.learnlib.oracle.equivalence.EQOracleChain;
 import de.learnlib.oracle.equivalence.RandomWordsEQOracle;
+import de.learnlib.oracle.equivalence.WpMethodEQOracle;
 import de.learnlib.oracle.membership.SULOracle;
 import de.learnlib.util.mealy.MealyUtil;
 import net.automatalib.automata.transducers.MealyMachine;
@@ -112,7 +113,7 @@ public class Main {
 		learner = new TTTLearnerMealyBuilder<String, String>()
 				.withAlphabet(alphabet)
 				.withOracle(memOracle)
-				.withStateLimit(12)
+				.withStateLimit(20)
 				.create();
 		if (learnerState != null) {
 			learner.resume(learnerState);
@@ -295,8 +296,8 @@ public class Main {
 		equivalenceCounter = counterOracle.getCounter();
 
 		Random random = new Random(learningParams.seed);
-		RandomWordsEQOracle<MealyMachine<?, String, ?, String>, String, Word<String>> eqOracle = new RandomWordsEQOracle<>(counterOracle, learningParams.minTraceLength, learningParams.maxTraceLength, learningParams.maxNumTraces, random);
-//		WpMethodEQOracle<MealyMachine<?, String, ?, String>, String, Word<String>> eqOracle = new WpMethodEQOracle<>(counterOracle, 3);
+//		RandomWordsEQOracle<MealyMachine<?, String, ?, String>, String, Word<String>> eqOracle = new RandomWordsEQOracle<>(counterOracle, learningParams.minTraceLength, learningParams.maxTraceLength, learningParams.maxNumTraces, random);
+		WpMethodEQOracle<MealyMachine<?, String, ?, String>, String, Word<String>> eqOracle = new WpMethodEQOracle<>(counterOracle, 2);
 		LogOracle fsOracle = new LogOracle(outputDir + File.separator + "cexOut.txt", eqOracle);
 		eqOracles.addOracle(fsOracle);
 

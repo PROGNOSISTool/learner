@@ -13,6 +13,6 @@ sulConfig:
 # add confidence that there were no missed/wrong responses
     runsPerQuery: 3
     confidence: 85
-    maxAttempts: 200
+    maxAttempts: 50
     sutPort: 3333
     sutIP: 127.0.0.1
