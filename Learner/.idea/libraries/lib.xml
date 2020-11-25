@@ -12,8 +12,11 @@
       <root url="jar://$PROJECT_DIR$/lib/jsr305-3.0.2.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/slf4j-jdk14-1.7.9.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/learnlib-0.16.0-SNAPSHOT-dependencies-bundle.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/Learner_lib_choco-solver-3.3.1-with-dependencies.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib/Learner_lib_choco-solver-3.3.1-with-dependencies.jar!/OSGI-OPT/src" />
+    </SOURCES>
   </library>
 </component>

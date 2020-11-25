@@ -113,7 +113,7 @@ public class Main {
 		learner = new TTTLearnerMealyBuilder<String, String>()
 				.withAlphabet(alphabet)
 				.withOracle(memOracle)
-				.withStateLimit(20)
+				.withStateLimit(40)
 				.create();
 		if (learnerState != null) {
 			learner.resume(learnerState);
