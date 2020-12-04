@@ -10,5 +10,10 @@ inputInterfaces:
   #SYN(?,?,?): []
   #SYN+ACK(?,?,?): []
   #ACK(?,?,?): []
+  #ACK+PSH(?,?,?): []
+  #FIN+ACK(?,?,?): []
+  #RST(?,?,?): []
+  #ACK+RST(?,?,?): []
+
 outputInterfaces: []
 constants: []
