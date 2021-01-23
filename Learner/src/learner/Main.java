@@ -53,6 +53,7 @@ public class Main {
 
 	private static File sutConfigFile = null;
 	public static LearningParams learningParams;
+	private static SocketSUL sul;
 	private static final long timeSnap = System.currentTimeMillis();;
 	public static String outputDir = "output" + File.separator + timeSnap;
 	private static File outputFolder = null;
@@ -197,7 +198,7 @@ public class Main {
 			saveState(cacheState, SUL_CACHE_FILE);
 			saveState(learner.suspend(), LEARNER_CACHE_FILE);
 			copyInputsToOutputFolder();
-
+            sul.stop();
 			if (!done) {
 				SoundUtils.failure();
 			}
@@ -256,8 +257,8 @@ public class Main {
 
 	public static MembershipOracle<String, Word<String>> buildQueryOracle(SULConfig sulConfig) {
 		System.out.println("Building Socket SUL Oracle...");
-		SocketSUL socketSUL = new SocketSUL(sulConfig);
-		SULOracle<String, String> sulOracle = new SocketSULOracle(socketSUL);
+		sul = new SocketSUL(sulConfig);
+		SULOracle<String, String> sulOracle = new SocketSULOracle(sul);
 
 		System.out.println("Building Counter Oracle...");
 		LearnLogger queryLogger = LearnLogger.getLogger("Query Oracle");
