@@ -1,4 +1,4 @@
-package util.learnlib;
+package util;
 
 import java.io.*;
 import java.util.Collection;
@@ -15,15 +15,6 @@ import net.automatalib.serialization.InputModelDeserializer;
 import net.automatalib.serialization.dot.GraphDOT;
 
 public class DotDo {
-	// policy : convert into method throwing unchecked exception
-	public static CompactMealy<String, String> readDotFile(String filepath)  {
-		try {
-			return readFile(filepath);
-		} catch (IOException ex) {
-			throw new ExceptionAdapter(ex);
-		}
-	}
-
 	public static CompactMealy<String, String> readFile(String filename) throws IOException {
 		File file = new File(filename);
 		InputModelDeserializer<String, CompactMealy<String,String>> parser = DOTParsers.mealy();

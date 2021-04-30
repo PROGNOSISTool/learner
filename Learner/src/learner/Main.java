@@ -8,13 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
-import de.learnlib.algorithms.lstar.AutomatonLStarState;
-import de.learnlib.algorithms.lstar.mealy.ExtensibleLStarMealy;
-import de.learnlib.algorithms.lstar.mealy.ExtensibleLStarMealyBuilder;
 import de.learnlib.algorithms.ttt.base.StateLimitException;
 import de.learnlib.algorithms.ttt.base.TTTLearnerState;
 import de.learnlib.algorithms.ttt.mealy.TTTLearnerMealy;
@@ -28,24 +22,20 @@ import de.learnlib.filter.cache.mealy.MealyCacheOracle;
 import de.learnlib.filter.statistic.Counter;
 import de.learnlib.filter.statistic.oracle.CounterOracle;
 import de.learnlib.oracle.equivalence.EQOracleChain;
-import de.learnlib.oracle.equivalence.RandomWordsEQOracle;
 import de.learnlib.oracle.equivalence.WpMethodEQOracle;
 import de.learnlib.oracle.membership.SULOracle;
 import de.learnlib.util.mealy.MealyUtil;
 import net.automatalib.automata.transducers.MealyMachine;
-import net.automatalib.automata.transducers.impl.compact.CompactMealy;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
 import sutInterface.*;
-import sutInterface.quic.LearnResult;
 import util.Chmod;
 import util.FileManager;
-import util.SoundUtils;
 import util.exceptions.CorruptedLearningException;
-import util.learnlib.DotDo;
+import util.DotDo;
 
 public class Main {
 	public static final String SUL_CACHE_FILE = "cache" + File.separator + "sul.ser";
@@ -54,7 +44,7 @@ public class Main {
 	private static File sutConfigFile = null;
 	public static LearningParams learningParams;
 	private static SocketSUL sul;
-	private static final long timeSnap = System.currentTimeMillis();;
+	private static final long timeSnap = System.currentTimeMillis();
 	public static String outputDir = "output" + File.separator + timeSnap;
 	private static File outputFolder = null;
 	private static final LearnLogger logger = LearnLogger.getLogger("Learner");
@@ -63,7 +53,6 @@ public class Main {
 	public static Config config;
 	private static Alphabet<String> alphabet;
 	private static TTTLearnerMealy<String, String> learner;
-	private static final List<Runnable> shutdownHooks = new ArrayList<>();
 	private static MealyCacheOracle<String, String> cacheOracle;
 	private static Counter queryCounter;
 	private static Counter membershipCounter;
@@ -95,7 +84,6 @@ public class Main {
 		logger.logEvent("Reading TCP parameters...");
 		SULConfig sul = readConfig(config, sutInterface);
 		alphabet = SutInfo.generateInputAlphabet();
-		SutInfo.generateOutputAlphabet();
 
 		logger.logEvent("Building query oracle...");
 		MembershipOracle<String, Word<String>> queryOracle = buildQueryOracle(sul);
@@ -104,7 +92,7 @@ public class Main {
 		MembershipOracle<String, Word<String>> memOracle = buildMembershipOracle(queryOracle);
 
 		logger.logEvent("Building equivalence oracle...");
-		EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> eqOracle = buildEquivalenceOracle(learningParams, queryOracle);
+		EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> eqOracle = buildEquivalenceOracle(queryOracle);
 
 		logger.logEvent("Building Learner State...");
 		TTTLearnerState<String, Word<String>> learnerState = FileManager.readStateFromFile(LEARNER_CACHE_FILE);
@@ -122,7 +110,7 @@ public class Main {
 		}
 
 		logger.logEvent("Starting learner...");
-		LearnResult learnResult = learn(learner, eqOracle);
+        MealyMachine<?, String, ?, String> model = learn(learner, eqOracle);
 
 		// final output to out.txt
 		logger.logConfig("Seed: " + learningParams.seed);
@@ -136,20 +124,11 @@ public class Main {
 		logger.logStatistic(queryCounter);
 		logger.logStatistic(membershipCounter);
 		logger.logStatistic(equivalenceCounter);
-		logger.logModel(learnResult.learnedModel);
+		logger.logModel(model);
 
-		// output learned model with start state highlighted to dot file :
-		// notes:
-		// - make start state the only highlighted state in dot file
-		// - learnlib makes highlighted state by setting attribute color='red'
-		// on state
-
-		writeOutputFiles(learnResult);
+		writeOutputFiles(model);
 
 		logger.logEvent("Learner Finished!");
-
-		// beeps to notify that learning is done :)
-		SoundUtils.success();
 	}
 
 	private static void copyInputsToOutputFolder() {
@@ -159,25 +138,20 @@ public class Main {
 		    return;
 		}
 		Path srcInputPath = inputFolder.toPath();
-		Path dstInputPath = outputFolder.toPath().resolve(inputFolder.getName()); // or resolve("input")
-		//Path srcTcpPath = Paths.get(System.getProperty("user.dir")).resolve("Learner").resolve("src").resolve("sutInterface").resolve("tcp");
-		//Path dstTcpPath = outputFolder.toPath().resolve("tcp");
+		Path dstInputPath = outputFolder.toPath().resolve(inputFolder.getName());
+
 		try {
 			FileManager.copyFromTo(srcInputPath, dstInputPath);
-		//	FileManager.copyFromTo(srcTcpPath, dstTcpPath);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private static void writeOutputFiles(LearnResult learnResult) {
-		// output learned state machine as dot and pdf file :
-		//File outputFolder = new File(outputDir + File.separator + learnResult.startTime);
-		//outputFolder.mkdirs();
+	private static void writeOutputFiles(MealyMachine<?, String, ?, String> model) {
 		File dotFile = new File(outputFolder.getAbsolutePath() + File.separator + "learnresult.dot");
 
 		try (BufferedWriter out = new BufferedWriter(new FileWriter(dotFile))) {
-			DotDo.write(learnResult.learnedModel, alphabet, out);
+			DotDo.write(model, alphabet, out);
 		} catch (IOException e1) {
 			logger.error("Could not write to dot file.");
 		}
@@ -188,7 +162,7 @@ public class Main {
 		}
 	}
 
-	public static void setupOutput(final String outputDir) throws FileNotFoundException {
+	public static void setupOutput(final String outputDir) {
 		outputFolder = new File(outputDir);
 		outputFolder.mkdirs();
 		registerShutdownHook(() -> {
@@ -199,16 +173,12 @@ public class Main {
 			saveState(learner.suspend(), LEARNER_CACHE_FILE);
 			copyInputsToOutputFolder();
             sul.stop();
-			if (!done) {
-				SoundUtils.failure();
-			}
 		});
 	}
 
-	private static LearnResult learn(LearningAlgorithm<MealyMachine<?,String,?,String>, String, Word<String>> learner,
+	private static MealyMachine<?, String, ?, String> learn(LearningAlgorithm<MealyMachine<?,String,?,String>, String, Word<String>> learner,
 									 EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> eqOracle)
 			throws IOException {
-		LearnResult learnResult = new LearnResult();
 		int hypCounter = 1;
 		done = false;
 
@@ -251,8 +221,7 @@ public class Main {
 			logger.logEvent("Reached state limit. Wrapping up...");
 		}
 
-		learnResult.learnedModel = learner.getHypothesisModel();
-		return learnResult;
+		return learner.getHypothesisModel();
 	}
 
 	public static MembershipOracle<String, Word<String>> buildQueryOracle(SULConfig sulConfig) {
@@ -290,20 +259,14 @@ public class Main {
 		return new LogOracle(outputDir + File.separator + "memQueries.txt", counterOracle);
 	}
 
-	private static EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> buildEquivalenceOracle(LearningParams learningParams, MembershipOracle<String, Word<String>> queryOracle) {
+	private static EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> buildEquivalenceOracle(MembershipOracle<String, Word<String>> queryOracle) {
 		EQOracleChain<MealyMachine<?, String, ?, String>, String, Word<String>> eqOracles = new EQOracleChain<>();
 
 		CounterOracle<String, Word<String>> counterOracle = new ExtendedCounterOracle(LearnLogger.getLogger("Equivalence Oracle"), queryOracle, "Equivalence Queries");
 		equivalenceCounter = counterOracle.getCounter();
 
-		Random random = new Random(learningParams.seed);
-//		RandomWordsEQOracle<MealyMachine<?, String, ?, String>, String, Word<String>> eqOracle = new RandomWordsEQOracle<>(counterOracle, learningParams.minTraceLength, learningParams.maxTraceLength, learningParams.maxNumTraces, random);
 		WpMethodEQOracle<MealyMachine<?, String, ?, String>, String, Word<String>> eqOracle = new WpMethodEQOracle<>(counterOracle, 2);
-		LogOracle fsOracle = new LogOracle(outputDir + File.separator + "cexOut.txt", eqOracle);
-		eqOracles.addOracle(fsOracle);
-
-		ExternalEquivalenceOracle extOracle = new ExternalEquivalenceOracle(counterOracle, "cexIn.txt");
-		eqOracles.addOracle(extOracle);
+		eqOracles.addOracle(eqOracle);
 
 		return eqOracles;
 	}
@@ -314,7 +277,6 @@ public class Main {
 		learningParams.printParams();
 
 		SutInfo.setInputSignatures(sutInterface.inputInterfaces);
-		SutInfo.setOutputSignatures(sutInterface.outputInterfaces);
 
 		// read/disp SUT config
 		SULConfig sul = config.sulConfig;
@@ -362,7 +324,6 @@ public class Main {
 
 	public static void registerShutdownHook(Runnable r) {
 		Runtime.getRuntime().addShutdownHook(new Thread(r));
-		shutdownHooks.add(r);
 	}
 }
 
