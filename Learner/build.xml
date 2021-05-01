@@ -1,6 +1,6 @@
-<project name="QUICLearner" default="dist" basedir=".">
+<project name="PrognosisLearner" default="dist" basedir=".">
     <description>
-        QIUC Learner build file
+        Prognosis Learner build file
     </description>
   <!-- set global properties for this build -->
   <property name="src" location="src"/>
@@ -15,7 +15,7 @@
     <mkdir dir="${build}"/>
   </target>
 
-  <path id="tcplib">
+  <path id="learnerlib">
     <fileset dir="${lib}" includes="*.jar"/>
   </path>
 
@@ -23,7 +23,7 @@
         description="compile the source " >
     <!-- Compile the java code from ${src} into ${build} -->
     <javac srcdir="${src}" destdir="${build}">
-      <classpath refid="tcplib"/>
+      <classpath refid="learnerlib"/>
     </javac>
   </target>
 
@@ -33,7 +33,7 @@
     <mkdir dir="${dist}/lib"/>
 
     <!-- Put everything in ${build} into the QUICLearner.jar file -->
-    <jar jarfile="${dist}/QUICLearner.jar" basedir="${build}"/>
+    <jar jarfile="${dist}/prognosisLearner.jar" basedir="${build}"/>
   </target>
 
   <target name="clean"

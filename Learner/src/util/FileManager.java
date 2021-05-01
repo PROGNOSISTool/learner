@@ -4,7 +4,6 @@ import de.learnlib.api.logging.LearnLogger;
 import net.automatalib.words.Word;
 
 import java.io.*;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -62,37 +61,6 @@ public class FileManager {
 		return file;
 	}
 
-
-	public static void writeQueriesToFile(String filename, Set<Word<String>> queries) {
-		File file = createFile(filename, true);
-		appendToFile(file, queries);
-	}
-
-	public static Set<Word<String>> readQueriesFromFile(String filename) {
-		Set<Word<String>> queries = new HashSet<>();
-		try {
-			File file = new File(filename);
-			FileReader fr = new FileReader(file);
-			BufferedReader br = new BufferedReader(fr);
-			String line;
-			while((line = br.readLine()) != null) {
-				line = line.replace("\n", "");
-				LinkedList<String> symbolList = new  LinkedList<>(Arrays.asList(line.split(" ")));
-				int separator = symbolList.indexOf("/");
-				if (separator != -1) {
-					symbolList.subList(separator, symbolList.size()).clear();
-				}
-				queries.add(Word.fromList(symbolList));
-			}
-			fr.close();
-		} catch(FileNotFoundException e) {
-			logger.info("External CounterExamples not found, creating pass-throw oracle.");
-		} catch(IOException e) {
-			e.printStackTrace();
-		}
-		return queries;
-	}
-
 	public static <T> void writeStateToFile(T state, String filename) {
 		if (state == null) {
 			logger.error("Could not write uninitialized cache state.");
@@ -103,7 +71,7 @@ public class FileManager {
 			File file = new File(filename);
 			Files.createDirectories(file.getParentFile().toPath());
 		} catch (IOException e) {
-			logger.error("Failed to create parent directories: " + e.toString());
+			logger.error("Failed to create parent directories: " + e);
 		}
 
 		try (OutputStream stream = new FileOutputStream(filename);
@@ -111,7 +79,7 @@ public class FileManager {
 			 ObjectOutput output = new ObjectOutputStream(buffer)) {
 			output.writeObject(state);
 		} catch (IOException ex){
-			System.err.println("Could not write cache state: (" + ex.toString() + ")");
+			System.err.println("Could not write cache state: (" + ex + ")");
 		}
 	}
 

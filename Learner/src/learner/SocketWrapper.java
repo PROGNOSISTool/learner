@@ -1,4 +1,4 @@
-package sutInterface;
+package learner;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,7 +10,7 @@ import java.util.Map;
 
 // Wrapper around the java Socket so we have clear segmentation of inputs and outputs
 public class SocketWrapper {
-	private static Map<Integer, Socket> socketMap = new HashMap<Integer, Socket>();
+	private static final Map<Integer, Socket> socketMap = new HashMap<>();
 	protected Socket sock;
 	protected PrintWriter sockout;
 	protected BufferedReader sockin;
@@ -28,11 +28,7 @@ public class SocketWrapper {
 				sock.getInputStream()));
 	}
 
-	public SocketWrapper(int sutPort) throws IOException {
-		this("localhost", sutPort);
-	}
-
-	public void writeInput(String input) {
+    public void writeInput(String input) {
 	    if (sockout != null) {
 		sockout.println(input);
 		sockout.flush();
@@ -50,16 +46,5 @@ public class SocketWrapper {
 			e.printStackTrace();
 		}
 		return output;
-	}
-
-	public void close() {
-	    if (sockout != null) {
-		sockout.write("STOP");
-		try {
-			sock.close();
-		} catch (IOException ex) {
-
-		}
-	    }
 	}
 }

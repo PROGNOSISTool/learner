@@ -2,6 +2,8 @@ package util.exceptions;
 
 import de.learnlib.api.exception.SULException;
 
+import java.io.Serial;
+
 /**
  * Used to denote that the learning process has been corrupted with wrong
  * information, e.g. an output that was already processed by the learner
@@ -9,7 +11,8 @@ import de.learnlib.api.exception.SULException;
  *
  */
 public class CorruptedLearningException extends SULException {
-	private static final long serialVersionUID = 3618393099207301314L;
+	@Serial
+    private static final long serialVersionUID = 3618393099207301314L;
 
 	public CorruptedLearningException() {
 		super(new Throwable());

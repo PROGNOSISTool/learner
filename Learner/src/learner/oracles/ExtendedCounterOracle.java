@@ -1,4 +1,4 @@
-package sutInterface;
+package learner.oracles;
 
 import de.learnlib.api.logging.LearnLogger;
 import de.learnlib.api.oracle.MembershipOracle;

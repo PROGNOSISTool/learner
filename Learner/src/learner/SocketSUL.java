@@ -1,7 +1,6 @@
 package learner;
 
 import de.learnlib.api.SUL;
-import sutInterface.SocketWrapper;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -10,7 +9,7 @@ import java.util.List;
 public class SocketSUL implements SUL<String, String> {
 	private SocketWrapper socket;
 
-	public SocketSUL(SULConfig config) {
+	public SocketSUL(Config config) {
 		try {
 			this.socket = new SocketWrapper(config.sutIP, config.sutPort);
 		} catch (IOException e) {

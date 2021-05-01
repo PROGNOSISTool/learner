@@ -7,8 +7,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.HashSet;
+import java.util.Objects;
 
-public class Chmod {	
+public class Chmod {
 	public static void set(int owner, int group, int others, boolean recursive, String pathName) throws IOException {
 		Path path = Paths.get(pathName);
 		HashSet<PosixFilePermission> perms = new HashSet<>();
@@ -33,7 +34,7 @@ public class Chmod {
 		Files.setPosixFilePermissions(path, perms);
 		File file = path.toFile();
 		if (recursive && file.isDirectory()) {
-			for (String child : file.list()) {
+			for (String child : Objects.requireNonNull(file.list())) {
 				set(owner, group, others, true, child);
 			}
 		}

@@ -1,4 +1,4 @@
-package sutInterface;
+package learner.oracles;
 
 import de.learnlib.api.query.Query;
 import de.learnlib.oracle.membership.SULOracle;

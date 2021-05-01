@@ -7,16 +7,13 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import de.learnlib.api.logging.LearnLogger;
-import de.learnlib.api.oracle.MembershipOracle;
 import learner.*;
-import net.automatalib.words.Word;
 import util.Tuple2;
 
 public class TraceRunner {
@@ -27,10 +24,9 @@ public class TraceRunner {
 	public static final String SEPARATOR = 	"\n****** OUTPUTS ******\n";
 	public static final String END = 		"\n*********************\n";
 
-	private final Map<List<String>, Integer> outcomes = new HashMap<List<String>, Integer>();
+	private final Map<List<String>, Integer> outcomes = new HashMap<>();
 	private final SocketSUL socketSul;
 	private final List<String> inputTrace;
-	//private final CacheInputValidator validator;
 
 	public static Tuple2<List<String>,Integer> readTraceAndIterations() {
 	    List<String> trace;
@@ -68,24 +64,23 @@ public class TraceRunner {
         } catch (NumberFormatException e) {
             iterations = 1;
         }
-        return new Tuple2<List<String>,Integer>(trace, iterations);
+        return new Tuple2<>(trace, iterations);
 	}
 
 	public static void main(String[] args) throws IOException {
 		Main.handleArgs(args);
 		Tuple2<List<String>, Integer> traceAndIncrement = readTraceAndIterations();
-		List<String> trace = traceAndIncrement.tuple0;
+        assert traceAndIncrement != null;
+        List<String> trace = traceAndIncrement.tuple0;
 		Integer iterations = traceAndIncrement.tuple1;
 
 		logger.info("Start running trace " + iterations + " times");
 
 		Main.setupOutput("trace runner output.txt");
 		Config config = Main.createConfig();
-		SutInterface sutInterface = Main.createSutInterface(config);
-		SULConfig sulConfig = Main.readConfig(config, sutInterface);
-		sulConfig.exitIfInvalid = false;
+        config.exitIfInvalid = false;
 
-		SocketSUL sul = new SocketSUL(sulConfig);
+		SocketSUL sul = new SocketSUL(config);
 		TraceRunner traceRunner = new TraceRunner(trace, sul);
 		traceRunner.testTrace(iterations);
 		sul.stop();
@@ -99,13 +94,7 @@ public class TraceRunner {
 		sb.append(SEPARATOR);
 		List<Entry<List<String>, Integer>> orderedEntries = new ArrayList<>(this.outcomes.size());
 		orderedEntries.addAll(this.outcomes.entrySet());
-		orderedEntries.sort(new Comparator<Entry<List<String>, Integer>>() {
-			@Override
-			public int compare(Entry<List<String>, Integer> arg0,
-							   Entry<List<String>, Integer> arg1) {
-				return Integer.compare(arg0.getValue(), arg1.getValue());
-			}
-		});
+		orderedEntries.sort(Comparator.comparingInt(Entry::getValue));
 		for (Entry<List<String>, Integer> entry : orderedEntries) {
 			sb.append(entry.getValue().toString()).append(": ").append(entry.getKey()).append("\n");
 		}
@@ -113,29 +102,19 @@ public class TraceRunner {
 		return sb.toString();
 	}
 
-	public TraceRunner(Word<String> word, SocketSUL socketSul) {
-		this.inputTrace = word.asList();
-		this.socketSul = socketSul;
-	}
-
-	public TraceRunner(List<String> inputTrace, SocketSUL socketSul) {
+    public TraceRunner(List<String> inputTrace, SocketSUL socketSul) {
 		this.inputTrace = inputTrace;
 		this.socketSul = socketSul;
 	}
 
 	public void testTrace(int iterations) {
 		for (int i = 0; i < iterations; i++) {
-			boolean check = runTrace((i+1));
-			if (!check) {
-			    break;
-			}
-
+			runTrace((i+1));
 		}
 		socketSul.pre();
 	}
 
-	protected boolean runTrace(int printNumber) {
-		boolean checkResult = true;
+	protected void runTrace(int printNumber) {
 		socketSul.pre();
 		System.out.println("# " + printNumber);
 		List<String> outcome = this.socketSul.step(inputTrace);
@@ -145,6 +124,5 @@ public class TraceRunner {
 			currentCounter = 0;
 		}
 		outcomes.put(outcome, currentCounter + 1);
-		return checkResult;
 	}
 }

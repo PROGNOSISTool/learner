@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.util.Map;
 
 import de.learnlib.algorithms.ttt.base.StateLimitException;
 import de.learnlib.algorithms.ttt.base.TTTLearnerState;
@@ -25,24 +26,26 @@ import de.learnlib.oracle.equivalence.EQOracleChain;
 import de.learnlib.oracle.equivalence.WpMethodEQOracle;
 import de.learnlib.oracle.membership.SULOracle;
 import de.learnlib.util.mealy.MealyUtil;
+import learner.oracles.ExtendedCounterOracle;
+import learner.oracles.LogOracle;
+import learner.oracles.ProbabilisticOracle;
+import learner.oracles.SocketSULOracle;
 import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
+import net.automatalib.words.impl.Alphabets;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 
-import sutInterface.*;
 import util.Chmod;
 import util.FileManager;
 import util.exceptions.CorruptedLearningException;
-import util.DotDo;
+import util.DotWriter;
 
 public class Main {
 	public static final String SUL_CACHE_FILE = "cache" + File.separator + "sul.ser";
 	public static final String LEARNER_CACHE_FILE = "cache" + File.separator + "learner.ser";
 
 	private static File sutConfigFile = null;
-	public static LearningParams learningParams;
 	private static SocketSUL sul;
 	private static final long timeSnap = System.currentTimeMillis();
 	public static String outputDir = "output" + File.separator + timeSnap;
@@ -74,12 +77,11 @@ public class Main {
 		setupOutput(outputDir);
 
 		logger.logEvent("Reading config...");
-		Config config = createConfig();
-		Main.config = config;
-        alphabet = SutInfo.generateInputAlphabet();
+		config = createConfig();
+        alphabet = Alphabets.fromList(config.inputAlphabet);
 
 		logger.logEvent("Building query oracle...");
-		MembershipOracle<String, Word<String>> queryOracle = buildQueryOracle(config.sulConfig);
+		MembershipOracle<String, Word<String>> queryOracle = buildQueryOracle(config);
 
 		logger.logEvent("Building membership oracle...");
 		MembershipOracle<String, Word<String>> memOracle = buildMembershipOracle(queryOracle);
@@ -143,7 +145,7 @@ public class Main {
 		File dotFile = new File(outputFolder.getAbsolutePath() + File.separator + "learnresult.dot");
 
 		try (BufferedWriter out = new BufferedWriter(new FileWriter(dotFile))) {
-			DotDo.write(model, alphabet, out);
+			DotWriter.write(model, alphabet, out);
 		} catch (IOException e1) {
 			logger.error("Could not write to dot file.");
 		}
@@ -186,7 +188,7 @@ public class Main {
 				String hypFileName = outputDir + File.separator + "tmp-learnresult"
 						+ hypCounter + ".dot";
 
-				DotDo.writeDotFile(hyp, alphabet, hypFileName);
+				DotWriter.writeDotFile(hyp, alphabet, hypFileName);
 
 				logger.logEvent("starting equivalence query");
 
@@ -216,9 +218,9 @@ public class Main {
 		return learner.getHypothesisModel();
 	}
 
-	public static MembershipOracle<String, Word<String>> buildQueryOracle(SULConfig sulConfig) {
+	public static MembershipOracle<String, Word<String>> buildQueryOracle(Config learnerConfig) {
 		System.out.println("Building Socket SUL Oracle...");
-		sul = new SocketSUL(sulConfig);
+		sul = new SocketSUL(learnerConfig);
 		SULOracle<String, String> sulOracle = new SocketSULOracle(sul);
 
 		System.out.println("Building Counter Oracle...");
@@ -230,8 +232,8 @@ public class Main {
 		MembershipOracle<String, Word<String>> logOracle = new LogOracle(queryLogger, counterOracle);
 
 		System.out.println("Building Probabilistic Oracle...");
-		double probFraction = (double) sulConfig.confidence / 100;
-		MembershipOracle<String, Word<String>> probabilisticOracle = new ProbabilisticOracle(logOracle, sulConfig.runsPerQuery, probFraction, sulConfig.maxAttempts);
+		double probFraction = (double) learnerConfig.confidence / 100;
+		MembershipOracle<String, Word<String>> probabilisticOracle = new ProbabilisticOracle(logOracle, learnerConfig.runsPerQuery, probFraction, learnerConfig.maxAttempts);
 
 		System.out.println("Building Cache Tree...");
 		MealyCacheOracle.MealyCacheOracleState<String, String> cacheState = FileManager.readStateFromFile(SUL_CACHE_FILE);
@@ -265,14 +267,9 @@ public class Main {
 
 	public static Config createConfig() throws FileNotFoundException {
 		InputStream configInput = new FileInputStream(sutConfigFile);
-		Yaml yaml = new Yaml(new Constructor(Config.class));
-		Config config = yaml.loadAs(configInput, Config.class);
-
-		SutInfo.setInputAlphabet(config.learningParams.inputAlphabet);
-        learningParams = config.learningParams;
-        learningParams.printParams();
-
-        return config;
+		Yaml yaml = new Yaml();
+        Map<String, Object> parsed = yaml.load(configInput);
+        return yaml.loadAs(yaml.dump(parsed.get("learner")), Config.class);
 	}
 
 	public static void handleArgs(String[] args) {

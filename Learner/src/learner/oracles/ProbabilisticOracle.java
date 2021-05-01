@@ -1,4 +1,4 @@
-package sutInterface;
+package learner.oracles;
 
 import java.util.Collection;
 import java.util.List;
@@ -32,8 +32,8 @@ public class ProbabilisticOracle implements MembershipOracle<String, Word<String
 	@Override
 	public Word<String> answerQuery(Word<String> inputWord) {
 		List<String> inputs = inputWord.asList();
-		Counter<List<String>> responseCounter = new Counter<List<String>>();
-		boolean finished = false;
+		Counter<List<String>> responseCounter = new Counter<>();
+		boolean finished;
 		boolean firstAttempt = true;
 		do {
 
