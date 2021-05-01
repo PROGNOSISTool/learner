@@ -9,22 +9,22 @@ import net.automatalib.words.Alphabet;
 import net.automatalib.words.impl.Alphabets;
 
 public class SutInfo {
-    private static List < ActionSignature > inputSignatures;
+    private static List < ActionSignature > inputAlphabet;
 
-    public static List < ActionSignature > getInputSignatures() {
-        return new ArrayList<>(inputSignatures);
+    public static List < ActionSignature > getInputAlphabet() {
+        return new ArrayList<>(inputAlphabet);
     }
 
-    public static void setInputSignatures(Map<String, List<String>> signatures) {
-    	SutInfo.inputSignatures = new ArrayList<>();
+    public static void setInputAlphabet(Map<String, List<String>> signatures) {
+    	SutInfo.inputAlphabet = new ArrayList<>();
     	for (Entry<String, List<String>> entry : signatures.entrySet()) {
-    		SutInfo.inputSignatures.add(new ActionSignature(entry.getKey(), entry.getValue()));
+    		SutInfo.inputAlphabet.add(new ActionSignature(entry.getKey(), entry.getValue()));
     	}
     }
 
 	public static Alphabet<String> generateInputAlphabet() {
 		List<String> symbolList = new ArrayList<>();
-		for (ActionSignature sig : SutInfo.getInputSignatures()) {
+		for (ActionSignature sig : SutInfo.getInputAlphabet()) {
 			List<String> currentAlpha = new ArrayList<>();
 			currentAlpha.add(sig.getMethodName());
 			symbolList.addAll(currentAlpha);

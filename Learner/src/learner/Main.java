@@ -49,8 +49,7 @@ public class Main {
 	private static File outputFolder = null;
 	private static final LearnLogger logger = LearnLogger.getLogger("Learner");
 	private static boolean learning;
-	private static boolean done;
-	public static Config config;
+    public static Config config;
 	private static Alphabet<String> alphabet;
 	private static TTTLearnerMealy<String, String> learner;
 	private static MealyCacheOracle<String, String> cacheOracle;
@@ -77,16 +76,10 @@ public class Main {
 		logger.logEvent("Reading config...");
 		Config config = createConfig();
 		Main.config = config;
-
-		logger.logEvent("Creating SUT interface...");
-		SutInterface sutInterface = createSutInterface(config);
-
-		logger.logEvent("Reading TCP parameters...");
-		SULConfig sul = readConfig(config, sutInterface);
-		alphabet = SutInfo.generateInputAlphabet();
+        alphabet = SutInfo.generateInputAlphabet();
 
 		logger.logEvent("Building query oracle...");
-		MembershipOracle<String, Word<String>> queryOracle = buildQueryOracle(sul);
+		MembershipOracle<String, Word<String>> queryOracle = buildQueryOracle(config.sulConfig);
 
 		logger.logEvent("Building membership oracle...");
 		MembershipOracle<String, Word<String>> memOracle = buildMembershipOracle(queryOracle);
@@ -113,7 +106,6 @@ public class Main {
         MealyMachine<?, String, ?, String> model = learn(learner, eqOracle);
 
 		// final output to out.txt
-		logger.logConfig("Seed: " + learningParams.seed);
 		logger.logEvent("Done.");
 		logger.logEvent("Successful run.");
 		outputDir = "output" + File.separator + "final-" + timeSnap;
@@ -180,7 +172,7 @@ public class Main {
 									 EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> eqOracle)
 			throws IOException {
 		int hypCounter = 1;
-		done = false;
+        boolean done = false;
 
 		try {
 			if (!learning) {
@@ -271,34 +263,16 @@ public class Main {
 		return eqOracles;
 	}
 
-	public static SULConfig readConfig(Config config, SutInterface sutInterface) {
-		// read/disp config params for learner
-		learningParams = config.learningParams;
-		learningParams.printParams();
-
-		SutInfo.setInputSignatures(sutInterface.inputInterfaces);
-
-		// read/disp SUT config
-		SULConfig sul = config.sulConfig;
-		sul.printParams();
-		return sul;
-	}
-
-	public static SutInterface createSutInterface(Config config)
-			throws FileNotFoundException {
-		File sutInterfaceFile = new File(sutConfigFile
-				.getParentFile().getAbsolutePath()
-				+ File.separator
-				+ config.learningParams.sutInterface);
-		InputStream sutInterfaceInput = new FileInputStream(sutInterfaceFile);
-		Yaml yaml = new Yaml(new Constructor(SutInterface.class));
-		return (SutInterface) yaml.load(sutInterfaceInput);
-	}
-
 	public static Config createConfig() throws FileNotFoundException {
 		InputStream configInput = new FileInputStream(sutConfigFile);
 		Yaml yaml = new Yaml(new Constructor(Config.class));
-		return (Config) yaml.load(configInput);
+		Config config = yaml.loadAs(configInput, Config.class);
+
+		SutInfo.setInputAlphabet(config.learningParams.inputAlphabet);
+        learningParams = config.learningParams;
+        learningParams.printParams();
+
+        return config;
 	}
 
 	public static void handleArgs(String[] args) {

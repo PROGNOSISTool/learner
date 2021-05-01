@@ -5,7 +5,6 @@ import sutInterface.SocketWrapper;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 public class SocketSUL implements SUL<String, String> {
