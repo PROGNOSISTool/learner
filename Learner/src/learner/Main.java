@@ -11,7 +11,6 @@ import java.nio.file.Path;
 import java.util.Map;
 
 import de.learnlib.algorithms.ttt.base.StateLimitException;
-import de.learnlib.algorithms.ttt.base.TTTLearnerState;
 import de.learnlib.algorithms.ttt.mealy.TTTLearnerMealy;
 import de.learnlib.algorithms.ttt.mealy.TTTLearnerMealyBuilder;
 import de.learnlib.api.algorithm.LearningAlgorithm;
@@ -43,7 +42,6 @@ import util.DotWriter;
 
 public class Main {
 	public static final String SUL_CACHE_FILE = "cache" + File.separator + "sul.ser";
-	public static final String LEARNER_CACHE_FILE = "cache" + File.separator + "learner.ser";
 
 	private static File sutConfigFile = null;
 	private static SocketSUL sul;
@@ -54,8 +52,7 @@ public class Main {
 	private static boolean learning;
     public static Config config;
 	private static Alphabet<String> alphabet;
-	private static TTTLearnerMealy<String, String> learner;
-	private static MealyCacheOracle<String, String> cacheOracle;
+    private static MealyCacheOracle<String, String> cacheOracle;
 	private static Counter queryCounter;
 	private static Counter membershipCounter;
 	private static Counter equivalenceCounter;
@@ -89,20 +86,13 @@ public class Main {
 		logger.logEvent("Building equivalence oracle...");
 		EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> eqOracle = buildEquivalenceOracle(queryOracle);
 
-		logger.logEvent("Building Learner State...");
-		TTTLearnerState<String, Word<String>> learnerState = FileManager.readStateFromFile(LEARNER_CACHE_FILE);
-
 		logger.logEvent("Building Learner...");
 		learning = false;
-		learner = new TTTLearnerMealyBuilder<String, String>()
-				.withAlphabet(alphabet)
-				.withOracle(memOracle)
-				.withStateLimit(40)
-				.create();
-		if (learnerState != null) {
-			learner.resume(learnerState);
-			learning = true;
-		}
+        TTTLearnerMealy<String, String> learner = new TTTLearnerMealyBuilder<String, String>()
+            .withAlphabet(alphabet)
+            .withOracle(memOracle)
+            .withStateLimit(40)
+            .create();
 
 		logger.logEvent("Starting learner...");
         MealyMachine<?, String, ?, String> model = learn(learner, eqOracle);
@@ -164,7 +154,6 @@ public class Main {
 			MealyCacheOracle.MealyCacheOracleState<String, String> cacheState = cacheOracle.suspend();
 			logger.info("Cache size: " + cacheOracle.getCacheSize());
 			saveState(cacheState, SUL_CACHE_FILE);
-			saveState(learner.suspend(), LEARNER_CACHE_FILE);
 			copyInputsToOutputFolder();
             sul.stop();
 		});
