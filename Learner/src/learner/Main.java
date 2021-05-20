@@ -167,7 +167,7 @@ public class Main {
 
 		try {
 			if (!learning) {
-				logger.info("Start Learning");
+				logger.info("Started Learning");
 				learner.startLearning();
 			}
 
@@ -183,7 +183,7 @@ public class Main {
 
 				// search for counterexample
 				DefaultQuery<String, Word<String>> o = eqOracle.findCounterExample(hyp, alphabet);
-				logger.logEvent("done equivalence query");
+				logger.logEvent("completed equivalence query");
 
 				// no counter example -> learning is done
 				if (o == null) {
@@ -194,7 +194,7 @@ public class Main {
 				assert o != null;
 
 				hypCounter ++;
-				logger.logEvent("Sending CE to LearnLib.");
+				logger.logEvent("Sending counterexample to LearnLib.");
 				logger.logCounterexample(o.toString());
 				// return counter example to the learner, so that it can use
 				// it to generate new membership queries
