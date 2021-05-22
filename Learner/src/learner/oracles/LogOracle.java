@@ -12,8 +12,7 @@ import util.FileManager;
 
 // Based on LogOracle from StateLearner by Joeri de Ruiter
 public class LogOracle implements MembershipOracle<String, Word<String>> {
-	private LearnLogger logger;
-	private File file;
+	private final LearnLogger logger;
 	private final MembershipOracle<String, Word<String>> queryOracle;
 
 	public LogOracle(LearnLogger logger, MembershipOracle<String, Word<String>> oracle) {
@@ -21,20 +20,11 @@ public class LogOracle implements MembershipOracle<String, Word<String>> {
 		this.queryOracle = oracle;
 	}
 
-	public LogOracle(String filename, MembershipOracle<String, Word<String>> oracle) {
-		this.file = FileManager.createFile(filename, true);
-		this.queryOracle = oracle;
-	}
-
     @Override
 	public Word<String> answerQuery(Word<String> input) {
 		Word<String> answer = queryOracle.answerQuery(input);
 		String query = input.toString() + " / " + answer.toString();
-		if (logger != null) {
-			logger.logQuery(query);
-		} else {
-			FileManager.appendToFile(file, Collections.singletonList(query));
-		}
+        logger.logQuery(query);
 		return answer;
 	}
 

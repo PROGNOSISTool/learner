@@ -8,7 +8,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 
 import de.learnlib.algorithms.ttt.base.StateLimitException;
 import de.learnlib.algorithms.ttt.mealy.TTTLearnerMealy;
@@ -100,9 +102,24 @@ public class Main {
 		// final output to out.txt
 		logger.logEvent("Done.");
 		logger.logEvent("Successful run.");
-		outputDir = "output" + File.separator + "final-" + timeSnap;
+
+		// Move our last results into the "final" folder, overwriting its content
+        // if necessary, but never deleting the folder as it can be used by a container.
+		outputDir = "output" + File.separator + "final";
 		File finalFolder = new File(outputDir);
-		outputFolder.renameTo(finalFolder);
+        if (finalFolder.exists()) {
+            for (File file : Objects.requireNonNull(finalFolder.listFiles())) {
+                file.delete();
+            }
+        }
+
+        if (outputFolder.exists()) {
+            for (File file : Objects.requireNonNull(outputFolder.listFiles())) {
+                file.renameTo(new File(outputDir + File.separator + file.getName()));
+            }
+        }
+
+		outputFolder.delete();
 		outputFolder = finalFolder;
 
 		logger.logStatistic(queryCounter);
@@ -239,7 +256,7 @@ public class Main {
 	private static MembershipOracle<String, Word<String>> buildMembershipOracle(MembershipOracle<String, Word<String>> queryOracle) {
 		CounterOracle<String, Word<String>> counterOracle = new ExtendedCounterOracle(LearnLogger.getLogger("Membership Oracle"),  queryOracle, "Membership Queries");
 		membershipCounter = counterOracle.getCounter();
-		return new LogOracle(outputDir + File.separator + "memQueries.txt", counterOracle);
+		return counterOracle;
 	}
 
 	private static EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> buildEquivalenceOracle(MembershipOracle<String, Word<String>> queryOracle) {
