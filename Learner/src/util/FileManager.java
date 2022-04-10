@@ -6,8 +6,13 @@ import net.automatalib.words.Word;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+
+import java.nio.charset.StandardCharsets;
+import com.thoughtworks.xstream.XStream;
+
 
 public class FileManager {
 	private static final LearnLogger logger = LearnLogger.getLogger("Learner");
@@ -77,25 +82,26 @@ public class FileManager {
 		try (OutputStream stream = new FileOutputStream(filename);
 			 OutputStream buffer = new BufferedOutputStream(stream);
 			 ObjectOutput output = new ObjectOutputStream(buffer)) {
-			output.writeObject(state);
+			XStream X_STREAM = new XStream();
+			X_STREAM.allowTypesByRegExp(new String[] {"net.automatalib.*", "de.learnlib.*"});
+			final byte[] cacheData = X_STREAM.toXML(state).getBytes(StandardCharsets.UTF_8);
+			output.writeObject(cacheData);
 		} catch (IOException ex){
 			System.err.println("Could not write cache state: (" + ex + ")");
 		}
 	}
 
 	public static <T> T readStateFromFile(String fileName) {
-		try (InputStream file = new FileInputStream(fileName);
-			 InputStream buffer = new BufferedInputStream(file);
-			 ObjectInput input = new ObjectInputStream (buffer)) {
-			@SuppressWarnings("unchecked")
-			T state = (T) input.readObject();
-			return state;
-		} catch(ClassNotFoundException ex) {
-			logger.error("Cache state file corrupt");
-			return null;
-		} catch(IOException ex) {
-			logger.error("Could not read cache file");
-			return null;
+		try {
+			Path path = Paths.get(fileName);
+			byte[] data = Files.readAllBytes(path);
+			String dataString = new String(data, StandardCharsets.UTF_8);
+			XStream X_STREAM = new XStream();
+			X_STREAM.allowTypesByRegExp(new String[] {"net.automatalib.*", "de.learnlib.*"});
+			return (T) X_STREAM.fromXML(dataString);
+		} catch (IOException e) {
+			logger.error("Failed to read state.");
 		}
+		return null;
 	}
 }

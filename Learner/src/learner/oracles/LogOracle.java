@@ -1,14 +1,11 @@
 package learner.oracles;
 
-import java.io.File;
 import java.util.Collection;
-import java.util.Collections;
 
 import de.learnlib.api.oracle.MembershipOracle;
 import de.learnlib.api.logging.LearnLogger;
 import de.learnlib.api.query.Query;
 import net.automatalib.words.Word;
-import util.FileManager;
 
 // Based on LogOracle from StateLearner by Joeri de Ruiter
 public class LogOracle implements MembershipOracle<String, Word<String>> {

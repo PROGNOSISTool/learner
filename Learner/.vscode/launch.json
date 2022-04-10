@@ -1,0 +1,29 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "type": "java",
+            "name": "TraceRunner",
+            "request": "launch",
+            "mainClass": "debug.TraceRunner",
+            "projectName": "Learner_e4f40140",
+            "args": "config.yaml",
+            "cwd": "${workspaceFolder}/../../",
+            "vmArgs": "--illegal-access=permit"
+        },
+        {
+            "type": "java",
+            "name": "Learner",
+            "request": "launch",
+            "mainClass": "learner.Main",
+            "projectName": "Learner_e4f40140",
+            "args": "config.yaml",
+            "cwd": "${workspaceFolder}/../../",
+            "vmArgs": "--illegal-access=permit"
+        }
+    ]
+}

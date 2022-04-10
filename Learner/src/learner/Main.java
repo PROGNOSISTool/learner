@@ -8,11 +8,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 
-import de.learnlib.algorithms.ttt.base.StateLimitException;
 import de.learnlib.algorithms.ttt.mealy.TTTLearnerMealy;
 import de.learnlib.algorithms.ttt.mealy.TTTLearnerMealyBuilder;
 import de.learnlib.api.algorithm.LearningAlgorithm;
@@ -21,6 +19,7 @@ import de.learnlib.api.oracle.EquivalenceOracle;
 import de.learnlib.api.oracle.MembershipOracle;
 import de.learnlib.api.query.DefaultQuery;
 import de.learnlib.filter.cache.mealy.MealyCacheOracle;
+import de.learnlib.filter.cache.mealy.MealyCaches;
 import de.learnlib.filter.statistic.Counter;
 import de.learnlib.filter.statistic.oracle.CounterOracle;
 import de.learnlib.oracle.equivalence.EQOracleChain;
@@ -39,7 +38,6 @@ import org.yaml.snakeyaml.Yaml;
 
 import util.Chmod;
 import util.FileManager;
-import util.exceptions.CorruptedLearningException;
 import util.DotWriter;
 
 public class Main {
@@ -63,7 +61,13 @@ public class Main {
 		try{
 			// wrapper around main to return a useful error code upon nondeterminism
 			runLearner(args);
-		} catch (CorruptedLearningException e) {
+		} catch (Exception e) {
+			logger.info("Running shutdown hook");
+			MealyCacheOracle.MealyCacheOracleState<String, String> cacheState = cacheOracle.suspend();
+			saveState(cacheState, SUL_CACHE_FILE);
+			copyInputsToOutputFolder();
+            sul.stop();
+			e.printStackTrace();
 			System.exit(42);
 		}
 	}
@@ -93,7 +97,6 @@ public class Main {
         TTTLearnerMealy<String, String> learner = new TTTLearnerMealyBuilder<String, String>()
             .withAlphabet(alphabet)
             .withOracle(memOracle)
-            .withStateLimit(40)
             .create();
 
 		logger.logEvent("Starting learner...");
@@ -169,7 +172,6 @@ public class Main {
 		registerShutdownHook(() -> {
 			logger.info("Running shutdown hook");
 			MealyCacheOracle.MealyCacheOracleState<String, String> cacheState = cacheOracle.suspend();
-			logger.info("Cache size: " + cacheOracle.getCacheSize());
 			saveState(cacheState, SUL_CACHE_FILE);
 			copyInputsToOutputFolder();
             sul.stop();
@@ -182,45 +184,40 @@ public class Main {
 		int hypCounter = 1;
         boolean done = false;
 
-		try {
-			if (!learning) {
-				logger.info("Started Learning");
-				learner.startLearning();
-			}
-
-			while (!done) {
-				// stable hypothesis after membership queries
-				MealyMachine<?, String, ?, String> hyp = learner.getHypothesisModel();
-				String hypFileName = outputDir + File.separator + "tmp-learnresult"
-						+ hypCounter + ".dot";
-
-				DotWriter.writeDotFile(hyp, alphabet, hypFileName);
-
-				logger.logEvent("starting equivalence query");
-
-				// search for counterexample
-				DefaultQuery<String, Word<String>> o = eqOracle.findCounterExample(hyp, alphabet);
-				logger.logEvent("completed equivalence query");
-
-				// no counter example -> learning is done
-				if (o == null) {
-					done = true;
-					continue;
-				}
-				o = MealyUtil.shortenCounterExample(hyp, o);
-				assert o != null;
-
-				hypCounter ++;
-				logger.logEvent("Sending counterexample to LearnLib.");
-				logger.logCounterexample(o.toString());
-				// return counter example to the learner, so that it can use
-				// it to generate new membership queries
-				learner.refineHypothesis(o);
-			}
-		} catch(StateLimitException ignored) {
-			logger.logEvent("Reached state limit. Wrapping up...");
+		if (!learning) {
+			logger.info("Started Learning");
+			learner.startLearning();
 		}
 
+		while (!done) {
+			// stable hypothesis after membership queries
+			MealyMachine<?, String, ?, String> hyp = learner.getHypothesisModel();
+			String hypFileName = outputDir + File.separator + "tmp-learnresult"
+					+ hypCounter + ".dot";
+
+			DotWriter.writeDotFile(hyp, alphabet, hypFileName);
+
+			logger.logEvent("starting equivalence query");
+
+			// search for counterexample
+			DefaultQuery<String, Word<String>> o = eqOracle.findCounterExample(hyp, alphabet);
+			logger.logEvent("completed equivalence query");
+
+			// no counter example -> learning is done
+			if (o == null) {
+				done = true;
+				continue;
+			}
+			o = MealyUtil.shortenCounterExample(hyp, o);
+			assert o != null;
+
+			hypCounter ++;
+			logger.logEvent("Sending counterexample to LearnLib.");
+			logger.logCounterexample(o.toString());
+			// return counter example to the learner, so that it can use
+			// it to generate new membership queries
+			learner.refineHypothesis(o);
+		}
 		return learner.getHypothesisModel();
 	}
 
@@ -245,10 +242,9 @@ public class Main {
 		MealyCacheOracle.MealyCacheOracleState<String, String> cacheState = FileManager.readStateFromFile(SUL_CACHE_FILE);
 
 		System.out.println("Building Cache Oracle...");
-		cacheOracle = MealyCacheOracle.createDAGCacheOracle(alphabet, probabilisticOracle);
+		cacheOracle = MealyCaches.createDAGCache(alphabet, probabilisticOracle);;
 		if (cacheState != null) {
 			cacheOracle.resume(cacheState);
-			logger.info("Cache size: " + cacheOracle.getCacheSize());
 		}
 		return cacheOracle;
 	}
@@ -303,5 +299,3 @@ public class Main {
 		Runtime.getRuntime().addShutdownHook(new Thread(r));
 	}
 }
-
-
