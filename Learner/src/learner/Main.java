@@ -154,6 +154,14 @@ public class Main {
 	private static void writeOutputFiles(MealyMachine<?, String, ?, String> model) {
 		File dotFile = new File(outputFolder.getAbsolutePath() + File.separator + "learnresult.dot");
 
+		try {
+			if (!dotFile.createNewFile()) {
+				logger.error("Could not create dot file.");
+			}
+		} catch (IOException e) {
+			logger.error("Error when creating dot file.");
+		}
+
 		try (BufferedWriter out = new BufferedWriter(new FileWriter(dotFile))) {
 			DotWriter.write(model, alphabet, out);
 		} catch (IOException e1) {
