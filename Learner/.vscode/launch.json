@@ -4,7 +4,6 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        
         {
             "type": "java",
             "name": "TraceRunner",
@@ -23,7 +22,7 @@
             "projectName": "Learner_e4f40140",
             "args": "config.yaml",
             "cwd": "${workspaceFolder}/../../",
-            "vmArgs": "--illegal-access=permit"
+            "vmArgs": "--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.util.concurrent=ALL-UNNAMED"
         }
     ]
 }
