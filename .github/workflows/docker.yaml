@@ -2,7 +2,7 @@ name: Build
 # From: https://dev.to/cloudx/multi-arch-docker-images-the-easy-way-with-github-actions-4k54
 # Controls when the workflow will run
 on:
-  workflow_dispatch
+  workflow_dispatch:
   push:
     branches:
       - 'main'
