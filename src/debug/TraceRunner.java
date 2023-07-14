@@ -78,7 +78,6 @@ public class TraceRunner {
 
 		Main.setupOutput("trace runner output.txt");
 		Config config = Main.createConfig();
-        config.exitIfInvalid = false;
 
 		SocketSUL sul = new SocketSUL(config);
 		TraceRunner traceRunner = new TraceRunner(trace, sul);

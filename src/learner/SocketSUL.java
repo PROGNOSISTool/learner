@@ -11,7 +11,7 @@ public class SocketSUL implements SUL<String, String> {
 
 	public SocketSUL(Config config) {
 		try {
-			this.socket = new SocketWrapper(config.sutIP, config.sutPort);
+			this.socket = new SocketWrapper(config.impIP, config.impPort);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);

@@ -114,7 +114,9 @@ public class Main {
             for (File file : Objects.requireNonNull(finalFolder.listFiles())) {
                 file.delete();
             }
-        }
+		} else {
+			finalFolder.mkdirs();
+		}
 
         if (outputFolder.exists()) {
             for (File file : Objects.requireNonNull(outputFolder.listFiles())) {
