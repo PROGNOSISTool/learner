@@ -139,7 +139,7 @@ public class Main {
 
 	private static void copyInputsToOutputFolder() {
 		File inputFolder = sutConfigFile.getParentFile();
-		if (!inputFolder.getName().equalsIgnoreCase("input")) {
+		if (!"input".equalsIgnoreCase(inputFolder.getName())) {
 			logger.error("Could not find input folder \"input\", so not copying ");
 		    return;
 		}
@@ -252,7 +252,7 @@ public class Main {
 		MealyCacheOracle.MealyCacheOracleState<String, String> cacheState = FileManager.readStateFromFile(SUL_CACHE_FILE);
 
 		System.out.println("Building Cache Oracle...");
-		cacheOracle = MealyCaches.createDAGCache(alphabet, probabilisticOracle);;
+		cacheOracle = MealyCaches.createTreeCache(alphabet, probabilisticOracle);
 		if (cacheState != null) {
 			cacheOracle.resume(cacheState);
 		}
@@ -280,7 +280,7 @@ public class Main {
 	public static Config createConfig() throws FileNotFoundException {
 		InputStream configInput = new FileInputStream(sutConfigFile);
 		Yaml yaml = new Yaml();
-        Map<String, Object> parsed = yaml.load(configInput);
+		Map<String, Object> parsed = yaml.load(configInput);
         return yaml.loadAs(yaml.dump(parsed.get("learner")), Config.class);
 	}
 
